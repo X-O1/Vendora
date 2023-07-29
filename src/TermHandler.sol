@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 
+// CONTRACT OBJECTIVES:
+
 pragma solidity ^0.8.19;
 
 contract TermHandler {
