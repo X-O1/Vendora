@@ -42,8 +42,8 @@ contract TerminatorEscrow {
     }
 
     // Deposit
-    function initiatorDeposit() public onlyTerminator {}
+    // function initiatorDeposit() public onlyTerminator {}
 
     // Withdraw
-    function withdrawFromTerminator() public onlyTerminator {}
+    // function withdrawFromTerminator() public onlyTerminator {}
 }

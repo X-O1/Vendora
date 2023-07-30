@@ -8,7 +8,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-contract InitiatorEscrow {
+contract Escrow {
     /** CUSTOM ERRORS */
     error Not_Initiator();
     error Not_Owner();
@@ -18,10 +18,6 @@ contract InitiatorEscrow {
 
     address private s_initiator;
     bool private s_initiatorSet;
-    bytes32[] private s_symbolWanted;
-    uint256[] private s_amountWanted;
-    bytes32[] private s_symbolGiving;
-    uint256[] private s_amountGiving;
 
     mapping(bytes32 => address) public s_whitelistedTokens;
     mapping(address => mapping(bytes32 => uint256)) public s_accountBalances;
@@ -30,16 +26,7 @@ contract InitiatorEscrow {
     event Initiator_Set(bool indexed set, address indexed initiatorsAddress);
 
     /** CONTRUCTOR */
-    constructor(
-        bytes32[] memory symbolWanted,
-        uint256[] memory amountWanted,
-        bytes32[] memory symbolGiving,
-        uint256[] memory amountGiving
-    ) {
-        s_symbolWanted = symbolWanted;
-        s_amountWanted = amountWanted;
-        s_symbolGiving = symbolGiving;
-        s_amountGiving = amountGiving;
+    constructor() {
         s_initiatorSet = false;
         i_owner = msg.sender;
     }
@@ -59,6 +46,14 @@ contract InitiatorEscrow {
     }
 
     /** FUNCTIONS */
+    // Whitelist new tokens
+    function whiteListToken(
+        bytes32 symbol,
+        address tokenAddress
+    ) external onlyOwner {
+        s_whitelistedTokens[symbol] = tokenAddress;
+    }
+
     // Set the Initiator
     function setInitiator() public {
         require(s_initiatorSet == false, "Initiator already set");
@@ -67,14 +62,6 @@ contract InitiatorEscrow {
         s_initiatorSet = true;
 
         emit Initiator_Set(s_initiatorSet, s_initiator);
-    }
-
-    // Whitelist new tokens
-    function whiteListToken(
-        bytes32 symbol,
-        address tokenAddress
-    ) external onlyOwner {
-        s_whitelistedTokens[symbol] = tokenAddress;
     }
 
     // Deposit
@@ -97,8 +84,10 @@ contract InitiatorEscrow {
             s_accountBalances[msg.sender][symbol] >= amount,
             "Insufficent funds"
         );
-        // Decrease the amount out of their balances since they are withdrawing
+
+        // Decrease the amount out of their account balance in protocol since they are withdrawing
         s_accountBalances[msg.sender][symbol] -= amount;
+
         // Transfer the tokens out
         ERC20(s_whitelistedTokens[symbol]).transfer(msg.sender, amount);
     }
