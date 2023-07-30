@@ -17,10 +17,6 @@ contract TermHandler {
         i_owner = msg.sender;
     }
 
-    /** MODIFIERS */
-
-    /** FUNCTIONS */
-
     // want() and give() will take in Initiator's front-end input values as thier arguments
     function want(
         bytes32[] memory,
