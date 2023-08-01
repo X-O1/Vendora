@@ -31,7 +31,6 @@ contract Escrow {
     DepositState private s_depositState;
     WithdrawState private s_withdrawState;
 
-    mapping(address => mapping(IERC20 => uint256)) public s_balances;
     mapping(address => TradeAssets[]) public s_deposits;
     mapping(address => TradeAssets[]) public s_wantedERC20;
     mapping(address => TradeAssets[]) public s_givingERC20;
@@ -166,6 +165,7 @@ contract Escrow {
 
     // DEPOSIT ERC20 TOKENS (INITIATOR)
     function initiatorDepositERC20(
+        bytes32 symbol,
         IERC20 token,
         uint256 amount
     ) external onlyInitiator {
@@ -175,13 +175,14 @@ contract Escrow {
             s_initiatorDepositsCompleted == false,
             "All Initiators deposits have been made"
         );
-
-        // Store deposit
-        TradeAssets memory deposit = TradeAssets(token, amount);
-        s_deposits[s_initiator].push(deposit);
+        require(
+            token == vendora.getWhitelistedERC20Tokens(symbol),
+            "Token not whitelisted"
+        );
 
         // Update balances
-        s_balances[s_initiator][token] += amount;
+        TradeAssets memory deposit = TradeAssets(token, amount);
+        s_deposits[s_initiator].push(deposit);
 
         // Transfering amount from user to the contract
         token.transferFrom(s_initiator, address(this), amount);
@@ -219,12 +220,9 @@ contract Escrow {
             "All Finalizer deposits have been made"
         );
 
-        // Store deposits
+        // Update balances
         TradeAssets memory deposit = TradeAssets(token, amount);
         s_deposits[s_finalizer].push(deposit);
-
-        // Update balances
-        s_balances[s_finalizer][token] += amount;
 
         // Transfering amount from user to the contract
         token.transferFrom(s_finalizer, address(this), amount);
@@ -248,21 +246,6 @@ contract Escrow {
                 break;
             }
         }
-    }
-
-    // CANCEL DEAL AND WITHDRAW BACK YOUR ASSETS
-    function cancelDealAndWithdraw(IERC20 token, uint256 amount) public {
-        require(
-            msg.sender == s_initiator || msg.sender == s_finalizer,
-            "Not a party memeber"
-        );
-        require(s_depositState == DepositState.OPEN, "Deposits are CLOSED");
-        require(s_withdrawState == WithdrawState.CLOSED, "Withdraws are OPEN");
-        require(s_balances[msg.sender][token] >= amount);
-
-        s_balances[msg.sender][token] -= amount;
-
-        // (s_deposits[token]).transfer(msg.sender, amount)
     }
 
     // OPEN WITHDRAWS
@@ -292,6 +275,29 @@ contract Escrow {
         emit Withdraw_State(s_withdrawState);
 
         return s_allDepositsCompleted;
+    }
+
+    // CANCEL DEAL AND WITHDRAW BACK YOUR ASSETS
+    function cancelDealAndWithdraw(IERC20 token, uint256 amount) public {
+        require(
+            msg.sender == s_initiator || msg.sender == s_finalizer,
+            "Not a party memeber"
+        );
+        require(s_depositState == DepositState.OPEN, "Deposits are CLOSED");
+        require(s_withdrawState == WithdrawState.CLOSED, "Withdraws are OPEN");
+
+        for (uint256 i = 0; i < s_deposits[msg.sender].length; i++) {
+            if (s_deposits[msg.sender][i].token == token) {
+                require(
+                    s_deposits[msg.sender][i].amount >= amount,
+                    "Insufficient funds"
+                );
+                s_deposits[msg.sender][i].amount -= amount;
+                break;
+            }
+        }
+
+        require(token.transfer(msg.sender, amount), "Token transfer failed");
     }
 
     // Withdraw
