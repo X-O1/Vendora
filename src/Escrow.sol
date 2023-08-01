@@ -31,6 +31,7 @@ contract Escrow {
     DepositState private s_depositState;
     WithdrawState private s_withdrawState;
 
+    mapping(address => mapping(IERC20 => uint256)) public s_balances;
     mapping(address => TradeAssets[]) public s_deposits;
     mapping(address => TradeAssets[]) public s_wantedERC20;
     mapping(address => TradeAssets[]) public s_givingERC20;
@@ -101,7 +102,7 @@ contract Escrow {
 
     /** FUNCTIONS */
 
-    // Set the Initiator // Starts the trade
+    // SET THE INITIATOR
     function setInitiator() public {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
         require(s_initiatorSet == false, "Initiator already set");
@@ -113,7 +114,7 @@ contract Escrow {
         emit Initiator_Set(s_initiatorSet, s_initiator);
     }
 
-    // Set the Finalizer
+    // SET THE FINALIZER
     function setFinalizer() public {
         require(s_tradeState == TradeState.LIVE, "Trade is Closed");
         require(s_initiatorSet == true, "Initiator and terms are not set");
@@ -125,7 +126,7 @@ contract Escrow {
         emit Initiator_Set(s_finalizerSet, s_finalizer);
     }
 
-    // Set trade terms.
+    // CHOOSE THE TOKENS WANTED IN TRADE
     function addERC20Wanted(
         IERC20 token,
         uint256 amount
@@ -137,6 +138,7 @@ contract Escrow {
         s_wantedERC20[msg.sender].push(newAsset);
     }
 
+    // CHOOSE THE TOKENS GIVING IN TRADE
     function addERC20ToGive(
         IERC20 token,
         uint256 amount
@@ -148,11 +150,12 @@ contract Escrow {
         s_givingERC20[msg.sender].push(newAsset);
     }
 
-    // Finalize and open the trade
+    // FINALIZE TERMS AND OPEN DEPOSITS
     function finalizeTermsAndOpenDeposits() external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is not Live");
         require(s_depositState == DepositState.CLOSED, "Deposites are OPEN");
         require(s_initiatorSet == true, "Initiator not set");
+        require(s_finalizerSet == true, "Finalizer not set");
 
         s_tradeState = TradeState.LIVE;
         s_depositState = DepositState.OPEN;
@@ -161,7 +164,7 @@ contract Escrow {
         emit Deposit_State(s_depositState);
     }
 
-    // Initiator Deposit ERC20 tokens
+    // DEPOSIT ERC20 TOKENS (INITIATOR)
     function initiatorDepositERC20(
         IERC20 token,
         uint256 amount
@@ -173,36 +176,38 @@ contract Escrow {
             "All Initiators deposits have been made"
         );
 
-        // Update deposit balances
+        // Store deposit
         TradeAssets memory deposit = TradeAssets(token, amount);
-        s_deposits[msg.sender].push(deposit);
+        s_deposits[s_initiator].push(deposit);
+
+        // Update balances
+        s_balances[s_initiator][token] += amount;
 
         // Transfering amount from user to the contract
-        token.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(s_initiator, address(this), amount);
 
         // Check if all deposites are made by initiator and Open the Trade
-        for (uint256 i = 0; i < s_deposits[msg.sender].length; i++) {
-            for (uint256 j = 0; j < s_givingERC20[msg.sender].length; j++) {
-                if (
-                    s_deposits[msg.sender][i].token ==
-                    s_givingERC20[msg.sender][i].token &&
-                    s_deposits[msg.sender][i].amount ==
-                    s_givingERC20[msg.sender][i].amount
-                ) {
-                    s_initiatorDepositsCompleted = true;
-                    emit All_Initiator_Deposits_Are_In(
-                        s_initiatorDepositsCompleted
-                    );
-                    break;
-                }
-            }
-            if (s_initiatorDepositsCompleted) {
+        uint256 depositLength = s_deposits[msg.sender].length;
+        uint256 givingLength = s_givingERC20[msg.sender].length;
+
+        if (depositLength != givingLength) return;
+        for (uint256 i = 0; i < depositLength; i++) {
+            if (
+                s_deposits[msg.sender][i].token ==
+                s_givingERC20[msg.sender][i].token &&
+                s_deposits[msg.sender][i].amount ==
+                s_givingERC20[msg.sender][i].amount
+            ) {
+                s_initiatorDepositsCompleted = true;
+                emit All_Initiator_Deposits_Are_In(
+                    s_initiatorDepositsCompleted
+                );
                 break;
             }
         }
     }
 
-    // Finalizer Deposit ERC20 tokens
+    // DEPOSIT ERC20 TOKENS (FINALIZER)
     function finalizerDepositERC20(
         IERC20 token,
         uint256 amount
@@ -214,40 +219,59 @@ contract Escrow {
             "All Finalizer deposits have been made"
         );
 
-        // Update deposit balances
+        // Store deposits
         TradeAssets memory deposit = TradeAssets(token, amount);
-        s_deposits[msg.sender].push(deposit);
+        s_deposits[s_finalizer].push(deposit);
+
+        // Update balances
+        s_balances[s_finalizer][token] += amount;
 
         // Transfering amount from user to the contract
-        token.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(s_finalizer, address(this), amount);
 
         // Check if all deposites are made by initiator and Open the Trade
-        for (uint256 i = 0; i < s_deposits[msg.sender].length; i++) {
-            for (uint256 j = 0; j < s_wantedERC20[msg.sender].length; j++) {
-                if (
-                    s_deposits[msg.sender][i].token ==
-                    s_wantedERC20[msg.sender][i].token &&
-                    s_deposits[msg.sender][i].amount ==
-                    s_wantedERC20[msg.sender][i].amount
-                ) {
-                    s_finalizerDepositsCompleted = true;
-                    emit All_Finalizer_Deposits_Are_In(
-                        s_finalizerDepositsCompleted
-                    );
-                    break;
-                }
-            }
-            if (s_finalizerDepositsCompleted) {
+        uint256 depositLength = s_deposits[msg.sender].length;
+        uint256 wantedLength = s_wantedERC20[msg.sender].length;
+
+        if (depositLength != wantedLength) return;
+        for (uint256 i = 0; i < depositLength; i++) {
+            if (
+                s_deposits[msg.sender][i].token ==
+                s_wantedERC20[msg.sender][i].token &&
+                s_deposits[msg.sender][i].amount ==
+                s_wantedERC20[msg.sender][i].amount
+            ) {
+                s_finalizerDepositsCompleted = true;
+                emit All_Finalizer_Deposits_Are_In(
+                    s_finalizerDepositsCompleted
+                );
                 break;
             }
         }
     }
 
-    // Finalize and open the trade
+    // CANCEL DEAL AND WITHDRAW BACK YOUR ASSETS
+    function cancelDealAndWithdraw(IERC20 token, uint256 amount) public {
+        require(
+            msg.sender == s_initiator || msg.sender == s_finalizer,
+            "Not a party memeber"
+        );
+        require(s_depositState == DepositState.OPEN, "Deposits are CLOSED");
+        require(s_withdrawState == WithdrawState.CLOSED, "Withdraws are OPEN");
+        require(s_balances[msg.sender][token] >= amount);
+
+        s_balances[msg.sender][token] -= amount;
+
+        // (s_deposits[token]).transfer(msg.sender, amount)
+    }
+
+    // OPEN WITHDRAWS
     function checkIfAllDepositsAreMadeAndOpenWithdrawls()
         internal
         returns (bool)
     {
+        require(s_initiatorSet == true, "Initiator not set");
+        require(s_finalizerSet == true, "Finalizer not set");
         require(s_withdrawState == WithdrawState.CLOSED, "Withdraws are OPEN");
         require(s_depositState == DepositState.OPEN, "Deposits are CLOSED");
         require(s_tradeState == TradeState.LIVE, "Trade is not Live");
