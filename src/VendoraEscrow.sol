@@ -332,18 +332,67 @@ contract VendoraEscrow {
         }
     }
 
-    // Withdraw
-    // function withdrawERC20(
-    //     uint256 amount,
-    //     bytes32 symbol
-    // ) external onlyPartyMembers {
-    //     require(checkIfAllDepositsAreMadeAndOpenWithdrawls(), "All deposites have not been made");
-    //     require(s_withdrawState == WithdrawState.OPEN, "Withdraws are not OPEN");
+    // WITHDRAW
+    function withdrawERC20Initiator(
+        uint256 amount,
+        bytes32 symbol
+    ) external onlyInitiator {
+        require(
+            checkIfAllDepositsAreMadeAndOpenWithdrawls(),
+            "All deposites have not been made"
+        );
+        require(
+            s_withdrawState == WithdrawState.OPEN,
+            "Withdraws are not OPEN"
+        );
 
-    //     // Get whitelisted token address
-    //     IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+        // Get whitelisted token address
+        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
-    // }
+        for (uint256 i = 0; i < s_deposits[s_finalizer].length; i++) {
+            if (s_deposits[s_finalizer][i].symbol == symbol) {
+                // Check if user has enough tokens to withdraw
+                require(
+                    s_deposits[s_finalizer][i].amount >= amount,
+                    "Insufficient funds"
+                );
+                // Transfer token to user
+                require(token.transfer(s_initiator, amount), "Transfer failed");
+                // Update balances
+                s_deposits[s_finalizer][i].amount -= amount;
+                break;
+            }
+        }
+    }
+
+    function withdrawERC20Finalizer(
+        bytes32 symbol,
+        uint256 amount
+    ) external onlyFinalizer {
+        require(
+            checkIfAllDepositsAreMadeAndOpenWithdrawls(),
+            "All deposits have not been made"
+        );
+        require(s_withdrawState == WithdrawState.OPEN, "Withdraw are CLOSED");
+
+        // Get whitelisted token address
+        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+
+        for (uint256 i = 0; i < s_deposits[s_initiator].length; i++) {
+            if (s_deposits[s_initiator][i].symbol == symbol) {
+                // Check if there enough in balances to withdraw
+                require(
+                    s_deposits[s_initiator][i].amount >= amount,
+                    "Insufficient funds"
+                );
+                // Transfer token to user
+                require(token.transfer(s_finalizer, amount), "Transfer failed");
+                // Updates balances
+                s_deposits[s_initiator][i].amount -= amount;
+                break;
+            }
+        }
+    }
 
     /** GET FUNCTIONS */
 }
