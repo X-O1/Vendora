@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-import {Escrow} from "./Escrow.sol";
+import {VendoraEscrow} from "./VendoraEscrow.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -13,7 +13,7 @@ contract Vendora {
     /** STATE VARIABLES */
     address private immutable i_owner;
 
-    mapping(bytes32 => IERC20) public s_whitelistedERC20;
+    mapping(bytes32 => address) public s_whitelistedERC20;
 
     constructor() {
         i_owner = msg.sender;
@@ -29,15 +29,15 @@ contract Vendora {
 
     /** FUNCTIONS */
 
-    // Whitelist new tokens
-    function whitelistERC20(bytes32 symbol, IERC20 token) external onlyOwner {
+    // WHITELIST NEW SUPPORTED TOKENS
+    function whitelistERC20(bytes32 symbol, address token) external onlyOwner {
         s_whitelistedERC20[symbol] = token;
     }
 
     /** GET */
     function getWhitelistedERC20Tokens(
         bytes32 symbol
-    ) external view returns (IERC20) {
+    ) external view returns (address) {
         return s_whitelistedERC20[symbol];
     }
 }
