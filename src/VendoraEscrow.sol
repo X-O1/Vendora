@@ -32,7 +32,7 @@ contract VendoraEscrow {
     DepositState private s_depositState;
     WithdrawState private s_withdrawState;
 
-    mapping(address => TradeAssetsERC20[]) public s_deposits;
+    mapping(address => TradeAssetsERC20[]) public s_depositsERC20;
     mapping(address => TradeAssetsERC20[]) public s_wantedERC20;
     mapping(address => TradeAssetsERC20[]) public s_givingERC20;
 
@@ -198,19 +198,19 @@ contract VendoraEscrow {
 
         // Update balances
         TradeAssetsERC20 memory deposit = TradeAssetsERC20(symbol, amount);
-        s_deposits[s_initiator].push(deposit);
+        s_depositsERC20[s_initiator].push(deposit);
 
         // Check if all deposites are made by initiator
-        uint256 depositLength = s_deposits[msg.sender].length;
-        uint256 givingLength = s_givingERC20[msg.sender].length;
+        uint256 depositLength = s_depositsERC20[s_initiator].length;
+        uint256 givingLength = s_givingERC20[s_initiator].length;
 
         if (depositLength != givingLength) return;
         for (uint256 i = 0; i < depositLength; i++) {
             if (
-                s_deposits[msg.sender][i].symbol ==
-                s_givingERC20[msg.sender][i].symbol &&
-                s_deposits[msg.sender][i].amount ==
-                s_givingERC20[msg.sender][i].amount
+                s_depositsERC20[s_initiator][i].symbol ==
+                s_givingERC20[s_initiator][i].symbol &&
+                s_depositsERC20[s_initiator][i].amount ==
+                s_givingERC20[s_initiator][i].amount
             ) {
                 s_initiatorDepositsCompleted = true;
                 emit All_Initiator_Deposits_Are_In(
@@ -250,19 +250,19 @@ contract VendoraEscrow {
 
         // Update balances
         TradeAssetsERC20 memory deposit = TradeAssetsERC20(symbol, amount);
-        s_deposits[s_finalizer].push(deposit);
+        s_depositsERC20[s_finalizer].push(deposit);
 
-        // Check if all deposites are made by initiator
-        uint256 depositLength = s_deposits[msg.sender].length;
-        uint256 wantedLength = s_wantedERC20[msg.sender].length;
+        // Check if all deposites are made by finalizer
+        uint256 depositLength = s_depositsERC20[s_finalizer].length;
+        uint256 wantedLength = s_wantedERC20[s_initiator].length;
 
         if (depositLength != wantedLength) return;
         for (uint256 i = 0; i < depositLength; i++) {
             if (
-                s_deposits[msg.sender][i].symbol ==
-                s_wantedERC20[msg.sender][i].symbol &&
-                s_deposits[msg.sender][i].amount ==
-                s_wantedERC20[msg.sender][i].amount
+                s_depositsERC20[s_finalizer][i].symbol ==
+                s_wantedERC20[s_initiator][i].symbol &&
+                s_depositsERC20[s_finalizer][i].amount ==
+                s_wantedERC20[s_initiator][i].amount
             ) {
                 s_finalizerDepositsCompleted = true;
                 emit All_Finalizer_Deposits_Are_In(
@@ -313,11 +313,11 @@ contract VendoraEscrow {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
-        for (uint256 i = 0; i < s_deposits[msg.sender].length; i++) {
-            if (s_deposits[msg.sender][i].symbol == symbol) {
+        for (uint256 i = 0; i < s_depositsERC20[msg.sender].length; i++) {
+            if (s_depositsERC20[msg.sender][i].symbol == symbol) {
                 // Check the user has enough in balance to withdraw
                 require(
-                    s_deposits[msg.sender][i].amount >= amount,
+                    s_depositsERC20[msg.sender][i].amount >= amount,
                     "Insufficient funds"
                 );
                 // Transfer tokens to user
@@ -326,7 +326,7 @@ contract VendoraEscrow {
                     "Token transfer failed"
                 );
                 // Update the user balance after withdraw
-                s_deposits[msg.sender][i].amount -= amount;
+                s_depositsERC20[msg.sender][i].amount -= amount;
                 break;
             }
         }
@@ -349,17 +349,17 @@ contract VendoraEscrow {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
-        for (uint256 i = 0; i < s_deposits[s_finalizer].length; i++) {
-            if (s_deposits[s_finalizer][i].symbol == symbol) {
+        for (uint256 i = 0; i < s_depositsERC20[s_finalizer].length; i++) {
+            if (s_depositsERC20[s_finalizer][i].symbol == symbol) {
                 // Check if user has enough tokens to withdraw
                 require(
-                    s_deposits[s_finalizer][i].amount >= amount,
+                    s_depositsERC20[s_finalizer][i].amount >= amount,
                     "Insufficient funds"
                 );
                 // Transfer token to user
                 require(token.transfer(s_initiator, amount), "Transfer failed");
                 // Update balances
-                s_deposits[s_finalizer][i].amount -= amount;
+                s_depositsERC20[s_finalizer][i].amount -= amount;
                 break;
             }
         }
@@ -378,17 +378,17 @@ contract VendoraEscrow {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
-        for (uint256 i = 0; i < s_deposits[s_initiator].length; i++) {
-            if (s_deposits[s_initiator][i].symbol == symbol) {
+        for (uint256 i = 0; i < s_depositsERC20[s_initiator].length; i++) {
+            if (s_depositsERC20[s_initiator][i].symbol == symbol) {
                 // Check if there enough in balances to withdraw
                 require(
-                    s_deposits[s_initiator][i].amount >= amount,
+                    s_depositsERC20[s_initiator][i].amount >= amount,
                     "Insufficient funds"
                 );
                 // Transfer token to user
                 require(token.transfer(s_finalizer, amount), "Transfer failed");
                 // Updates balances
-                s_deposits[s_initiator][i].amount -= amount;
+                s_depositsERC20[s_initiator][i].amount -= amount;
                 break;
             }
         }
