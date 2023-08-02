@@ -22,11 +22,11 @@ contract VendoraEscrow {
 
     address private s_initiator;
     address private s_finalizer;
-    bool private s_initiatorSet;
-    bool private s_finalizerSet;
-    bool private s_initiatorDepositsCompleted;
-    bool private s_finalizerDepositsCompleted;
-    bool private s_allDepositsCompleted;
+    bool private s_initiatorIsSet;
+    bool private s_finalizerIsSet;
+    bool private s_allInitiatorDepositsAreCompleted;
+    bool private s_allFinalizerDepositsAreCompleted;
+    bool private s_allDepositsAreCompleted;
 
     TradeState private s_tradeState;
     DepositState private s_depositState;
@@ -68,15 +68,15 @@ contract VendoraEscrow {
 
     /** CONTRUCTOR */
     constructor() {
-        s_initiatorSet = false;
-        s_finalizerSet = false;
+        s_initiatorIsSet = false;
+        s_finalizerIsSet = false;
         s_tradeState = TradeState.CLOSED;
         s_depositState = DepositState.CLOSED;
         s_withdrawState = WithdrawState.CLOSED;
 
-        s_finalizerDepositsCompleted = false;
-        s_initiatorDepositsCompleted = false;
-        s_allDepositsCompleted = false;
+        s_allFinalizerDepositsAreCompleted = false;
+        s_allInitiatorDepositsAreCompleted = false;
+        s_allDepositsAreCompleted = false;
         i_owner = msg.sender;
     }
 
@@ -112,33 +112,33 @@ contract VendoraEscrow {
     // SET THE INITIATOR
     function setInitiator() public {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
-        require(s_initiatorSet == false, "Initiator already set");
-        require(s_finalizerSet == false, "Deal active");
+        require(s_initiatorIsSet == false, "Initiator already set");
+        require(s_finalizerIsSet == false, "Deal active");
 
         s_initiator = msg.sender;
-        s_initiatorSet = true;
+        s_initiatorIsSet = true;
 
-        emit Initiator_Set(s_initiatorSet, s_initiator);
+        emit Initiator_Set(s_initiatorIsSet, s_initiator);
     }
 
     // SET THE FINALIZER
     function setFinalizer() public {
         require(s_tradeState == TradeState.LIVE, "Trade is Closed");
-        require(s_initiatorSet == true, "Initiator and terms are not set");
-        require(s_finalizerSet == false, "Finalizer already set");
+        require(s_initiatorIsSet == true, "Initiator and terms are not set");
+        require(s_finalizerIsSet == false, "Finalizer already set");
 
         s_finalizer = msg.sender;
-        s_finalizerSet = true;
+        s_finalizerIsSet = true;
 
-        emit Initiator_Set(s_finalizerSet, s_finalizer);
+        emit Initiator_Set(s_finalizerIsSet, s_finalizer);
     }
 
     // FINALIZE TERMS AND OPEN DEPOSITS
     function finalizeTermsAndOpenDeposits() external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is not Live");
         require(s_depositState == DepositState.CLOSED, "Deposites are OPEN");
-        require(s_initiatorSet == true, "Initiator not set");
-        require(s_finalizerSet == true, "Finalizer not set");
+        require(s_initiatorIsSet == true, "Initiator not set");
+        require(s_finalizerIsSet == true, "Finalizer not set");
 
         s_tradeState = TradeState.LIVE;
         s_depositState = DepositState.OPEN;
@@ -153,7 +153,7 @@ contract VendoraEscrow {
         uint256 amount
     ) external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
-        require(s_initiatorSet == true, "Intitiator is not set");
+        require(s_initiatorIsSet == true, "Intitiator is not set");
 
         TradeAssetsERC20 memory newAsset = TradeAssetsERC20(symbol, amount);
         s_wantedERC20[msg.sender].push(newAsset);
@@ -165,7 +165,7 @@ contract VendoraEscrow {
         uint256 amount
     ) external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
-        require(s_initiatorSet == true, "Intitiator is not set");
+        require(s_initiatorIsSet == true, "Intitiator is not set");
 
         TradeAssetsERC20 memory newAsset = TradeAssetsERC20(symbol, amount);
         s_givingERC20[msg.sender].push(newAsset);
@@ -179,7 +179,7 @@ contract VendoraEscrow {
         require(s_tradeState == TradeState.LIVE, "Trade is not LIVE");
         require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
         require(
-            s_initiatorDepositsCompleted == false,
+            s_allInitiatorDepositsAreCompleted == false,
             "All Initiators deposits have been made"
         );
 
@@ -212,9 +212,9 @@ contract VendoraEscrow {
                 s_depositsERC20[s_initiator][i].amount ==
                 s_givingERC20[s_initiator][i].amount
             ) {
-                s_initiatorDepositsCompleted = true;
+                s_allInitiatorDepositsAreCompleted = true;
                 emit All_Initiator_Deposits_Are_In(
-                    s_initiatorDepositsCompleted
+                    s_allInitiatorDepositsAreCompleted
                 );
                 break;
             }
@@ -229,7 +229,7 @@ contract VendoraEscrow {
         require(s_tradeState == TradeState.LIVE, "Trade is not LIVE");
         require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
         require(
-            s_finalizerDepositsCompleted == false,
+            s_allFinalizerDepositsAreCompleted == false,
             "All Finalizer deposits have been made"
         );
         // Get whitelisted token address
@@ -264,9 +264,9 @@ contract VendoraEscrow {
                 s_depositsERC20[s_finalizer][i].amount ==
                 s_wantedERC20[s_initiator][i].amount
             ) {
-                s_finalizerDepositsCompleted = true;
+                s_allFinalizerDepositsAreCompleted = true;
                 emit All_Finalizer_Deposits_Are_In(
-                    s_finalizerDepositsCompleted
+                    s_allFinalizerDepositsAreCompleted
                 );
                 break;
             }
@@ -278,28 +278,28 @@ contract VendoraEscrow {
         internal
         returns (bool)
     {
-        require(s_initiatorSet == true, "Initiator not set");
-        require(s_finalizerSet == true, "Finalizer not set");
+        require(s_initiatorIsSet == true, "Initiator not set");
+        require(s_finalizerIsSet == true, "Finalizer not set");
         require(s_withdrawState == WithdrawState.CLOSED, "Withdraws are OPEN");
         require(s_depositState == DepositState.OPEN, "Deposits are CLOSED");
         require(s_tradeState == TradeState.LIVE, "Trade is not Live");
         require(
-            s_initiatorDepositsCompleted == true,
+            s_allInitiatorDepositsAreCompleted == true,
             "Waiting on Initiators deposits"
         );
         require(
-            s_finalizerDepositsCompleted == true,
+            s_allFinalizerDepositsAreCompleted == true,
             "Waiting on Finalizers deposits"
         );
 
         s_depositState = DepositState.CLOSED;
         s_tradeState = TradeState.CLOSING;
         s_withdrawState = WithdrawState.OPEN;
-        s_allDepositsCompleted = true;
+        s_allDepositsAreCompleted = true;
 
         emit Withdraw_State(s_withdrawState);
 
-        return s_allDepositsCompleted;
+        return s_allDepositsAreCompleted;
     }
 
     // CANCEL DEAL AND WITHDRAW BACK YOUR ASSETS
@@ -403,6 +403,14 @@ contract VendoraEscrow {
         return s_finalizer;
     }
 
+    function getInitiatorIsSet() external view returns (bool) {
+        return s_initiatorIsSet;
+    }
+
+    function getFinalizerIsSet() external view returns (bool) {
+        return s_finalizerIsSet;
+    }
+
     function getTradeState() external view returns (TradeState) {
         return s_tradeState;
     }
@@ -431,5 +439,25 @@ contract VendoraEscrow {
         address user
     ) external view returns (TradeAssetsERC20[] memory) {
         return s_givingERC20[user];
+    }
+
+    function getAllDepositsAreCompleted() external view returns (bool) {
+        return s_allDepositsAreCompleted;
+    }
+
+    function getAllInitiatorDepositsAreCompleted()
+        external
+        view
+        returns (bool)
+    {
+        return s_allInitiatorDepositsAreCompleted;
+    }
+
+    function getAllFinalizerDepositsAreCompleted()
+        external
+        view
+        returns (bool)
+    {
+        return s_allFinalizerDepositsAreCompleted;
     }
 }
