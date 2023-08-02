@@ -22,7 +22,7 @@ contract VendoraEscrowTest is Test {
     function testInitiatorCanOnlyBeSetOnce() public {
         vm.prank(INITIATOR);
         vendoraEscrow.setInitiator();
-        vm.prank(FINALIZER);
+        vm.prank(USER3);
         vm.expectRevert();
         vendoraEscrow.setInitiator();
     }
@@ -32,4 +32,43 @@ contract VendoraEscrowTest is Test {
         vendoraEscrow.setInitiator();
         assert(vendoraEscrow.getInitiatorAddress() == INITIATOR);
     }
+
+    function testInitiatorCantBeSetIfTradeIsLive() public {
+        vm.prank(INITIATOR);
+        vendoraEscrow.setInitiator();
+        vm.prank(INITIATOR);
+        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.setInitiator();
+    }
+
+    function testFinalizerCanOnlyBeSetOnce() public {
+        vm.prank(INITIATOR);
+        vendoraEscrow.setInitiator();
+        vm.prank(INITIATOR);
+        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        vm.prank(FINALIZER);
+        vendoraEscrow.setFinalizer();
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.setFinalizer();
+    }
+
+    function testFinalizerAddressIsSetToMsgSenderAddress() public {
+        vm.prank(INITIATOR);
+        vendoraEscrow.setInitiator();
+        vm.prank(INITIATOR);
+        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        vm.prank(FINALIZER);
+        vendoraEscrow.setFinalizer();
+        assert(vendoraEscrow.getFinalizerAddress() == FINALIZER);
+    }
+
+    function testFinalizerCanOnlyBeSetAfterInitiatorIsSet() public {
+        vm.prank(FINALIZER);
+        vm.expectRevert();
+        vendoraEscrow.setFinalizer();
+    }
+    
 }

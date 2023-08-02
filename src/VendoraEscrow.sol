@@ -133,12 +133,15 @@ contract VendoraEscrow {
         emit Initiator_Set(s_finalizerIsSet, s_finalizer);
     }
 
+    //  FINALIZER BACK OUT OF DEAL
+    function resetFinalizer() public {}
+
     // FINALIZE TERMS AND OPEN DEPOSITS
     function finalizeTermsAndOpenDeposits() external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is not Live");
         require(s_depositState == DepositState.CLOSED, "Deposites are OPEN");
         require(s_initiatorIsSet == true, "Initiator not set");
-        require(s_finalizerIsSet == true, "Finalizer not set");
+        require(s_finalizerIsSet == false, "Finalizer not set");
 
         s_tradeState = TradeState.LIVE;
         s_depositState = DepositState.OPEN;
@@ -327,7 +330,10 @@ contract VendoraEscrow {
                 );
                 // Update the user balance after withdraw
                 s_depositsERC20[msg.sender][i].amount -= amount;
-                break;
+
+                if (s_depositsERC20[msg.sender][i].amount == 0) {
+                    break;
+                }
             }
         }
     }
@@ -394,7 +400,7 @@ contract VendoraEscrow {
         }
     }
 
-    /** GET */
+    /** GET FUNCTIONS*/
     function getInitiatorAddress() external view returns (address) {
         return s_initiator;
     }
