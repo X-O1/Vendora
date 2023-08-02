@@ -394,5 +394,42 @@ contract VendoraEscrow {
         }
     }
 
-    /** GET FUNCTIONS */
+    /** GET */
+    function getInitiatorAddress() external view returns (address) {
+        return s_initiator;
+    }
+
+    function getFinalizerAddress() external view returns (address) {
+        return s_finalizer;
+    }
+
+    function getTradeState() external view returns (TradeState) {
+        return s_tradeState;
+    }
+
+    function getDepositState() external view returns (DepositState) {
+        return s_depositState;
+    }
+
+    function getWithdrawState() external view returns (WithdrawState) {
+        return s_withdrawState;
+    }
+
+    function getUserERC20Deposits(
+        address user
+    ) external view returns (TradeAssetsERC20[] memory) {
+        return s_depositsERC20[user];
+    }
+
+    function getWantedERC20Tokens(
+        address user
+    ) external view returns (TradeAssetsERC20[] memory) {
+        return s_wantedERC20[user];
+    }
+
+    function getGivingERC20Tokens(
+        address user
+    ) external view returns (TradeAssetsERC20[] memory) {
+        return s_givingERC20[user];
+    }
 }
