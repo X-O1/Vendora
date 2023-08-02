@@ -146,26 +146,88 @@ contract VendoraEscrow {
         emit Deposit_State(s_depositState);
     }
 
-    // CHOOSE THE TOKENS WANTED IN TRADE
+    // ADD THE TOKENS WANTED IN TRADE
     function addWantedERC20Token(
         bytes32 symbol,
         uint256 amount
     ) external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant add token to trade terms afer withdraws are open"
+        );
+        require(
+            s_depositState == DepositState.CLOSED,
+            "Cant add token to trade terms afer deposits are open"
+        );
         require(s_initiatorIsSet == true, "Intitiator is not set");
 
         s_wantedERC20Tokens[s_initiator][symbol] += amount;
     }
 
-    // CHOOSE THE TOKENS GIVING IN TRADE
+    // ADD THE TOKENS GIVING IN TRADE
     function addGivingERC20Token(
         bytes32 symbol,
         uint256 amount
     ) external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant add token to trade terms afer withdraws are open"
+        );
+        require(
+            s_depositState == DepositState.CLOSED,
+            "Cant add token to trade terms afer deposits are open"
+        );
         require(s_initiatorIsSet == true, "Intitiator is not set");
 
         s_givingERC20Tokens[s_initiator][symbol] += amount;
+    }
+
+    // DELETE THE TOKENS WANTED IN TRADE
+    function deleteWantedERC20Token(
+        bytes32 symbol,
+        uint256 amount
+    ) external onlyInitiator {
+        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant add token to trade terms afer withdraws are open"
+        );
+        require(
+            s_depositState == DepositState.CLOSED,
+            "Cant add token to trade terms afer deposits are open"
+        );
+        require(s_initiatorIsSet == true, "Intitiator is not set");
+        require(
+            s_wantedERC20Tokens[s_initiator][symbol] != 0,
+            "Nothing to delete"
+        );
+
+        s_wantedERC20Tokens[s_initiator][symbol] -= amount;
+    }
+
+    // DELETE THE TOKENS GIVING IN TRADE
+    function deleteGivingERC20Token(
+        bytes32 symbol,
+        uint256 amount
+    ) external onlyInitiator {
+        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant add token to trade terms afer withdraws are open"
+        );
+        require(
+            s_depositState == DepositState.CLOSED,
+            "Cant add token to trade terms afer deposits are open"
+        );
+        require(s_initiatorIsSet == true, "Intitiator is not set");
+        require(
+            s_givingERC20Tokens[s_initiator][symbol] != 0,
+            "Nothing to delete"
+        );
+
+        s_givingERC20Tokens[s_initiator][symbol] -= amount;
     }
 
     // DEPOSIT ERC20 TOKENS (INITIATOR)
@@ -178,6 +240,10 @@ contract VendoraEscrow {
         require(
             s_allInitiatorDepositsAreCompleted == false,
             "All Initiators deposits have been made"
+        );
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant deposit while withdraws are open"
         );
 
         // Get whitelisted token address
@@ -209,6 +275,10 @@ contract VendoraEscrow {
         require(
             s_allFinalizerDepositsAreCompleted == false,
             "All Finalizer deposits have been made"
+        );
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant deposit while withdraws are open"
         );
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
