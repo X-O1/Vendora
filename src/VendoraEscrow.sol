@@ -32,15 +32,11 @@ contract VendoraEscrow {
     DepositState private s_depositState;
     WithdrawState private s_withdrawState;
 
-    mapping(address => TradeAssetsERC20[]) public s_depositsERC20;
-    mapping(address => TradeAssetsERC20[]) public s_wantedERC20;
-    mapping(address => TradeAssetsERC20[]) public s_givingERC20;
+    mapping(address => mapping(bytes32 => uint256)) public s_userERC20Balances;
+    mapping(address => mapping(bytes32 => uint256)) public s_givingERC20Tokens;
+    mapping(address => mapping(bytes32 => uint256)) public s_wantedERC20Tokens;
 
     /** CUSTOM TYPES */
-    struct TradeAssetsERC20 {
-        bytes32 symbol;
-        uint256 amount;
-    }
 
     /** EVENTS */
     event Initiator_Set(bool indexed set, address indexed initiatorsAddress);
@@ -151,27 +147,25 @@ contract VendoraEscrow {
     }
 
     // CHOOSE THE TOKENS WANTED IN TRADE
-    function addERC20Wanted(
+    function addWantedERC20Token(
         bytes32 symbol,
         uint256 amount
     ) external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
         require(s_initiatorIsSet == true, "Intitiator is not set");
 
-        TradeAssetsERC20 memory newAsset = TradeAssetsERC20(symbol, amount);
-        s_wantedERC20[msg.sender].push(newAsset);
+        s_wantedERC20Tokens[s_initiator][symbol] += amount;
     }
 
     // CHOOSE THE TOKENS GIVING IN TRADE
-    function addERC20ToGive(
+    function addGivingERC20Token(
         bytes32 symbol,
         uint256 amount
     ) external onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
         require(s_initiatorIsSet == true, "Intitiator is not set");
 
-        TradeAssetsERC20 memory newAsset = TradeAssetsERC20(symbol, amount);
-        s_givingERC20[msg.sender].push(newAsset);
+        s_givingERC20Tokens[s_initiator][symbol] += amount;
     }
 
     // DEPOSIT ERC20 TOKENS (INITIATOR)
@@ -200,28 +194,9 @@ contract VendoraEscrow {
         );
 
         // Update balances
-        TradeAssetsERC20 memory deposit = TradeAssetsERC20(symbol, amount);
-        s_depositsERC20[s_initiator].push(deposit);
+        s_userERC20Balances[s_initiator][symbol] += amount;
 
         // Check if all deposites are made by initiator
-        uint256 depositLength = s_depositsERC20[s_initiator].length;
-        uint256 givingLength = s_givingERC20[s_initiator].length;
-
-        if (depositLength != givingLength) return;
-        for (uint256 i = 0; i < depositLength; i++) {
-            if (
-                s_depositsERC20[s_initiator][i].symbol ==
-                s_givingERC20[s_initiator][i].symbol &&
-                s_depositsERC20[s_initiator][i].amount ==
-                s_givingERC20[s_initiator][i].amount
-            ) {
-                s_allInitiatorDepositsAreCompleted = true;
-                emit All_Initiator_Deposits_Are_In(
-                    s_allInitiatorDepositsAreCompleted
-                );
-                break;
-            }
-        }
     }
 
     // DEPOSIT ERC20 TOKENS (FINALIZER)
@@ -237,13 +212,9 @@ contract VendoraEscrow {
         );
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
-
         // Check token allowances
-        uint256 allowances = token.allowance(s_finalizer, address(this));
-        require(
-            allowances >= amount,
-            "Amount of tokens have not been approved"
-        );
+        uint256 allowance = token.allowance(s_finalizer, address(this));
+        require(allowance >= amount, "Amount of tokens have not been approved");
 
         // Transfering amount from user to the contract
         require(
@@ -252,28 +223,9 @@ contract VendoraEscrow {
         );
 
         // Update balances
-        TradeAssetsERC20 memory deposit = TradeAssetsERC20(symbol, amount);
-        s_depositsERC20[s_finalizer].push(deposit);
+        s_userERC20Balances[s_finalizer][symbol] += amount;
 
         // Check if all deposites are made by finalizer
-        uint256 depositLength = s_depositsERC20[s_finalizer].length;
-        uint256 wantedLength = s_wantedERC20[s_initiator].length;
-
-        if (depositLength != wantedLength) return;
-        for (uint256 i = 0; i < depositLength; i++) {
-            if (
-                s_depositsERC20[s_finalizer][i].symbol ==
-                s_wantedERC20[s_initiator][i].symbol &&
-                s_depositsERC20[s_finalizer][i].amount ==
-                s_wantedERC20[s_initiator][i].amount
-            ) {
-                s_allFinalizerDepositsAreCompleted = true;
-                emit All_Finalizer_Deposits_Are_In(
-                    s_allFinalizerDepositsAreCompleted
-                );
-                break;
-            }
-        }
     }
 
     // OPEN WITHDRAWS
@@ -316,26 +268,17 @@ contract VendoraEscrow {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
-        for (uint256 i = 0; i < s_depositsERC20[msg.sender].length; i++) {
-            if (s_depositsERC20[msg.sender][i].symbol == symbol) {
-                // Check the user has enough in balance to withdraw
-                require(
-                    s_depositsERC20[msg.sender][i].amount >= amount,
-                    "Insufficient funds"
-                );
-                // Transfer tokens to user
-                require(
-                    token.transfer(msg.sender, amount),
-                    "Token transfer failed"
-                );
-                // Update the user balance after withdraw
-                s_depositsERC20[msg.sender][i].amount -= amount;
+        // Check the user has enough in balance to withdraw
+        require(
+            s_userERC20Balances[msg.sender][symbol] >= amount,
+            "Insufficient funds"
+        );
 
-                if (s_depositsERC20[msg.sender][i].amount == 0) {
-                    break;
-                }
-            }
-        }
+        // Transfer tokens to user
+        require(token.transfer(msg.sender, amount), "Token transfer failed");
+
+        // Update the user balance after withdraw
+        s_userERC20Balances[msg.sender][symbol] -= amount;
     }
 
     // WITHDRAW
@@ -355,20 +298,17 @@ contract VendoraEscrow {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
-        for (uint256 i = 0; i < s_depositsERC20[s_finalizer].length; i++) {
-            if (s_depositsERC20[s_finalizer][i].symbol == symbol) {
-                // Check if user has enough tokens to withdraw
-                require(
-                    s_depositsERC20[s_finalizer][i].amount >= amount,
-                    "Insufficient funds"
-                );
-                // Transfer token to user
-                require(token.transfer(s_initiator, amount), "Transfer failed");
-                // Update balances
-                s_depositsERC20[s_finalizer][i].amount -= amount;
-                break;
-            }
-        }
+        // Check if user has enough tokens to withdraw
+        require(
+            s_userERC20Balances[s_finalizer][symbol] >= amount,
+            "Insufficient funds"
+        );
+
+        // Transfer tokens to user
+        require(token.transfer(s_initiator, amount), "Token transfer failed");
+
+        // Update balances
+        s_userERC20Balances[s_finalizer][symbol] -= amount;
     }
 
     function withdrawERC20Finalizer(
@@ -384,20 +324,17 @@ contract VendoraEscrow {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
-        for (uint256 i = 0; i < s_depositsERC20[s_initiator].length; i++) {
-            if (s_depositsERC20[s_initiator][i].symbol == symbol) {
-                // Check if there enough in balances to withdraw
-                require(
-                    s_depositsERC20[s_initiator][i].amount >= amount,
-                    "Insufficient funds"
-                );
-                // Transfer token to user
-                require(token.transfer(s_finalizer, amount), "Transfer failed");
-                // Updates balances
-                s_depositsERC20[s_initiator][i].amount -= amount;
-                break;
-            }
-        }
+        // Check if user deposit balance is enough to cover withdraw
+        require(
+            s_userERC20Balances[s_initiator][symbol] >= amount,
+            "Insufficient funds"
+        );
+
+        // Transfer tokens to user
+        require(token.transfer(s_finalizer, amount), "Token transfer failed");
+
+        // Updates balances
+        s_userERC20Balances[s_initiator][symbol] -= amount;
     }
 
     /** GET FUNCTIONS*/
@@ -427,24 +364,6 @@ contract VendoraEscrow {
 
     function getWithdrawState() external view returns (WithdrawState) {
         return s_withdrawState;
-    }
-
-    function getUserERC20Deposits(
-        address user
-    ) external view returns (TradeAssetsERC20[] memory) {
-        return s_depositsERC20[user];
-    }
-
-    function getWantedERC20Tokens(
-        address user
-    ) external view returns (TradeAssetsERC20[] memory) {
-        return s_wantedERC20[user];
-    }
-
-    function getGivingERC20Tokens(
-        address user
-    ) external view returns (TradeAssetsERC20[] memory) {
-        return s_givingERC20[user];
     }
 
     function getAllDepositsAreCompleted() external view returns (bool) {
