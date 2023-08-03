@@ -21,54 +21,53 @@ contract VendoraEscrowTest is Test {
 
     function testInitiatorCanOnlyBeSetOnce() public {
         vm.prank(INITIATOR);
-        vendoraEscrow.setInitiator();
+        vendoraEscrow.setSeller();
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.setInitiator();
+        vendoraEscrow.setSeller();
     }
 
     function testInitiatorAddressIsSetToMsgSenderAddress() public {
         vm.prank(INITIATOR);
-        vendoraEscrow.setInitiator();
-        assert(vendoraEscrow.getInitiatorAddress() == INITIATOR);
+        vendoraEscrow.setSeller();
+        assert(vendoraEscrow.getSellerAddress() == INITIATOR);
     }
 
     function testInitiatorCantBeSetIfTradeIsLive() public {
         vm.prank(INITIATOR);
-        vendoraEscrow.setInitiator();
+        vendoraEscrow.setSeller();
         vm.prank(INITIATOR);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.setInitiator();
+        vendoraEscrow.setSeller();
     }
 
     function testFinalizerCanOnlyBeSetOnce() public {
         vm.prank(INITIATOR);
-        vendoraEscrow.setInitiator();
+        vendoraEscrow.setSeller();
         vm.prank(INITIATOR);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         vm.prank(FINALIZER);
-        vendoraEscrow.setFinalizer();
+        vendoraEscrow.setBuyer();
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.setFinalizer();
+        vendoraEscrow.setBuyer();
     }
 
     function testFinalizerAddressIsSetToMsgSenderAddress() public {
         vm.prank(INITIATOR);
-        vendoraEscrow.setInitiator();
+        vendoraEscrow.setSeller();
         vm.prank(INITIATOR);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         vm.prank(FINALIZER);
-        vendoraEscrow.setFinalizer();
-        assert(vendoraEscrow.getFinalizerAddress() == FINALIZER);
+        vendoraEscrow.setBuyer();
+        assert(vendoraEscrow.getBuyerAddress() == FINALIZER);
     }
 
     function testFinalizerCanOnlyBeSetAfterInitiatorIsSet() public {
         vm.prank(FINALIZER);
         vm.expectRevert();
-        vendoraEscrow.setFinalizer();
+        vendoraEscrow.setBuyer();
     }
-    
 }
