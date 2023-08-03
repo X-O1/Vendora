@@ -24,19 +24,17 @@ contract VendoraEscrow {
     address private s_finalizer;
     bool private s_initiatorIsSet;
     bool private s_finalizerIsSet;
-    bool private s_allInitiatorDepositsAreCompleted;
-    bool private s_allFinalizerDepositsAreCompleted;
     bool private s_allDepositsAreCompleted;
-
+    uint256 private s_numOfAssetsInTradeTerms;
+    uint256 private s_numOfAssetsDeposited;
     TradeState private s_tradeState;
     DepositState private s_depositState;
     WithdrawState private s_withdrawState;
 
+    /** MAPPINGS */
     mapping(address => mapping(bytes32 => uint256)) public s_userERC20Balances;
     mapping(address => mapping(bytes32 => uint256)) public s_givingERC20Tokens;
     mapping(address => mapping(bytes32 => uint256)) public s_wantedERC20Tokens;
-
-    /** CUSTOM TYPES */
 
     /** EVENTS */
     event Initiator_Set(bool indexed set, address indexed initiatorsAddress);
@@ -44,8 +42,7 @@ contract VendoraEscrow {
     event Trade_State(TradeState indexed tradeState);
     event Deposit_State(DepositState indexed depositState);
     event Withdraw_State(WithdrawState indexed withdrawState);
-    event All_Initiator_Deposits_Are_In(bool indexed depositsAreIn);
-    event All_Finalizer_Deposits_Are_In(bool indexed depositsAreIn);
+    event Deposit_Terms_Met(bool indexed depositTermsMet);
 
     /** ENUMS */
     enum TradeState {
@@ -69,9 +66,9 @@ contract VendoraEscrow {
         s_tradeState = TradeState.CLOSED;
         s_depositState = DepositState.CLOSED;
         s_withdrawState = WithdrawState.CLOSED;
+        s_numOfAssetsInTradeTerms = 0;
+        s_numOfAssetsDeposited = 0;
 
-        s_allFinalizerDepositsAreCompleted = false;
-        s_allInitiatorDepositsAreCompleted = false;
         s_allDepositsAreCompleted = false;
         i_owner = msg.sender;
     }
@@ -162,7 +159,9 @@ contract VendoraEscrow {
         );
         require(s_initiatorIsSet == true, "Intitiator is not set");
 
-        s_wantedERC20Tokens[s_initiator][symbol] += amount;
+        s_wantedERC20Tokens[s_finalizer][symbol] += amount;
+
+        s_numOfAssetsInTradeTerms++;
     }
 
     // ADD THE TOKENS GIVING IN TRADE
@@ -182,13 +181,15 @@ contract VendoraEscrow {
         require(s_initiatorIsSet == true, "Intitiator is not set");
 
         s_givingERC20Tokens[s_initiator][symbol] += amount;
+
+        s_numOfAssetsInTradeTerms++;
     }
 
     // DELETE THE TOKENS WANTED IN TRADE
     function deleteWantedERC20Token(
         bytes32 symbol,
         uint256 amount
-    ) external onlyInitiator {
+    ) public onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
         require(
             s_withdrawState == WithdrawState.CLOSED,
@@ -205,13 +206,15 @@ contract VendoraEscrow {
         );
 
         s_wantedERC20Tokens[s_initiator][symbol] -= amount;
+
+        s_numOfAssetsInTradeTerms--;
     }
 
     // DELETE THE TOKENS GIVING IN TRADE
     function deleteGivingERC20Token(
         bytes32 symbol,
         uint256 amount
-    ) external onlyInitiator {
+    ) public onlyInitiator {
         require(s_tradeState == TradeState.CLOSED, "Trade is Live");
         require(
             s_withdrawState == WithdrawState.CLOSED,
@@ -228,18 +231,20 @@ contract VendoraEscrow {
         );
 
         s_givingERC20Tokens[s_initiator][symbol] -= amount;
+
+        s_numOfAssetsInTradeTerms--;
     }
 
     // DEPOSIT ERC20 TOKENS (INITIATOR)
     function initiatorDepositERC20(
         bytes32 symbol,
         uint256 amount
-    ) external onlyInitiator {
+    ) public onlyInitiator {
         require(s_tradeState == TradeState.LIVE, "Trade is not LIVE");
         require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
         require(
-            s_allInitiatorDepositsAreCompleted == false,
-            "All Initiators deposits have been made"
+            s_allDepositsAreCompleted == false,
+            "All agreed upon deposits have been made"
         );
         require(
             s_withdrawState == WithdrawState.CLOSED,
@@ -263,18 +268,30 @@ contract VendoraEscrow {
         s_userERC20Balances[s_initiator][symbol] += amount;
 
         // Check if all deposites are made by initiator
+        if (
+            s_userERC20Balances[s_initiator][symbol] ==
+            s_givingERC20Tokens[s_initiator][symbol]
+        ) {
+            s_numOfAssetsDeposited++;
+        }
+        if (s_numOfAssetsInTradeTerms == s_numOfAssetsDeposited) {
+            s_allDepositsAreCompleted = true;
+            emit Deposit_Terms_Met(s_allDepositsAreCompleted);
+        } else {
+            s_allDepositsAreCompleted = false;
+        }
     }
 
     // DEPOSIT ERC20 TOKENS (FINALIZER)
     function finalizerDepositERC20(
         bytes32 symbol,
         uint256 amount
-    ) external onlyFinalizer {
+    ) public onlyFinalizer {
         require(s_tradeState == TradeState.LIVE, "Trade is not LIVE");
         require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
         require(
-            s_allFinalizerDepositsAreCompleted == false,
-            "All Finalizer deposits have been made"
+            s_allDepositsAreCompleted == false,
+            "All agreed upon deposits have been made"
         );
         require(
             s_withdrawState == WithdrawState.CLOSED,
@@ -296,11 +313,23 @@ contract VendoraEscrow {
         s_userERC20Balances[s_finalizer][symbol] += amount;
 
         // Check if all deposites are made by finalizer
+        if (
+            s_userERC20Balances[s_finalizer][symbol] ==
+            s_wantedERC20Tokens[s_initiator][symbol]
+        ) {
+            s_numOfAssetsDeposited++;
+        }
+        if (s_numOfAssetsInTradeTerms == s_numOfAssetsDeposited) {
+            s_allDepositsAreCompleted = true;
+            emit Deposit_Terms_Met(s_allDepositsAreCompleted);
+        } else {
+            s_allDepositsAreCompleted = false;
+        }
     }
 
     // OPEN WITHDRAWS
     function checkIfAllDepositsAreMadeAndOpenWithdrawls()
-        internal
+        public
         returns (bool)
     {
         require(s_initiatorIsSet == true, "Initiator not set");
@@ -309,18 +338,13 @@ contract VendoraEscrow {
         require(s_depositState == DepositState.OPEN, "Deposits are CLOSED");
         require(s_tradeState == TradeState.LIVE, "Trade is not Live");
         require(
-            s_allInitiatorDepositsAreCompleted == true,
-            "Waiting on Initiators deposits"
-        );
-        require(
-            s_allFinalizerDepositsAreCompleted == true,
-            "Waiting on Finalizers deposits"
+            s_allDepositsAreCompleted == true,
+            "All agreed upon assets have not been deposited"
         );
 
         s_depositState = DepositState.CLOSED;
         s_tradeState = TradeState.CLOSING;
         s_withdrawState = WithdrawState.OPEN;
-        s_allDepositsAreCompleted = true;
 
         emit Withdraw_State(s_withdrawState);
 
@@ -328,7 +352,7 @@ contract VendoraEscrow {
     }
 
     // CANCEL DEAL AND WITHDRAW BACK YOUR ASSETS
-    function cancelDealAndWithdraw(
+    function cancelAndWithdrawInitiator(
         bytes32 symbol,
         uint256 amount
     ) public onlyPartyMembers {
@@ -340,22 +364,75 @@ contract VendoraEscrow {
 
         // Check the user has enough in balance to withdraw
         require(
-            s_userERC20Balances[msg.sender][symbol] >= amount,
+            s_userERC20Balances[s_initiator][symbol] >= amount,
             "Insufficient funds"
         );
 
         // Transfer tokens to user
-        require(token.transfer(msg.sender, amount), "Token transfer failed");
+        require(token.transfer(s_initiator, amount), "Token transfer failed");
 
         // Update the user balance after withdraw
-        s_userERC20Balances[msg.sender][symbol] -= amount;
+        s_userERC20Balances[s_initiator][symbol] -= amount;
+
+        // Update Deposit Check
+        if (s_numOfAssetsDeposited != 0) {
+            if (
+                s_userERC20Balances[s_initiator][symbol] !=
+                s_givingERC20Tokens[s_initiator][symbol]
+            ) {
+                s_numOfAssetsDeposited--;
+            }
+            if (s_numOfAssetsDeposited == s_numOfAssetsInTradeTerms) {
+                s_allDepositsAreCompleted = true;
+            } else {
+                s_allDepositsAreCompleted = false;
+            }
+        }
+    }
+
+    function cancelAndWithdrawFinalizer(
+        bytes32 symbol,
+        uint256 amount
+    ) public onlyPartyMembers {
+        require(s_depositState == DepositState.OPEN, "Deposits are CLOSED");
+        require(s_withdrawState == WithdrawState.CLOSED, "Withdraws are OPEN");
+
+        // Get whitelisted token address
+        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+
+        // Check the user has enough in balance to withdraw
+        require(
+            s_userERC20Balances[s_finalizer][symbol] >= amount,
+            "Insufficient funds"
+        );
+
+        // Transfer tokens to user
+        require(token.transfer(s_finalizer, amount), "Token transfer failed");
+
+        // Update the user balance after withdraw
+        s_userERC20Balances[s_finalizer][symbol] -= amount;
+
+        // Update Deposit Check
+        if (s_numOfAssetsDeposited != 0) {
+            if (
+                s_userERC20Balances[s_finalizer][symbol] !=
+                s_wantedERC20Tokens[s_finalizer][symbol]
+            ) {
+                s_numOfAssetsDeposited--;
+            }
+            if (s_numOfAssetsDeposited == s_numOfAssetsInTradeTerms) {
+                s_allDepositsAreCompleted = true;
+            } else {
+                s_allDepositsAreCompleted = false;
+            }
+        }
     }
 
     // WITHDRAW
     function withdrawERC20Initiator(
         uint256 amount,
         bytes32 symbol
-    ) external onlyInitiator {
+    ) public onlyInitiator {
         require(
             checkIfAllDepositsAreMadeAndOpenWithdrawls(),
             "All deposites have not been made"
@@ -384,7 +461,7 @@ contract VendoraEscrow {
     function withdrawERC20Finalizer(
         bytes32 symbol,
         uint256 amount
-    ) external onlyFinalizer {
+    ) public onlyFinalizer {
         require(
             checkIfAllDepositsAreMadeAndOpenWithdrawls(),
             "All deposits have not been made"
@@ -438,21 +515,5 @@ contract VendoraEscrow {
 
     function getAllDepositsAreCompleted() external view returns (bool) {
         return s_allDepositsAreCompleted;
-    }
-
-    function getAllInitiatorDepositsAreCompleted()
-        external
-        view
-        returns (bool)
-    {
-        return s_allInitiatorDepositsAreCompleted;
-    }
-
-    function getAllFinalizerDepositsAreCompleted()
-        external
-        view
-        returns (bool)
-    {
-        return s_allFinalizerDepositsAreCompleted;
     }
 }
