@@ -9,8 +9,8 @@ import {DeployVendoraEscrow} from "../../script/DeployVendoraEscrow.s.sol";
 contract VendoraEscrowTest is Test {
     VendoraEscrow vendoraEscrow;
 
-    address INITIATOR = makeAddr("user");
-    address FINALIZER = makeAddr("user2");
+    address SELLER = makeAddr("user");
+    address BUYER = makeAddr("user2");
     address USER3 = makeAddr("user3");
     address USER4 = makeAddr("user4");
 
@@ -19,54 +19,54 @@ contract VendoraEscrowTest is Test {
         vendoraEscrow = deployVendoraEscrow.run();
     }
 
-    function testInitiatorCanOnlyBeSetOnce() public {
-        vm.prank(INITIATOR);
+    function testSellerCanOnlyBeSetOnce() public {
+        vm.prank(SELLER);
         vendoraEscrow.setSeller();
         vm.prank(USER3);
         vm.expectRevert();
         vendoraEscrow.setSeller();
     }
 
-    function testInitiatorAddressIsSetToMsgSenderAddress() public {
-        vm.prank(INITIATOR);
+    function testSellerAddressIsSetToMsgSenderAddress() public {
+        vm.prank(SELLER);
         vendoraEscrow.setSeller();
-        assert(vendoraEscrow.getSellerAddress() == INITIATOR);
+        assert(vendoraEscrow.getSellerAddress() == SELLER);
     }
 
-    function testInitiatorCantBeSetIfTradeIsLive() public {
-        vm.prank(INITIATOR);
+    function testSellerCantBeSetIfTradeIsLive() public {
+        vm.prank(SELLER);
         vendoraEscrow.setSeller();
-        vm.prank(INITIATOR);
+        vm.prank(SELLER);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         vm.prank(USER3);
         vm.expectRevert();
         vendoraEscrow.setSeller();
     }
 
-    function testFinalizerCanOnlyBeSetOnce() public {
-        vm.prank(INITIATOR);
+    function testBuyerCanOnlyBeSetOnce() public {
+        vm.prank(SELLER);
         vendoraEscrow.setSeller();
-        vm.prank(INITIATOR);
+        vm.prank(SELLER);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
-        vm.prank(FINALIZER);
+        vm.prank(BUYER);
         vendoraEscrow.setBuyer();
         vm.prank(USER3);
         vm.expectRevert();
         vendoraEscrow.setBuyer();
     }
 
-    function testFinalizerAddressIsSetToMsgSenderAddress() public {
-        vm.prank(INITIATOR);
+    function testBuyerAddressIsSetToMsgSenderAddress() public {
+        vm.prank(SELLER);
         vendoraEscrow.setSeller();
-        vm.prank(INITIATOR);
+        vm.prank(SELLER);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
-        vm.prank(FINALIZER);
+        vm.prank(BUYER);
         vendoraEscrow.setBuyer();
-        assert(vendoraEscrow.getBuyerAddress() == FINALIZER);
+        assert(vendoraEscrow.getBuyerAddress() == BUYER);
     }
 
-    function testFinalizerCanOnlyBeSetAfterInitiatorIsSet() public {
-        vm.prank(FINALIZER);
+    function testBuyerCanOnlyBeSetAfterInitiatorIsSet() public {
+        vm.prank(BUYER);
         vm.expectRevert();
         vendoraEscrow.setBuyer();
     }
