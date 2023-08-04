@@ -24,8 +24,10 @@ contract VendoraEscrow {
     address private s_buyer;
     bool private s_sellerIsSet;
     bool private s_buyerIsSet;
-    bool private s_allDepositsAreCompleted;
+    uint256 private s_numOfAssetsRequested;
+    uint256 private s_numOfAssetsOffered;
     uint256 private s_numOfAssetsInTradeTerms;
+    bool private s_allDepositsAreCompleted;
     uint256 private s_numOfAssetsDeposited;
     uint256 private s_numOfBuyerDeposits;
 
@@ -69,7 +71,11 @@ contract VendoraEscrow {
         s_tradeState = TradeState.CLOSED;
         s_depositState = DepositState.CLOSED;
         s_withdrawState = WithdrawState.CLOSED;
-        s_numOfAssetsInTradeTerms = 0;
+        s_numOfAssetsRequested = 0;
+        s_numOfAssetsOffered = 0;
+        s_numOfAssetsInTradeTerms =
+            s_numOfAssetsRequested +
+            s_numOfAssetsOffered;
         s_numOfAssetsDeposited = 0;
         s_numOfBuyerDeposits = 0;
 
@@ -104,7 +110,7 @@ contract VendoraEscrow {
         _;
     }
 
-    /** FUNCTIONS */
+    /** ESCROW */
 
     // SET SELLER
     function setSeller() public {
@@ -112,10 +118,10 @@ contract VendoraEscrow {
         require(s_depositState == DepositState.CLOSED, "Deposites are OPEN");
         require(
             s_withdrawState == WithdrawState.CLOSED,
-            "Can't finalized terms while withdrawls are open"
+            "Can't set Seller while withdrawls are open"
         );
         require(s_sellerIsSet == false, "Seller already set");
-        require(s_buyerIsSet == false, "Deal active");
+        require(s_buyerIsSet == false, "Trade is Live");
 
         s_seller = msg.sender;
         s_sellerIsSet = true;
@@ -138,7 +144,7 @@ contract VendoraEscrow {
 
         s_requestedERC20[s_buyer][symbol] += amount;
 
-        s_numOfAssetsInTradeTerms++;
+        s_numOfAssetsRequested++;
     }
 
     // DELETE ERC20 REQUEST IN TRADE TERMS
@@ -160,7 +166,7 @@ contract VendoraEscrow {
 
         s_requestedERC20[s_seller][symbol] -= amount;
 
-        s_numOfAssetsInTradeTerms--;
+        s_numOfAssetsRequested--;
     }
 
     // ADD ERC20 OFFER TO TRADE TERMS
@@ -178,7 +184,7 @@ contract VendoraEscrow {
 
         s_offeredERC20[s_seller][symbol] += amount;
 
-        s_numOfAssetsInTradeTerms++;
+        s_numOfAssetsRequested++;
     }
 
     // DELETE ERC20 OFFER IN TRADE TERMS
@@ -200,7 +206,7 @@ contract VendoraEscrow {
 
         s_offeredERC20[s_seller][symbol] -= amount;
 
-        s_numOfAssetsInTradeTerms--;
+        s_numOfAssetsRequested--;
     }
 
     // FINALIZE TERMS AND OPEN DEPOSITS
@@ -531,9 +537,9 @@ contract VendoraEscrow {
             "Insufficient funds"
         );
 
-        // Make sure user doesn't withdraw thier deposited items after the terms are set
+        // Make sure user doesn't withdraw their deposited items after the terms are set
         bool s_userOwnsThisAsset;
-        if (s_userBalanceERC20[s_buyer][symbol] > 0) {
+        if (s_userBalanceERC20[s_seller][symbol] > 0) {
             s_userOwnsThisAsset = true;
         } else {
             s_userOwnsThisAsset = false;
