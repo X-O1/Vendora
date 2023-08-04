@@ -19,6 +19,7 @@ contract VendoraEscrow {
 
     /** STATE VARIABLES */
     address private immutable i_owner;
+    address private immutable i_buyerPlaceHolder;
 
     address private s_seller;
     address private s_buyer;
@@ -47,6 +48,7 @@ contract VendoraEscrow {
     event Deposit_State(DepositState indexed depositState);
     event Withdraw_State(WithdrawState indexed withdrawState);
     event Deposit_Terms_Met(bool indexed depositTermsMet);
+    event Buyer_Changed(address indexed buyerAddress);
 
     /** ENUMS */
     enum TradeState {
@@ -78,9 +80,10 @@ contract VendoraEscrow {
             s_numOfAssetsOffered;
         s_numOfAssetsDeposited = 0;
         s_numOfBuyerDeposits = 0;
-
         s_allDepositsAreCompleted = false;
+
         i_owner = msg.sender;
+        i_buyerPlaceHolder = address(0);
     }
 
     /** MODIFIERS */
@@ -114,14 +117,20 @@ contract VendoraEscrow {
 
     // SET SELLER
     function setSeller() public {
-        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
-        require(s_depositState == DepositState.CLOSED, "Deposites are OPEN");
+        require(
+            s_tradeState == TradeState.CLOSED,
+            "Can't set Seller while trade is live"
+        );
+        require(
+            s_depositState == DepositState.CLOSED,
+            "Can't set Seller while deposits are open"
+        );
         require(
             s_withdrawState == WithdrawState.CLOSED,
             "Can't set Seller while withdrawls are open"
         );
         require(s_sellerIsSet == false, "Seller already set");
-        require(s_buyerIsSet == false, "Trade is Live");
+        require(s_buyerIsSet == false, "Seller already set");
 
         s_seller = msg.sender;
         s_sellerIsSet = true;
@@ -141,6 +150,10 @@ contract VendoraEscrow {
             "Cant add token to trade terms afer deposits are open"
         );
         require(s_sellerIsSet == true, "Seller is not set");
+        require(
+            s_buyerIsSet == false,
+            "Can not add assets to terms after buyer is set"
+        );
 
         s_requestedERC20[s_buyer][symbol] += amount;
 
@@ -162,6 +175,10 @@ contract VendoraEscrow {
             "Cant add token to trade terms afer deposits are open"
         );
         require(s_sellerIsSet == true, "Seller is not set");
+        require(
+            s_buyerIsSet == false,
+            "Can not add assets to terms after buyer is set"
+        );
         require(s_requestedERC20[s_seller][symbol] != 0, "Nothing to delete");
 
         s_requestedERC20[s_seller][symbol] -= amount;
@@ -181,6 +198,10 @@ contract VendoraEscrow {
             "Cant add token to trade terms afer deposits are open"
         );
         require(s_sellerIsSet == true, "Seller is not set");
+        require(
+            s_buyerIsSet == false,
+            "Can not add assets to terms after buyer is set"
+        );
 
         s_offeredERC20[s_seller][symbol] += amount;
 
@@ -202,6 +223,11 @@ contract VendoraEscrow {
             "Cant add token to trade terms afer deposits are open"
         );
         require(s_sellerIsSet == true, "Seller is not set");
+        require(
+            s_buyerIsSet == false,
+            "Can not add assets to terms after buyer is set"
+        );
+
         require(s_offeredERC20[s_seller][symbol] != 0, "Nothing to delete");
 
         s_offeredERC20[s_seller][symbol] -= amount;
@@ -230,6 +256,33 @@ contract VendoraEscrow {
         emit Deposit_State(s_depositState);
     }
 
+    // CLOSE DEPOSITS AND CHANGE TERMS OF TRADE AFTER THEY'VE BEEN FINALIZED
+    function changeTermsAndCloseDeposits() public onlySeller {
+        require(
+            s_buyerIsSet == false,
+            "Can only change terms after they have been set if there is no buyer set"
+        );
+        require(
+            s_numOfAssetsDeposited == 0,
+            "Can not change terms after assets have been deposited. Withdraw all assets to change terms."
+        );
+        require(
+            s_tradeState == TradeState.OPEN,
+            "This function is for changing terms after terms are set and trade is open. The trade is not currently open"
+        );
+        require(
+            s_depositState == DepositState.OPEN,
+            "This function is for changing terms after terms are set and deposits are open. Deposits are not currently open"
+        );
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Can not change terms after withdrawls are open"
+        );
+
+        s_tradeState = TradeState.CLOSED;
+        s_depositState = DepositState.CLOSED;
+    }
+
     // SET BUYER
     function setBuyer() public {
         require(s_tradeState == TradeState.OPEN, "Trade is Closed");
@@ -251,8 +304,8 @@ contract VendoraEscrow {
         emit Seller_Set(s_buyerIsSet, s_buyer);
     }
 
-    // LEAVE TRADE AND CHANGE BUYER
-    function changeBuyer() public {
+    // BUYER LEAVES TRADE
+    function leaveTradeBuyer() public onlyBuyer {
         require(s_tradeState == TradeState.OPEN, "Trade is Closed");
         require(s_depositState == DepositState.OPEN, "Deposites are OPEN");
         require(
@@ -266,7 +319,11 @@ contract VendoraEscrow {
             "Buyer has deposits still in trade that need to be withdrawn before role transfer"
         );
 
+        // Reset Buyer's address and state
+        s_buyer = i_buyerPlaceHolder;
         s_buyerIsSet = false;
+
+        emit Buyer_Changed(s_buyer);
     }
 
     // DEPOSIT ERC20 TOKENS (SELLER)
@@ -461,14 +518,14 @@ contract VendoraEscrow {
             "Can not withdraw other party's assets"
         );
 
-        // Get whitelisted token address
-        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
-
         // Check the user has enough in balance to withdraw
         require(
             s_userBalanceERC20[s_buyer][symbol] >= amount,
             "Insufficient funds"
         );
+
+        // Get whitelisted token address
+        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
         // Transfer tokens to user
         require(token.transfer(s_buyer, amount), "Token transfer failed");
