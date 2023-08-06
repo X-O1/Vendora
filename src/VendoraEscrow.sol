@@ -37,9 +37,9 @@ contract VendoraEscrow {
     WithdrawState private s_withdrawState;
 
     /** MAPPINGS */
-    mapping(address => mapping(bytes32 => uint256)) public s_userBalanceERC20;
-    mapping(address => mapping(bytes32 => uint256)) public s_offeredERC20;
-    mapping(address => mapping(bytes32 => uint256)) public s_requestedERC20;
+    mapping(address => mapping(bytes32 => uint256)) private s_userBalanceERC20;
+    mapping(address => mapping(bytes32 => uint256)) private s_offeredERC20;
+    mapping(address => mapping(bytes32 => uint256)) private s_requestedERC20;
 
     /** EVENTS */
     event Seller_Set(bool indexed set, address indexed sellerAddress);
@@ -181,7 +181,7 @@ contract VendoraEscrow {
         );
         require(s_requestedERC20[s_seller][symbol] != 0, "Nothing to delete");
 
-        s_requestedERC20[s_seller][symbol] -= amount;
+        s_requestedERC20[s_buyer][symbol] -= amount;
 
         s_numOfAssetsRequested--;
     }
@@ -391,6 +391,7 @@ contract VendoraEscrow {
 
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+
         // Check token allowances
         uint256 allowance = token.allowance(s_buyer, address(this));
         require(allowance >= amount, "Amount of tokens have not been approved");
