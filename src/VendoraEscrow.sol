@@ -19,16 +19,14 @@ contract VendoraEscrow {
 
     /** STATE VARIABLES */
     address private immutable i_owner;
-    address private immutable i_buyerPlaceHolder;
+    address private immutable i_unassignedPartyMember;
 
     address private s_seller;
     address private s_buyer;
     bool private s_sellerIsSet;
     bool private s_buyerIsSet;
-    uint256 private s_numOfAssetsRequested;
-    uint256 private s_numOfAssetsOffered;
-    uint256 private s_numOfAssetsInTradeTerms;
     bool private s_allDepositsAreCompleted;
+    uint256 private s_numOfAssetsInTradeTerms;
     uint256 private s_numOfAssetsDeposited;
     uint256 private s_numOfBuyerDeposits;
 
@@ -37,7 +35,7 @@ contract VendoraEscrow {
     WithdrawState private s_withdrawState;
 
     /** MAPPINGS */
-    mapping(address => mapping(bytes32 => uint256)) private s_userBalanceERC20;
+    mapping(address => mapping(bytes32 => uint256)) public s_userBalanceERC20;
     mapping(address => mapping(bytes32 => uint256)) private s_offeredERC20;
     mapping(address => mapping(bytes32 => uint256)) private s_requestedERC20;
 
@@ -68,22 +66,19 @@ contract VendoraEscrow {
 
     /** CONTRUCTOR */
     constructor() {
+        i_owner = msg.sender;
+        i_unassignedPartyMember = address(0);
+
+        s_buyer = i_unassignedPartyMember;
         s_sellerIsSet = false;
         s_buyerIsSet = false;
         s_tradeState = TradeState.CLOSED;
         s_depositState = DepositState.CLOSED;
         s_withdrawState = WithdrawState.CLOSED;
-        s_numOfAssetsRequested = 0;
-        s_numOfAssetsOffered = 0;
-        s_numOfAssetsInTradeTerms =
-            s_numOfAssetsRequested +
-            s_numOfAssetsOffered;
+        s_numOfAssetsInTradeTerms = 0;
         s_numOfAssetsDeposited = 0;
         s_numOfBuyerDeposits = 0;
         s_allDepositsAreCompleted = false;
-
-        i_owner = msg.sender;
-        i_buyerPlaceHolder = address(0);
     }
 
     /** MODIFIERS */
@@ -112,11 +107,70 @@ contract VendoraEscrow {
         );
         _;
     }
+    modifier creatingTermsRequires() {
+        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant add token to trade terms afer withdraws are open"
+        );
+        require(
+            s_depositState == DepositState.CLOSED,
+            "Cant add token to trade terms afer deposits are open"
+        );
+        require(s_sellerIsSet == true, "Seller is not set");
+        require(
+            s_buyerIsSet == false,
+            "Can not add assets to terms after buyer is set"
+        );
+        _;
+    }
+
+    modifier depositRequires() {
+        require(s_tradeState == TradeState.OPEN, "Trade is not LIVE");
+        require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
+        require(
+            s_allDepositsAreCompleted == false,
+            "All agreed upon deposits have been made"
+        );
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Cant deposit while withdraws are open"
+        );
+        _;
+    }
+
+    modifier withdrawBeforeTermsAreMetRequires() {
+        require(
+            s_tradeState == TradeState.OPEN,
+            "Can not cancel and withdraw at this stage of deal"
+        );
+        require(
+            s_depositState == DepositState.OPEN,
+            "Deposits are CLOSED. Can not cancel and withdraw at this stage of deal"
+        );
+        require(
+            s_withdrawState == WithdrawState.CLOSED,
+            "Withdraws are OPEN, Can not cancel and withdraw at this stage of deal"
+        );
+        require(
+            s_allDepositsAreCompleted == false,
+            "Terms have been met and can no longer withdraw these assets"
+        );
+        _;
+    }
+    modifier withdrawRequires() {
+        require(
+            checkIfAllDepositsAreMadeAndOpenWithdrawls(),
+            "All deposits have not been made"
+        );
+        require(s_withdrawState == WithdrawState.OPEN, "Withdraw are CLOSED");
+        _;
+    }
 
     /** ESCROW */
 
     // SET SELLER
-    function setSeller() public {
+    function setSeller() external {
         require(
             s_tradeState == TradeState.CLOSED,
             "Can't set Seller while trade is live"
@@ -129,6 +183,10 @@ contract VendoraEscrow {
             s_withdrawState == WithdrawState.CLOSED,
             "Can't set Seller while withdrawls are open"
         );
+        require(
+            s_numOfAssetsDeposited == 0,
+            "Can not set seller after deposits have been made"
+        );
         require(s_sellerIsSet == false, "Seller already set");
         require(s_buyerIsSet == false, "Seller already set");
 
@@ -139,100 +197,75 @@ contract VendoraEscrow {
     }
 
     // ADD ERC20 REQUEST TO TRADE TERMS
-    function requestERC20(bytes32 symbol, uint256 amount) external onlySeller {
-        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
-        require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Cant add token to trade terms afer withdraws are open"
-        );
-        require(
-            s_depositState == DepositState.CLOSED,
-            "Cant add token to trade terms afer deposits are open"
-        );
-        require(s_sellerIsSet == true, "Seller is not set");
-        require(
-            s_buyerIsSet == false,
-            "Can not add assets to terms after buyer is set"
-        );
+    function requestERC20(
+        bytes32 symbol,
+        uint256 amount
+    ) external onlySeller creatingTermsRequires {
+        require(amount > 0, "Must choose an amount greater than zero");
 
-        s_requestedERC20[s_buyer][symbol] += amount;
+        if (s_requestedERC20[s_seller][symbol] == 0) {
+            s_numOfAssetsInTradeTerms++;
+        }
 
-        s_numOfAssetsRequested++;
+        s_requestedERC20[s_seller][symbol] += amount;
     }
 
     // DELETE ERC20 REQUEST IN TRADE TERMS
     function deleteRequestedERC20(
         bytes32 symbol,
         uint256 amount
-    ) public onlySeller {
-        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+    ) external onlySeller creatingTermsRequires {
+        require(s_requestedERC20[s_seller][symbol] > 0, "Nothing to delete");
         require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Cant add token to trade terms afer withdraws are open"
+            s_requestedERC20[s_seller][symbol] >= amount,
+            "Trying to delete more than available in trade terms"
         );
         require(
-            s_depositState == DepositState.CLOSED,
-            "Cant add token to trade terms afer deposits are open"
+            s_numOfAssetsInTradeTerms > 0,
+            "Can be less than 0 items in trade terms"
         );
-        require(s_sellerIsSet == true, "Seller is not set");
-        require(
-            s_buyerIsSet == false,
-            "Can not add assets to terms after buyer is set"
-        );
-        require(s_requestedERC20[s_seller][symbol] != 0, "Nothing to delete");
 
-        s_requestedERC20[s_buyer][symbol] -= amount;
+        s_requestedERC20[s_seller][symbol] -= amount;
 
-        s_numOfAssetsRequested--;
+        if (s_requestedERC20[s_seller][symbol] == 0) {
+            s_numOfAssetsInTradeTerms--;
+        }
     }
 
     // ADD ERC20 OFFER TO TRADE TERMS
-    function offerERC20(bytes32 symbol, uint256 amount) external onlySeller {
-        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
-        require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Cant add token to trade terms afer withdraws are open"
-        );
-        require(
-            s_depositState == DepositState.CLOSED,
-            "Cant add token to trade terms afer deposits are open"
-        );
-        require(s_sellerIsSet == true, "Seller is not set");
-        require(
-            s_buyerIsSet == false,
-            "Can not add assets to terms after buyer is set"
-        );
+    function offerERC20(
+        bytes32 symbol,
+        uint256 amount
+    ) external onlySeller creatingTermsRequires {
+        require(amount > 0, "Must choose an amount greater than zero");
+
+        if (s_offeredERC20[s_seller][symbol] == 0) {
+            s_numOfAssetsInTradeTerms++;
+        }
 
         s_offeredERC20[s_seller][symbol] += amount;
-
-        s_numOfAssetsRequested++;
     }
 
     // DELETE ERC20 OFFER IN TRADE TERMS
     function deleteOfferedERC20(
         bytes32 symbol,
         uint256 amount
-    ) public onlySeller {
-        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+    ) external onlySeller creatingTermsRequires {
+        require(s_offeredERC20[s_seller][symbol] > 0, "Nothing to delete");
         require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Cant add token to trade terms afer withdraws are open"
+            s_offeredERC20[s_seller][symbol] >= amount,
+            "Trying to delete more than available in trade terms"
         );
         require(
-            s_depositState == DepositState.CLOSED,
-            "Cant add token to trade terms afer deposits are open"
+            s_numOfAssetsInTradeTerms > 0,
+            "Can be less than 0 items in trade terms"
         );
-        require(s_sellerIsSet == true, "Seller is not set");
-        require(
-            s_buyerIsSet == false,
-            "Can not add assets to terms after buyer is set"
-        );
-
-        require(s_offeredERC20[s_seller][symbol] != 0, "Nothing to delete");
 
         s_offeredERC20[s_seller][symbol] -= amount;
 
-        s_numOfAssetsRequested--;
+        if (s_offeredERC20[s_seller][symbol] == 0) {
+            s_numOfAssetsInTradeTerms--;
+        }
     }
 
     // FINALIZE TERMS AND OPEN DEPOSITS
@@ -257,7 +290,7 @@ contract VendoraEscrow {
     }
 
     // CLOSE DEPOSITS AND CHANGE TERMS OF TRADE AFTER THEY'VE BEEN FINALIZED
-    function changeTermsAndCloseDeposits() public onlySeller {
+    function changeTermsAndCloseDeposits() external onlySeller {
         require(
             s_buyerIsSet == false,
             "Can only change terms after they have been set if there is no buyer set"
@@ -284,7 +317,7 @@ contract VendoraEscrow {
     }
 
     // SET BUYER
-    function setBuyer() public {
+    function setBuyer() external {
         require(s_tradeState == TradeState.OPEN, "Trade is Closed");
         require(s_depositState == DepositState.OPEN, "Deposites are OPEN");
         require(
@@ -305,7 +338,7 @@ contract VendoraEscrow {
     }
 
     // BUYER LEAVES TRADE
-    function leaveTradeBuyer() public onlyBuyer {
+    function leaveTradeBuyer() external onlyBuyer {
         require(s_tradeState == TradeState.OPEN, "Trade is Closed");
         require(s_depositState == DepositState.OPEN, "Deposites are OPEN");
         require(
@@ -320,7 +353,7 @@ contract VendoraEscrow {
         );
 
         // Reset Buyer's address and state
-        s_buyer = i_buyerPlaceHolder;
+        s_buyer = i_unassignedPartyMember;
         s_buyerIsSet = false;
 
         emit Buyer_Changed(s_buyer);
@@ -330,18 +363,7 @@ contract VendoraEscrow {
     function depositERC20Seller(
         bytes32 symbol,
         uint256 amount
-    ) public onlySeller {
-        require(s_tradeState == TradeState.OPEN, "Trade is not LIVE");
-        require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
-        require(
-            s_allDepositsAreCompleted == false,
-            "All agreed upon deposits have been made"
-        );
-        require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Cant deposit while withdraws are open"
-        );
-
+    ) external onlySeller depositRequires {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
@@ -377,18 +399,7 @@ contract VendoraEscrow {
     function depositERC20Buyer(
         bytes32 symbol,
         uint256 amount
-    ) public onlyBuyer {
-        require(s_tradeState == TradeState.OPEN, "Trade is not LIVE");
-        require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
-        require(
-            s_allDepositsAreCompleted == false,
-            "All agreed upon deposits have been made"
-        );
-        require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Cant deposit while withdraws are open"
-        );
-
+    ) external onlyBuyer depositRequires {
         // Get whitelisted token address
         IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
 
@@ -425,38 +436,16 @@ contract VendoraEscrow {
     function withdrawBeforeTermsAreMetSeller(
         bytes32 symbol,
         uint256 amount
-    ) public onlySeller {
-        require(
-            s_tradeState == TradeState.OPEN,
-            "Can not cancel and withdraw at this stage of deal"
-        );
-        require(
-            s_depositState == DepositState.OPEN,
-            "Deposits are CLOSED. Can not cancel and withdraw at this stage of deal"
-        );
-        require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Withdraws are OPEN, Can not cancel and withdraw at this stage of deal"
-        );
+    ) external onlySeller withdrawBeforeTermsAreMetRequires {
         // Check the user has enough in balance to withdraw
         require(
             s_userBalanceERC20[s_seller][symbol] >= amount,
             "Insufficient funds"
         );
-        require(
-            s_allDepositsAreCompleted == false,
-            "Terms have been met and can no longer withdraw these assets"
-        );
 
         // Make sure user withdraws thier own asset
-        bool s_otherUserOwnsThisAsset;
-        if (s_userBalanceERC20[s_buyer][symbol] > 0) {
-            s_otherUserOwnsThisAsset = true;
-        } else {
-            s_otherUserOwnsThisAsset = false;
-        }
         require(
-            s_otherUserOwnsThisAsset == false,
+            getIfOtherUserOwnsThisAsset(s_buyer, symbol) == false,
             "Can not withdraw other party's assets"
         );
 
@@ -489,40 +478,16 @@ contract VendoraEscrow {
     function withdrawBeforeTermsAreMetBuyer(
         bytes32 symbol,
         uint256 amount
-    ) public onlyBuyer {
-        require(
-            s_tradeState == TradeState.OPEN,
-            "Can not cancel and withdraw at this stage of deal"
-        );
-        require(
-            s_depositState == DepositState.OPEN,
-            "Deposits are CLOSED. Can not cancel and withdraw at this stage of deal"
-        );
-        require(
-            s_withdrawState == WithdrawState.CLOSED,
-            "Withdraws are OPEN, Can not cancel and withdraw at this stage of deal"
-        );
-        require(
-            s_allDepositsAreCompleted == false,
-            "Terms have been met and can no longer withdraw these assets"
-        );
-
-        // Make sure user withdraws thier own assets
-        bool s_userOwnsThisAsset;
-        if (s_userBalanceERC20[s_seller][symbol] > 0) {
-            s_userOwnsThisAsset = true;
-        } else {
-            s_userOwnsThisAsset = false;
-        }
-        require(
-            s_userOwnsThisAsset == false,
-            "Can not withdraw other party's assets"
-        );
-
+    ) external onlyBuyer withdrawBeforeTermsAreMetRequires {
         // Check the user has enough in balance to withdraw
         require(
             s_userBalanceERC20[s_buyer][symbol] >= amount,
             "Insufficient funds"
+        );
+        // Make sure user withdraws thier own asset
+        require(
+            getIfOtherUserOwnsThisAsset(s_seller, symbol) == false,
+            "Can not withdraw other party's assets"
         );
 
         // Get whitelisted token address
@@ -538,7 +503,7 @@ contract VendoraEscrow {
         if (s_numOfAssetsDeposited != 0) {
             if (
                 s_userBalanceERC20[s_buyer][symbol] !=
-                s_requestedERC20[s_buyer][symbol]
+                s_requestedERC20[s_seller][symbol]
             ) {
                 s_numOfAssetsDeposited--;
                 s_numOfBuyerDeposits--;
@@ -553,7 +518,7 @@ contract VendoraEscrow {
 
     // OPEN WITHDRAWS
     function checkIfAllDepositsAreMadeAndOpenWithdrawls()
-        public
+        internal
         returns (bool)
     {
         require(s_sellerIsSet == true, "Seller not set");
@@ -579,16 +544,7 @@ contract VendoraEscrow {
     function withdrawERC20Seller(
         uint256 amount,
         bytes32 symbol
-    ) public onlySeller {
-        require(
-            checkIfAllDepositsAreMadeAndOpenWithdrawls(),
-            "All deposites have not been made"
-        );
-        require(
-            s_withdrawState == WithdrawState.OPEN,
-            "Withdraws are not OPEN"
-        );
-
+    ) external onlySeller {
         // Check if buyer deposited enough for the seller to withdraw
         require(
             s_userBalanceERC20[s_buyer][symbol] >= amount,
@@ -596,14 +552,8 @@ contract VendoraEscrow {
         );
 
         // Make sure user doesn't withdraw their deposited items after the terms are set
-        bool s_userOwnsThisAsset;
-        if (s_userBalanceERC20[s_seller][symbol] > 0) {
-            s_userOwnsThisAsset = true;
-        } else {
-            s_userOwnsThisAsset = false;
-        }
         require(
-            s_userOwnsThisAsset == false,
+            getIfUserOwnsThisAsset(s_seller, symbol) == false,
             "Can not withdraw your own deposited item after the terms have been met."
         );
 
@@ -629,13 +579,7 @@ contract VendoraEscrow {
     function withdrawERC20Buyer(
         bytes32 symbol,
         uint256 amount
-    ) public onlyBuyer {
-        require(
-            checkIfAllDepositsAreMadeAndOpenWithdrawls(),
-            "All deposits have not been made"
-        );
-        require(s_withdrawState == WithdrawState.OPEN, "Withdraw are CLOSED");
-
+    ) external onlyBuyer {
         // Check if seller deposited enough for the buyer to withdraw
         require(
             s_userBalanceERC20[s_seller][symbol] >= amount,
@@ -643,14 +587,8 @@ contract VendoraEscrow {
         );
 
         // Make sure user doesn't withdraw thier deposited items after the terms are set
-        bool s_userOwnsThisAsset;
-        if (s_userBalanceERC20[s_buyer][symbol] > 0) {
-            s_userOwnsThisAsset = true;
-        } else {
-            s_userOwnsThisAsset = false;
-        }
         require(
-            s_userOwnsThisAsset == false,
+            getIfUserOwnsThisAsset(s_buyer, symbol) == false,
             "Can not withdraw your own deposited item after the terms have been met."
         );
 
@@ -703,5 +641,51 @@ contract VendoraEscrow {
 
     function getAllDepositsAreCompleted() external view returns (bool) {
         return s_allDepositsAreCompleted;
+    }
+
+    function getNumOfAssetsInTradeTerms() external view returns (uint256) {
+        return s_numOfAssetsInTradeTerms;
+    }
+
+    function getRequestedERC20Tokens(
+        address buyer,
+        bytes32 symbol
+    ) external view returns (uint256 amount) {
+        return s_requestedERC20[buyer][symbol];
+    }
+
+    function getOfferedERC20Tokens(
+        address seller,
+        bytes32 symbol
+    ) external view returns (uint256 amount) {
+        return s_offeredERC20[seller][symbol];
+    }
+
+    function getIfOtherUserOwnsThisAsset(
+        address user,
+        bytes32 symbol
+    ) internal view returns (bool) {
+        bool s_otherUserOwnsThisAsset;
+        if (s_userBalanceERC20[user][symbol] > 0) {
+            s_otherUserOwnsThisAsset = true;
+        } else {
+            s_otherUserOwnsThisAsset = false;
+        }
+
+        return s_otherUserOwnsThisAsset;
+    }
+
+    function getIfUserOwnsThisAsset(
+        address user,
+        bytes32 symbol
+    ) internal view returns (bool) {
+        bool s_userOwnsThisAsset;
+        if (s_userBalanceERC20[user][symbol] > 0) {
+            s_userOwnsThisAsset = true;
+        } else {
+            s_userOwnsThisAsset = false;
+        }
+
+        return s_userOwnsThisAsset;
     }
 }
