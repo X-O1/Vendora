@@ -6,11 +6,8 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import {Vendora} from "./Vendora.sol";
 
 contract VendoraEscrow {
-    Vendora vendora;
-
     /** CUSTOM ERRORS */
     error Not_Seller();
     error Not_Buyer();
@@ -371,6 +368,7 @@ contract VendoraEscrow {
         address token,
         uint256 amount
     ) external onlySeller depositRequires {
+        // Token
         IERC20 erc20 = IERC20(token);
 
         // Check allowances
@@ -407,6 +405,7 @@ contract VendoraEscrow {
         address token,
         uint256 amount
     ) external onlyBuyer depositRequires {
+        // Token
         IERC20 erc20 = IERC20(token);
 
         // Check token allowances
@@ -456,12 +455,7 @@ contract VendoraEscrow {
             "Can not withdraw other party's assets"
         );
 
-        // Check if token is supported
-        require(
-            vendora.getWhitelistedERC20Tokens(token) == true,
-            "Token not supported"
-        );
-
+        // Token
         IERC20 erc20 = IERC20(token);
 
         // Transfer tokens to user
@@ -504,12 +498,7 @@ contract VendoraEscrow {
             "Can not withdraw other party's assets"
         );
 
-        // Check if token is supported
-        require(
-            vendora.getWhitelistedERC20Tokens(token) == true,
-            "Token not supported"
-        );
-
+        // Token
         IERC20 erc20 = IERC20(token);
 
         // Transfer tokens to user
