@@ -35,9 +35,9 @@ contract VendoraEscrow {
     WithdrawState private s_withdrawState;
 
     /** MAPPINGS */
-    mapping(address => mapping(bytes32 => uint256)) public s_userBalanceERC20;
-    mapping(address => mapping(bytes32 => uint256)) private s_offeredERC20;
-    mapping(address => mapping(bytes32 => uint256)) private s_requestedERC20;
+    mapping(address => mapping(address => uint256)) public s_userBalanceERC20;
+    mapping(address => mapping(address => uint256)) private s_offeredERC20;
+    mapping(address => mapping(address => uint256)) private s_requestedERC20;
 
     /** EVENTS */
     event Seller_Set(bool indexed set, address indexed sellerAddress);
@@ -129,16 +129,20 @@ contract VendoraEscrow {
     }
 
     modifier depositRequires() {
-        require(s_tradeState == TradeState.OPEN, "Trade is not LIVE");
         require(s_depositState == DepositState.OPEN, "Deposites are CLOSED");
-        require(
-            s_allDepositsAreCompleted == false,
-            "All agreed upon deposits have been made"
-        );
         require(
             s_withdrawState == WithdrawState.CLOSED,
             "Cant deposit while withdraws are open"
         );
+        require(
+            s_tradeState == TradeState.OPEN,
+            "Can't deposit while trade is not open"
+        );
+        require(
+            s_allDepositsAreCompleted == false,
+            "All agreed upon deposits have been made"
+        );
+
         _;
     }
 
@@ -201,26 +205,26 @@ contract VendoraEscrow {
 
     // ADD ERC20 REQUEST TO TRADE TERMS
     function requestERC20(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlySeller creatingTermsRequires {
         require(amount > 0, "Must choose an amount greater than zero");
 
-        if (s_requestedERC20[s_seller][symbol] == 0) {
+        if (s_requestedERC20[s_seller][token] == 0) {
             s_numOfAssetsInTradeTerms++;
         }
 
-        s_requestedERC20[s_seller][symbol] += amount;
+        s_requestedERC20[s_seller][token] += amount;
     }
 
     // DELETE ERC20 REQUEST IN TRADE TERMS
     function deleteRequestedERC20(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlySeller creatingTermsRequires {
-        require(s_requestedERC20[s_seller][symbol] > 0, "Nothing to delete");
+        require(s_requestedERC20[s_seller][token] > 0, "Nothing to delete");
         require(
-            s_requestedERC20[s_seller][symbol] >= amount,
+            s_requestedERC20[s_seller][token] >= amount,
             "Trying to delete more than available in trade terms"
         );
         require(
@@ -228,35 +232,35 @@ contract VendoraEscrow {
             "Can be less than 0 items in trade terms"
         );
 
-        s_requestedERC20[s_seller][symbol] -= amount;
+        s_requestedERC20[s_seller][token] -= amount;
 
-        if (s_requestedERC20[s_seller][symbol] == 0) {
+        if (s_requestedERC20[s_seller][token] == 0) {
             s_numOfAssetsInTradeTerms--;
         }
     }
 
     // ADD ERC20 OFFER TO TRADE TERMS
     function offerERC20(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlySeller creatingTermsRequires {
         require(amount > 0, "Must choose an amount greater than zero");
 
-        if (s_offeredERC20[s_seller][symbol] == 0) {
+        if (s_offeredERC20[s_seller][token] == 0) {
             s_numOfAssetsInTradeTerms++;
         }
 
-        s_offeredERC20[s_seller][symbol] += amount;
+        s_offeredERC20[s_seller][token] += amount;
     }
 
     // DELETE ERC20 OFFER IN TRADE TERMS
     function deleteOfferedERC20(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlySeller creatingTermsRequires {
-        require(s_offeredERC20[s_seller][symbol] > 0, "Nothing to delete");
+        require(s_offeredERC20[s_seller][token] > 0, "Nothing to delete");
         require(
-            s_offeredERC20[s_seller][symbol] >= amount,
+            s_offeredERC20[s_seller][token] >= amount,
             "Trying to delete more than available in trade terms"
         );
         require(
@@ -264,9 +268,9 @@ contract VendoraEscrow {
             "Can be less than 0 items in trade terms"
         );
 
-        s_offeredERC20[s_seller][symbol] -= amount;
+        s_offeredERC20[s_seller][token] -= amount;
 
-        if (s_offeredERC20[s_seller][symbol] == 0) {
+        if (s_offeredERC20[s_seller][token] == 0) {
             s_numOfAssetsInTradeTerms--;
         }
     }
@@ -364,34 +368,40 @@ contract VendoraEscrow {
 
     // DEPOSIT ERC20 TOKENS (SELLER)
     function depositERC20Seller(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlySeller depositRequires {
-        // Get whitelisted token address
-        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+        // Check if token is supported
+        // require(
+        //     vendora.getWhitelistedERC20Tokens(token) == true,
+        //     "Token not supported"
+        // );
+
+        IERC20 erc20 = IERC20(token);
 
         // Check allowances
-        uint256 allowance = token.allowance(s_seller, address(this));
+        uint256 allowance = erc20.allowance(s_seller, address(this));
         require(allowance >= amount, "Amount of tokens have not been approved");
 
         // Transfer tokens from seller to escrow contract
         require(
-            token.transferFrom(s_seller, address(this), amount),
+            erc20.transferFrom(s_seller, address(this), amount),
             "Transfer failed"
         );
 
         // Update balances
-        s_userBalanceERC20[s_seller][symbol] += amount;
+        s_userBalanceERC20[s_seller][token] += amount;
 
         // Check if seller made all deposits offered in trade terms
         if (
-            s_userBalanceERC20[s_seller][symbol] ==
-            s_offeredERC20[s_seller][symbol]
+            s_userBalanceERC20[s_seller][token] ==
+            s_offeredERC20[s_seller][token]
         ) {
             s_numOfAssetsDeposited++;
         }
         if (s_numOfAssetsInTradeTerms == s_numOfAssetsDeposited) {
             s_allDepositsAreCompleted = true;
+            checkIfAllDepositsAreMadeAndOpenWithdrawls();
             emit Deposit_Terms_Met(s_allDepositsAreCompleted);
         } else {
             s_allDepositsAreCompleted = false;
@@ -400,35 +410,41 @@ contract VendoraEscrow {
 
     // DEPOSIT ERC20 TOKENS (BUYER)
     function depositERC20Buyer(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlyBuyer depositRequires {
-        // Get whitelisted token address
-        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+        // Check if token is supported
+        // require(
+        //     vendora.getWhitelistedERC20Tokens(token) == true,
+        //     "Token not supported"
+        // );
+
+        IERC20 erc20 = IERC20(token);
 
         // Check token allowances
-        uint256 allowance = token.allowance(s_buyer, address(this));
+        uint256 allowance = erc20.allowance(s_buyer, address(this));
         require(allowance >= amount, "Amount of tokens have not been approved");
 
         // Transfer amount from buyer to the escrow contract
         require(
-            token.transferFrom(s_buyer, address(this), amount),
+            erc20.transferFrom(s_buyer, address(this), amount),
             "Transfer failed"
         );
 
         // Update balances
-        s_userBalanceERC20[s_buyer][symbol] += amount;
+        s_userBalanceERC20[s_buyer][token] += amount;
 
         // Check if buyer made all deposits requested in trade terms
         if (
-            s_userBalanceERC20[s_buyer][symbol] ==
-            s_requestedERC20[s_seller][symbol]
+            s_userBalanceERC20[s_buyer][token] ==
+            s_requestedERC20[s_seller][token]
         ) {
             s_numOfAssetsDeposited++;
             s_numOfBuyerDeposits++;
         }
         if (s_numOfAssetsInTradeTerms == s_numOfAssetsDeposited) {
             s_allDepositsAreCompleted = true;
+            checkIfAllDepositsAreMadeAndOpenWithdrawls();
             emit Deposit_Terms_Met(s_allDepositsAreCompleted);
         } else {
             s_allDepositsAreCompleted = false;
@@ -437,40 +453,47 @@ contract VendoraEscrow {
 
     // WITHDRAW YOUR OWN ASSETS BEFORE TERMS ARE MET (SELLER)
     function withdrawBeforeTermsAreMetSeller(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlySeller withdrawBeforeTermsAreMetRequires {
         // Check the user has enough in balance to withdraw
         require(
-            s_userBalanceERC20[s_seller][symbol] >= amount,
+            s_userBalanceERC20[s_seller][token] >= amount,
             "Insufficient funds"
         );
 
         // Make sure user withdraws thier own asset
         require(
-            getIfOtherUserOwnsThisAsset(s_buyer, symbol) == false,
+            getIfOtherUserOwnsThisAsset(s_buyer, token) == false,
             "Can not withdraw other party's assets"
         );
 
-        // Get whitelisted token address
-        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+        // Check if token is supported
+        require(
+            vendora.getWhitelistedERC20Tokens(token) == true,
+            "Token not supported"
+        );
+
+        IERC20 erc20 = IERC20(token);
 
         // Transfer tokens to user
-        require(token.transfer(s_seller, amount), "Token transfer failed");
+        require(erc20.transfer(s_seller, amount), "Token transfer failed");
 
         // Update the user balance after withdraw
-        s_userBalanceERC20[s_seller][symbol] -= amount;
+        s_userBalanceERC20[s_seller][token] -= amount;
 
         // Check if all Deposits completed
         if (s_numOfAssetsDeposited != 0) {
             if (
-                s_userBalanceERC20[s_seller][symbol] !=
-                s_offeredERC20[s_seller][symbol]
+                s_userBalanceERC20[s_seller][token] !=
+                s_offeredERC20[s_seller][token]
             ) {
                 s_numOfAssetsDeposited--;
             }
             if (s_numOfAssetsDeposited == s_numOfAssetsInTradeTerms) {
                 s_allDepositsAreCompleted = true;
+                checkIfAllDepositsAreMadeAndOpenWithdrawls();
+                emit Deposit_Terms_Met(s_allDepositsAreCompleted);
             } else {
                 s_allDepositsAreCompleted = false;
             }
@@ -479,40 +502,47 @@ contract VendoraEscrow {
 
     // WITHDRAW YOUR OWN ASSETS BEFORE TERMS ARE MET (BUYER)
     function withdrawBeforeTermsAreMetBuyer(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlyBuyer withdrawBeforeTermsAreMetRequires {
         // Check the user has enough in balance to withdraw
         require(
-            s_userBalanceERC20[s_buyer][symbol] >= amount,
+            s_userBalanceERC20[s_buyer][token] >= amount,
             "Insufficient funds"
         );
         // Make sure user withdraws thier own asset
         require(
-            getIfOtherUserOwnsThisAsset(s_seller, symbol) == false,
+            getIfOtherUserOwnsThisAsset(s_seller, token) == false,
             "Can not withdraw other party's assets"
         );
 
-        // Get whitelisted token address
-        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+        // Check if token is supported
+        require(
+            vendora.getWhitelistedERC20Tokens(token) == true,
+            "Token not supported"
+        );
+
+        IERC20 erc20 = IERC20(token);
 
         // Transfer tokens to user
-        require(token.transfer(s_buyer, amount), "Token transfer failed");
+        require(erc20.transfer(s_buyer, amount), "Token transfer failed");
 
         // Update the user balance after withdraw
-        s_userBalanceERC20[s_buyer][symbol] -= amount;
+        s_userBalanceERC20[s_buyer][token] -= amount;
 
         // Check if all Deposits completed
         if (s_numOfAssetsDeposited != 0) {
             if (
-                s_userBalanceERC20[s_buyer][symbol] !=
-                s_requestedERC20[s_seller][symbol]
+                s_userBalanceERC20[s_buyer][token] !=
+                s_requestedERC20[s_seller][token]
             ) {
                 s_numOfAssetsDeposited--;
                 s_numOfBuyerDeposits--;
             }
             if (s_numOfAssetsDeposited == s_numOfAssetsInTradeTerms) {
                 s_allDepositsAreCompleted = true;
+                checkIfAllDepositsAreMadeAndOpenWithdrawls();
+                emit Deposit_Terms_Met(s_allDepositsAreCompleted);
             } else {
                 s_allDepositsAreCompleted = false;
             }
@@ -545,29 +575,27 @@ contract VendoraEscrow {
 
     // WITHDRAW ASSETS SET IN TERMS OF DEAL (SELLER)
     function withdrawERC20Seller(
-        uint256 amount,
-        bytes32 symbol
+        address token,
+        uint256 amount
     ) external onlySeller {
         // Check if buyer deposited enough for the seller to withdraw
         require(
-            s_userBalanceERC20[s_buyer][symbol] >= amount,
+            s_userBalanceERC20[s_buyer][token] >= amount,
             "Insufficient funds"
         );
 
         // Make sure user doesn't withdraw their deposited items after the terms are set
         require(
-            getIfUserOwnsThisAsset(s_seller, symbol) == false,
+            getIfUserOwnsThisAsset(s_seller, token) == false,
             "Can not withdraw your own deposited item after the terms have been met."
         );
 
-        // Get whitelisted token address
-        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
-
+        IERC20 erc20 = IERC20(token);
         // Transfer tokens to user
-        require(token.transfer(s_seller, amount), "Token transfer failed");
+        require(erc20.transfer(s_seller, amount), "Token transfer failed");
 
         // Update balances
-        s_userBalanceERC20[s_buyer][symbol] -= amount;
+        s_userBalanceERC20[s_buyer][token] -= amount;
 
         // Update State of Trade
         s_numOfAssetsDeposited--;
@@ -580,29 +608,28 @@ contract VendoraEscrow {
 
     // WITHDRAW ASSETS SET IN TERMS OF DEAL (BUYER)
     function withdrawERC20Buyer(
-        bytes32 symbol,
+        address token,
         uint256 amount
     ) external onlyBuyer {
         // Check if seller deposited enough for the buyer to withdraw
         require(
-            s_userBalanceERC20[s_seller][symbol] >= amount,
+            s_userBalanceERC20[s_seller][token] >= amount,
             "Insufficient funds"
         );
 
         // Make sure user doesn't withdraw thier deposited items after the terms are set
         require(
-            getIfUserOwnsThisAsset(s_buyer, symbol) == false,
+            getIfUserOwnsThisAsset(s_buyer, token) == false,
             "Can not withdraw your own deposited item after the terms have been met."
         );
 
-        // Get whitelisted token address
-        IERC20 token = IERC20(vendora.getWhitelistedERC20Tokens(symbol));
+        IERC20 erc20 = IERC20(token);
 
         // Transfer tokens to user
-        require(token.transfer(s_buyer, amount), "Token transfer failed");
+        require(erc20.transfer(s_buyer, amount), "Token transfer failed");
 
         // Updates balances
-        s_userBalanceERC20[s_seller][symbol] -= amount;
+        s_userBalanceERC20[s_seller][token] -= amount;
 
         // Update State of Trade
         s_numOfAssetsDeposited--;
@@ -650,26 +677,37 @@ contract VendoraEscrow {
         return s_numOfAssetsInTradeTerms;
     }
 
+    function getNumOfAssetsDeposited() external view returns (uint256) {
+        return s_numOfAssetsDeposited;
+    }
+
+    function getUserDepositBalances(
+        address user,
+        address token
+    ) external view returns (uint256 amount) {
+        return s_userBalanceERC20[user][token];
+    }
+
     function getRequestedERC20Tokens(
         address buyer,
-        bytes32 symbol
+        address token
     ) external view returns (uint256 amount) {
-        return s_requestedERC20[buyer][symbol];
+        return s_requestedERC20[buyer][token];
     }
 
     function getOfferedERC20Tokens(
         address seller,
-        bytes32 symbol
+        address token
     ) external view returns (uint256 amount) {
-        return s_offeredERC20[seller][symbol];
+        return s_offeredERC20[seller][token];
     }
 
     function getIfOtherUserOwnsThisAsset(
         address user,
-        bytes32 symbol
+        address token
     ) internal view returns (bool) {
         bool s_otherUserOwnsThisAsset;
-        if (s_userBalanceERC20[user][symbol] > 0) {
+        if (s_userBalanceERC20[user][token] > 0) {
             s_otherUserOwnsThisAsset = true;
         } else {
             s_otherUserOwnsThisAsset = false;
@@ -680,10 +718,10 @@ contract VendoraEscrow {
 
     function getIfUserOwnsThisAsset(
         address user,
-        bytes32 symbol
+        address token
     ) internal view returns (bool) {
         bool s_userOwnsThisAsset;
-        if (s_userBalanceERC20[user][symbol] > 0) {
+        if (s_userBalanceERC20[user][token] > 0) {
             s_userOwnsThisAsset = true;
         } else {
             s_userOwnsThisAsset = false;

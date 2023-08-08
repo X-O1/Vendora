@@ -7,7 +7,7 @@ contract Vendora {
     /** STATE VARIABLES */
     address private immutable i_owner;
 
-    mapping(bytes32 => address) public s_whitelistedERC20;
+    mapping(address => bool) public s_whitelistedERC20;
 
     constructor() {
         i_owner = msg.sender;
@@ -24,15 +24,19 @@ contract Vendora {
     /** FUNCTIONS */
 
     // WHITELIST NEW SUPPORTED TOKENS
-    function whitelistERC20(bytes32 symbol, address token) public onlyOwner {
-        s_whitelistedERC20[symbol] = token;
+    function whitelistERC20(address token) public onlyOwner {
+        s_whitelistedERC20[token] = true;
+    }
+
+    function deleteWhitelistERC20(address token) public onlyOwner {
+        s_whitelistedERC20[token] = false;
     }
 
     /** GET */
     function getWhitelistedERC20Tokens(
-        bytes32 symbol
-    ) public view returns (address) {
-        return s_whitelistedERC20[symbol];
+        address token
+    ) public view returns (bool) {
+        return s_whitelistedERC20[token];
     }
 
     function getOwner() public view returns (address) {

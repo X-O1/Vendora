@@ -7,8 +7,8 @@ import {VendoraEscrow} from "../../src/VendoraEscrow.sol";
 import {Vendora} from "../../src/Vendora.sol";
 import {DeployVendoraEscrow} from "../../script/DeployVendoraEscrow.s.sol";
 import {DeployVendora} from "../../script/DeployVendora.s.sol";
-import {StdUtils} from "forge-std/StdUtils.sol";
-import {MockERC20} from "../../src/mocks/MockERC20.sol";
+import {MOCKLINK, MOCKAAVE, MOCKUNI} from "../../src/mocks/MockERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract VendoraEscrowTest is Test {
     VendoraEscrow vendoraEscrow;
@@ -18,20 +18,18 @@ contract VendoraEscrowTest is Test {
     address BUYER = makeAddr("user2");
     address USER3 = makeAddr("user3");
     address USER4 = makeAddr("user4");
-    address public linkAddress = 0x514910771AF9Ca656af840dff83E8264EcF986CA;
-    address public aaveAddress = 0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9;
-    address public uniAddress = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
-    bytes32 LINK =
-        0x4c494e4b00000000000000000000000000000000000000000000000000000000;
-    bytes32 AAVE =
-        0x4141415645000000000000000000000000000000000000000000000000000000;
-    bytes32 UNI =
-        0x554E490000000000000000000000000000000000000000000000000000000000;
+    address public LINK = 0x514910771AF9Ca656af840dff83E8264EcF986CA;
+    address public AAVE = 0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9;
+    address public UNI = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
 
-    // MockERC20 public TOKEN1;
-    // MockERC20 public TOKEN2;
-    // MockERC20 public TOKEN3;
-    // uint256 public tokenAmount = 10e18;
+    MOCKLINK public link;
+    MOCKAAVE public aave;
+    MOCKUNI public uni;
+    address public linkAddress = 0xF62849F9A0B5Bf2913b396098F7c7019b51A820a;
+    address public aaveAddress = 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9;
+    address public uniAddress = 0xc7183455a4C133Ae270771860664b6B7ec320bB1;
+
+    uint256 public tokenAmount = 10e18;
 
     function setUp() external {
         DeployVendoraEscrow deployVendoraEscrow = new DeployVendoraEscrow();
@@ -40,9 +38,9 @@ contract VendoraEscrowTest is Test {
         DeployVendora deployVendora = new DeployVendora();
         vendora = deployVendora.run();
 
-        // TOKEN1 = new MockERC20();
-        // TOKEN2 = new MockERC20();
-        // TOKEN3 = new MockERC20();
+        link = new MOCKLINK();
+        aave = new MOCKAAVE();
+        uni = new MOCKUNI();
     }
 
     modifier setSeller() {
@@ -59,6 +57,7 @@ contract VendoraEscrowTest is Test {
         vendoraEscrow.requestERC20(AAVE, 100);
         vm.prank(SELLER);
         vendoraEscrow.offerERC20(UNI, 100);
+
         vm.prank(SELLER);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         _;
@@ -210,5 +209,43 @@ contract VendoraEscrowTest is Test {
         vm.prank(SELLER);
         vendoraEscrow.deleteOfferedERC20(UNI, 100);
         assertEq(vendoraEscrow.getNumOfAssetsInTradeTerms(), 2);
+    }
+
+    function testDeposits() public setSeller {
+        vm.prank(SELLER);
+        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        vm.prank(SELLER);
+        vendoraEscrow.requestERC20(aaveAddress, tokenAmount);
+        vm.prank(SELLER);
+        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        vm.prank(SELLER);
+        link.approve(address(vendoraEscrow), 100e18);
+        vm.prank(SELLER);
+        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        vm.prank(BUYER);
+        vendoraEscrow.setBuyer();
+        vm.prank(BUYER);
+        aave.approve(address(vendoraEscrow), 100e18);
+        vm.prank(BUYER);
+        vendoraEscrow.depositERC20Buyer(aaveAddress, tokenAmount);
+
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            tokenAmount
+        );
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress),
+            tokenAmount
+        );
+        assert(
+            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+        );
+
+        vm.prank(SELLER);
+        link.approve(address(vendoraEscrow), 100e18);
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
     }
 }
