@@ -371,12 +371,6 @@ contract VendoraEscrow {
         address token,
         uint256 amount
     ) external onlySeller depositRequires {
-        // Check if token is supported
-        // require(
-        //     vendora.getWhitelistedERC20Tokens(token) == true,
-        //     "Token not supported"
-        // );
-
         IERC20 erc20 = IERC20(token);
 
         // Check allowances
@@ -413,12 +407,6 @@ contract VendoraEscrow {
         address token,
         uint256 amount
     ) external onlyBuyer depositRequires {
-        // Check if token is supported
-        // require(
-        //     vendora.getWhitelistedERC20Tokens(token) == true,
-        //     "Token not supported"
-        // );
-
         IERC20 erc20 = IERC20(token);
 
         // Check token allowances
