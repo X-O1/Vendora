@@ -285,5 +285,26 @@ contract VendoraEscrowTest is Test {
             vendoraEscrow.getWithdrawState() ==
                 VendoraEscrow.WithdrawState.CLOSED
         );
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            tokenAmount
+        );
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress),
+            tokenAmount
+        );
+
+        vm.prank(SELLER);
+        vendoraEscrow.withdrawBeforeTermsAreMetSeller(linkAddress, tokenAmount);
+
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 1);
+        assertEq(vendoraEscrow.getUserDepositBalances(SELLER, linkAddress), 0);
+
+        vm.prank(BUYER);
+        vendoraEscrow.withdrawBeforeTermsAreMetBuyer(aaveAddress, tokenAmount);
+
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 0);
+        assertEq(vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress), 0);
     }
 }
