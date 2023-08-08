@@ -45,23 +45,36 @@ contract VendoraEscrowTest is Test {
         // uni = new MockERC20();
     }
 
-    function testSellerCanOnlyBeSetOnce() public {
+    modifier setSeller() {
         vm.prank(SELLER);
         vendoraEscrow.setSeller();
+        _;
+    }
+    modifier sellerSetAndTermsFinalized() {
+        vm.prank(SELLER);
+        vendoraEscrow.setSeller();
+        vm.prank(SELLER);
+        vendoraEscrow.requestERC20(LINK, 100);
+        vm.prank(SELLER);
+        vendoraEscrow.requestERC20(AAVE, 100);
+        vm.prank(SELLER);
+        vendoraEscrow.offerERC20(UNI, 100);
+        vm.prank(SELLER);
+        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        _;
+    }
+
+    function testSellerCanOnlyBeSetOnce() public setSeller {
         vm.prank(USER3);
         vm.expectRevert();
         vendoraEscrow.setSeller();
     }
 
-    function testSellerAddressIsSetToMsgSenderAddress() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testSellerAddressIsSetToMsgSenderAddress() public setSeller {
         assert(vendoraEscrow.getSellerAddress() == SELLER);
     }
 
-    function testSellerCantBeSetIfTradeIsLive() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testSellerCantBeSetIfTradeIsLive() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         vm.prank(USER3);
@@ -69,9 +82,7 @@ contract VendoraEscrowTest is Test {
         vendoraEscrow.setSeller();
     }
 
-    function testBuyerCanOnlyBeSetOnce() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testBuyerCanOnlyBeSetOnce() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         vm.prank(BUYER);
@@ -81,9 +92,7 @@ contract VendoraEscrowTest is Test {
         vendoraEscrow.setBuyer();
     }
 
-    function testBuyerAddressIsSetToMsgSenderAddress() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testBuyerAddressIsSetToMsgSenderAddress() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.finalizeTermsAndOpenDeposits();
         vm.prank(BUYER);
@@ -91,16 +100,33 @@ contract VendoraEscrowTest is Test {
         assert(vendoraEscrow.getBuyerAddress() == BUYER);
     }
 
-    function testBuyerCanOnlyBeSetAfterInitiatorIsSet() public {
+    function testBuyerCanOnlyBeSetAfterSellerIsSet() public {
         vm.prank(BUYER);
         vm.expectRevert();
         vendoraEscrow.setBuyer();
     }
 
+    function testSwitchingBuyers() public sellerSetAndTermsFinalized {
+        vm.prank(BUYER);
+        vendoraEscrow.setBuyer();
+        assertEq(vendoraEscrow.getBuyerAddress(), BUYER);
+
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.setBuyer();
+
+        vm.prank(BUYER);
+        vendoraEscrow.leaveTradeBuyer();
+        assertEq(vendoraEscrow.getBuyerAddress(), address(0));
+
+        vm.prank(USER3);
+        vendoraEscrow.setBuyer();
+
+        assertEq(vendoraEscrow.getBuyerAddress(), USER3);
+    }
+
     // TEST CREATING TERMS OF THE TRADE
-    function testRequestERC20DateStructure() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testRequestERC20DateStructure() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.requestERC20(LINK, 200);
         uint256 amount = vendoraEscrow.getRequestedERC20Tokens(SELLER, LINK);
@@ -108,9 +134,7 @@ contract VendoraEscrowTest is Test {
         assertEq(amount, 200);
     }
 
-    function testDeleteRequestedERC20DateStructure() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testDeleteRequestedERC20DateStructure() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.requestERC20(LINK, 200);
         vendoraEscrow.getRequestedERC20Tokens(SELLER, LINK);
@@ -121,9 +145,7 @@ contract VendoraEscrowTest is Test {
         assertEq(amount, 150);
     }
 
-    function testOfferERC20DateStructure() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testOfferERC20DateStructure() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.offerERC20(LINK, 200);
         uint256 amount = vendoraEscrow.getOfferedERC20Tokens(SELLER, LINK);
@@ -131,9 +153,7 @@ contract VendoraEscrowTest is Test {
         assertEq(amount, 200);
     }
 
-    function testDeleteOfferedERC20DateStructure() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testDeleteOfferedERC20DateStructure() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.offerERC20(LINK, 200);
         vendoraEscrow.getOfferedERC20Tokens(SELLER, LINK);
@@ -144,9 +164,7 @@ contract VendoraEscrowTest is Test {
         assertEq(amount, 150);
     }
 
-    function testNumOfAssetsInTermsUpdate() public {
-        vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+    function testNumOfAssetsInTermsUpdate() public setSeller {
         vm.prank(SELLER);
         vendoraEscrow.requestERC20(LINK, 100);
         vm.prank(SELLER);
@@ -169,5 +187,28 @@ contract VendoraEscrowTest is Test {
         vendoraEscrow.requestERC20(LINK, 100);
 
         assertEq(vendoraEscrow.getNumOfAssetsInTradeTerms(), 4);
+    }
+
+    function testModifyingTermsAfterFinalizedTermsAndOpenDepositsIsCalled()
+        public
+        sellerSetAndTermsFinalized
+    {
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendoraEscrow.deleteOfferedERC20(UNI, 100);
+    }
+
+    function testChangeTermsAndCloseDeposits()
+        public
+        sellerSetAndTermsFinalized
+    {
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendoraEscrow.deleteOfferedERC20(UNI, 100);
+        vm.prank(SELLER);
+        vendoraEscrow.changeTermsAndCloseDeposits();
+        vm.prank(SELLER);
+        vendoraEscrow.deleteOfferedERC20(UNI, 100);
+        assertEq(vendoraEscrow.getNumOfAssetsInTradeTerms(), 2);
     }
 }

@@ -108,7 +108,10 @@ contract VendoraEscrow {
         _;
     }
     modifier creatingTermsRequires() {
-        require(s_tradeState == TradeState.CLOSED, "Trade is Live");
+        require(
+            s_tradeState == TradeState.CLOSED,
+            "Can't change terms after trade is live"
+        );
         require(
             s_withdrawState == WithdrawState.CLOSED,
             "Cant add token to trade terms afer withdraws are open"
@@ -297,15 +300,15 @@ contract VendoraEscrow {
         );
         require(
             s_numOfAssetsDeposited == 0,
-            "Can not change terms after assets have been deposited. Withdraw all assets to change terms."
+            "Withdraw all assets to change terms."
         );
         require(
             s_tradeState == TradeState.OPEN,
-            "This function is for changing terms after terms are set and trade is open. The trade is not currently open"
+            "Can't change terms if the trade is closed"
         );
         require(
             s_depositState == DepositState.OPEN,
-            "This function is for changing terms after terms are set and deposits are open. Deposits are not currently open"
+            "Can't change terms if the deposits are closed"
         );
         require(
             s_withdrawState == WithdrawState.CLOSED,
