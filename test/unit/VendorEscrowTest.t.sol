@@ -28,9 +28,9 @@ contract VendoraEscrowTest is Test {
     bytes32 UNI =
         0x554E490000000000000000000000000000000000000000000000000000000000;
 
-    // MockERC20 public link;
-    // MockERC20 public aave;
-    // MockERC20 public uni;
+    // MockERC20 public TOKEN1;
+    // MockERC20 public TOKEN2;
+    // MockERC20 public TOKEN3;
     // uint256 public tokenAmount = 10e18;
 
     function setUp() external {
@@ -40,9 +40,9 @@ contract VendoraEscrowTest is Test {
         DeployVendora deployVendora = new DeployVendora();
         vendora = deployVendora.run();
 
-        // link = new MockERC20();
-        // aave = new MockERC20();
-        // uni = new MockERC20();
+        // TOKEN1 = new MockERC20();
+        // TOKEN2 = new MockERC20();
+        // TOKEN3 = new MockERC20();
     }
 
     modifier setSeller() {
