@@ -555,16 +555,16 @@ contract VendoraEscrow {
         address token,
         uint256 amount
     ) external onlySeller {
-        // Check if buyer deposited enough for the seller to withdraw
-        require(
-            s_userBalanceERC20[s_buyer][token] >= amount,
-            "Insufficient funds"
-        );
-
         // Make sure user doesn't withdraw their deposited items after the terms are set
         require(
             getIfUserOwnsThisAsset(s_seller, token) == false,
             "Can not withdraw your own deposited item after the terms have been met."
+        );
+
+        // Check if buyer deposited enough for the seller to withdraw
+        require(
+            s_userBalanceERC20[s_buyer][token] >= amount,
+            "Insufficient funds"
         );
 
         IERC20 erc20 = IERC20(token);
@@ -588,16 +588,16 @@ contract VendoraEscrow {
         address token,
         uint256 amount
     ) external onlyBuyer {
-        // Check if seller deposited enough for the buyer to withdraw
-        require(
-            s_userBalanceERC20[s_seller][token] >= amount,
-            "Insufficient funds"
-        );
-
         // Make sure user doesn't withdraw thier deposited items after the terms are set
         require(
             getIfUserOwnsThisAsset(s_buyer, token) == false,
             "Can not withdraw your own deposited item after the terms have been met."
+        );
+
+        // Check if seller deposited enough for the buyer to withdraw
+        require(
+            s_userBalanceERC20[s_seller][token] >= amount,
+            "Insufficient funds"
         );
 
         IERC20 erc20 = IERC20(token);

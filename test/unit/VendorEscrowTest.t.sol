@@ -55,7 +55,9 @@ contract VendoraEscrowTest is Test {
         _;
     }
 
-    modifier termsSetWitdrawlsOpen() {
+    modifier termsMetWitdrawlsOpen() {
+        vm.prank(SELLER);
+        vendoraEscrow.setSeller();
         vm.prank(SELLER);
         vendoraEscrow.offerERC20(linkAddress, tokenAmount);
         vm.prank(SELLER);
@@ -306,5 +308,70 @@ contract VendoraEscrowTest is Test {
 
         assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 0);
         assertEq(vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress), 0);
+    }
+
+    function testSellerCanWithdraw() public termsMetWitdrawlsOpen {
+        assert(
+            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+        );
+
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress),
+            tokenAmount
+        );
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+
+        vm.prank(SELLER);
+        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        assertEq(vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress), 0);
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 1);
+    }
+
+    function testBuyerCanWithdraw() public termsMetWitdrawlsOpen {
+        assert(
+            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+        );
+
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            tokenAmount
+        );
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+
+        vm.prank(BUYER);
+        vendoraEscrow.withdrawERC20Buyer(linkAddress, tokenAmount);
+        assertEq(vendoraEscrow.getUserDepositBalances(SELLER, linkAddress), 0);
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 1);
+    }
+
+    function testUserCanWithdrawOwnDepositAfterTermsAreMetAndWithdrawlsAreOpen()
+        public
+        termsMetWitdrawlsOpen
+    {
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendoraEscrow.withdrawERC20Seller(linkAddress, tokenAmount);
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            tokenAmount
+        );
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+    }
+
+    function testEndingTrade() public termsMetWitdrawlsOpen {
+        vm.prank(SELLER);
+        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+
+        vm.prank(BUYER);
+        vendoraEscrow.withdrawERC20Buyer(linkAddress, tokenAmount);
+
+        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 0);
+        assert(
+            vendoraEscrow.getWithdrawState() ==
+                VendoraEscrow.WithdrawState.CLOSED
+        );
+        assert(
+            vendoraEscrow.getTradeState() == VendoraEscrow.TradeState.COMPLETED
+        );
     }
 }
