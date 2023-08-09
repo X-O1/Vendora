@@ -374,4 +374,102 @@ contract VendoraEscrowTest is Test {
             vendoraEscrow.getTradeState() == VendoraEscrow.TradeState.COMPLETED
         );
     }
+
+    // AI generated test
+
+    function testWithdrawByNonParticipant() public termsMetWitdrawlsOpen {
+        assert(
+            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+        );
+
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.withdrawERC20Buyer(aaveAddress, tokenAmount);
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.withdrawBeforeTermsAreMetBuyer(aaveAddress, tokenAmount);
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.withdrawBeforeTermsAreMetSeller(aaveAddress, tokenAmount);
+    }
+
+    function testRepeatedWithdraw() public termsMetWitdrawlsOpen {
+        assert(
+            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+        );
+
+        vm.prank(SELLER);
+        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+    }
+
+    function testTradeCompletionState() public termsMetWitdrawlsOpen {
+        vm.prank(SELLER);
+        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        vm.prank(BUYER);
+        vendoraEscrow.withdrawERC20Buyer(linkAddress, tokenAmount);
+
+        assert(
+            vendoraEscrow.getTradeState() == VendoraEscrow.TradeState.COMPLETED
+        );
+    }
+
+    function testDepositMoreThanAllowed() public setSeller {
+        vm.prank(SELLER);
+        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        vm.prank(SELLER);
+        link.approve(address(vendoraEscrow), 100e18);
+        vm.expectRevert();
+        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount + 1);
+    }
+
+    function testWithdrawMoreThanDeposited() public termsMetWitdrawlsOpen {
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendoraEscrow.withdrawBeforeTermsAreMetSeller(
+            linkAddress,
+            tokenAmount + 1
+        );
+    }
+
+    function testOtherUserCannotWithdraw() public termsMetWitdrawlsOpen {
+        vm.prank(USER3);
+        vm.expectRevert();
+        vendoraEscrow.withdrawBeforeTermsAreMetSeller(linkAddress, tokenAmount);
+    }
+
+    function testOverApprovalDoesNotAllowOverDeposit() public setSeller {
+        vm.prank(SELLER);
+        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        vm.prank(SELLER);
+        link.approve(address(vendoraEscrow), 1000e18); // Excessive approval
+        vm.expectRevert();
+        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount + 1); // Try to deposit more than the terms
+    }
+
+    function testZeroTokenAmount() public setSeller {
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendoraEscrow.requestERC20(LINK, 0);
+    }
+
+    function testMultipleDepositsBySeller() public sellerSetAndTermsFinalized {
+        vm.prank(SELLER);
+        link.approve(address(vendoraEscrow), 200e18);
+        vm.prank(SELLER);
+        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        vm.prank(SELLER);
+        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+
+        assertEq(
+            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            2 * tokenAmount
+        );
+    }
 }
