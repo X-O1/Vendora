@@ -3,14 +3,14 @@
 pragma solidity ^0.8.19;
 
 import {Test, console} from "forge-std/Test.sol";
-import {VendoraEscrow} from "../../src/VendoraEscrow.sol";
-import {DeployVendoraEscrow} from "../../script/DeployVendoraEscrow.s.sol";
+import {EscrowERC20} from "../../src/EscrowERC20.sol";
+import {DeployEscrowERC20} from "../../script/DeployEscrowERC20.s.sol";
 import {DeployVendora} from "../../script/DeployVendora.s.sol";
 import {MOCKLINK, MOCKAAVE, MOCKUNI} from "../../src/mocks/MockERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract VendoraEscrowTest is Test {
-    VendoraEscrow vendoraEscrow;
+contract ERC20EscrowTest is Test {
+    EscrowERC20 escrowERC20;
 
     address SELLER = makeAddr("user");
     address BUYER = makeAddr("user2");
@@ -30,8 +30,8 @@ contract VendoraEscrowTest is Test {
     uint256 public tokenAmount = 10e18;
 
     function setUp() external {
-        DeployVendoraEscrow deployVendoraEscrow = new DeployVendoraEscrow();
-        vendoraEscrow = deployVendoraEscrow.run();
+        DeployEscrowERC20 deployEscrowERC20 = new DeployEscrowERC20();
+        escrowERC20 = deployEscrowERC20.run();
 
         link = new MOCKLINK();
         aave = new MOCKAAVE();
@@ -40,166 +40,166 @@ contract VendoraEscrowTest is Test {
 
     modifier setSeller() {
         vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+        escrowERC20.setSeller();
         _;
     }
     modifier sellerSetAndTermsFinalized() {
         vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+        escrowERC20.setSeller();
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(LINK, 100);
+        escrowERC20.requestERC20(LINK, 100);
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(UNI, 100);
+        escrowERC20.offerERC20(UNI, 100);
         vm.prank(SELLER);
-        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        escrowERC20.finalizeTermsAndOpenDeposits();
         _;
     }
 
     modifier termsMetWitdrawlsOpen() {
         vm.prank(SELLER);
-        vendoraEscrow.setSeller();
+        escrowERC20.setSeller();
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        escrowERC20.offerERC20(linkAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(aaveAddress, tokenAmount);
+        escrowERC20.requestERC20(aaveAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        escrowERC20.finalizeTermsAndOpenDeposits();
         vm.prank(SELLER);
-        link.approve(address(vendoraEscrow), 100e18);
+        link.approve(address(escrowERC20), 100e18);
         vm.prank(SELLER);
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount);
         vm.prank(BUYER);
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
         vm.prank(BUYER);
-        aave.approve(address(vendoraEscrow), 100e18);
+        aave.approve(address(escrowERC20), 100e18);
         vm.prank(BUYER);
-        vendoraEscrow.depositERC20Buyer(aaveAddress, tokenAmount);
+        escrowERC20.depositERC20Buyer(aaveAddress, tokenAmount);
         _;
     }
 
     function testSellerCanOnlyBeSetOnce() public setSeller {
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.setSeller();
+        escrowERC20.setSeller();
     }
 
     function testSellerAddressIsSetToMsgSenderAddress() public setSeller {
-        assert(vendoraEscrow.getSellerAddress() == SELLER);
+        assert(escrowERC20.getSellerAddress() == SELLER);
     }
 
     function testSellerCantBeSetIfTradeIsLive() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        escrowERC20.finalizeTermsAndOpenDeposits();
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.setSeller();
+        escrowERC20.setSeller();
     }
 
     function testBuyerCanOnlyBeSetOnce() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        escrowERC20.finalizeTermsAndOpenDeposits();
         vm.prank(BUYER);
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
     }
 
     function testBuyerAddressIsSetToMsgSenderAddress() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        escrowERC20.finalizeTermsAndOpenDeposits();
         vm.prank(BUYER);
-        vendoraEscrow.setBuyer();
-        assert(vendoraEscrow.getBuyerAddress() == BUYER);
+        escrowERC20.setBuyer();
+        assert(escrowERC20.getBuyerAddress() == BUYER);
     }
 
     function testBuyerCanOnlyBeSetAfterSellerIsSet() public {
         vm.prank(BUYER);
         vm.expectRevert();
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
     }
 
     function testSwitchingBuyers() public sellerSetAndTermsFinalized {
         vm.prank(BUYER);
-        vendoraEscrow.setBuyer();
-        assertEq(vendoraEscrow.getBuyerAddress(), BUYER);
+        escrowERC20.setBuyer();
+        assertEq(escrowERC20.getBuyerAddress(), BUYER);
 
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
 
         vm.prank(BUYER);
-        vendoraEscrow.leaveTradeBuyer();
-        assertEq(vendoraEscrow.getBuyerAddress(), address(0));
+        escrowERC20.leaveTradeBuyer();
+        assertEq(escrowERC20.getBuyerAddress(), address(0));
 
         vm.prank(USER3);
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
 
-        assertEq(vendoraEscrow.getBuyerAddress(), USER3);
+        assertEq(escrowERC20.getBuyerAddress(), USER3);
     }
 
     // TEST CREATING TERMS OF THE TRADE
     function testRequestERC20DateStructure() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(LINK, 200);
-        uint256 amount = vendoraEscrow.getRequestedERC20Tokens(SELLER, LINK);
+        escrowERC20.requestERC20(LINK, 200);
+        uint256 amount = escrowERC20.getRequestedERC20Tokens(SELLER, LINK);
 
         assertEq(amount, 200);
     }
 
     function testDeleteRequestedERC20DateStructure() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(LINK, 200);
-        vendoraEscrow.getRequestedERC20Tokens(SELLER, LINK);
+        escrowERC20.requestERC20(LINK, 200);
+        escrowERC20.getRequestedERC20Tokens(SELLER, LINK);
         vm.prank(SELLER);
-        vendoraEscrow.deleteRequestedERC20(LINK, 50);
-        uint256 amount = vendoraEscrow.getRequestedERC20Tokens(SELLER, LINK);
+        escrowERC20.deleteRequestedERC20(LINK, 50);
+        uint256 amount = escrowERC20.getRequestedERC20Tokens(SELLER, LINK);
 
         assertEq(amount, 150);
     }
 
     function testOfferERC20DateStructure() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(LINK, 200);
-        uint256 amount = vendoraEscrow.getOfferedERC20Tokens(SELLER, LINK);
+        escrowERC20.offerERC20(LINK, 200);
+        uint256 amount = escrowERC20.getOfferedERC20Tokens(SELLER, LINK);
 
         assertEq(amount, 200);
     }
 
     function testDeleteOfferedERC20DateStructure() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(LINK, 200);
-        vendoraEscrow.getOfferedERC20Tokens(SELLER, LINK);
+        escrowERC20.offerERC20(LINK, 200);
+        escrowERC20.getOfferedERC20Tokens(SELLER, LINK);
         vm.prank(SELLER);
-        vendoraEscrow.deleteOfferedERC20(LINK, 50);
-        uint256 amount = vendoraEscrow.getOfferedERC20Tokens(SELLER, LINK);
+        escrowERC20.deleteOfferedERC20(LINK, 50);
+        uint256 amount = escrowERC20.getOfferedERC20Tokens(SELLER, LINK);
 
         assertEq(amount, 150);
     }
 
     function testNumOfAssetsInTermsUpdate() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(LINK, 100);
+        escrowERC20.requestERC20(LINK, 100);
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(AAVE, 100);
+        escrowERC20.requestERC20(AAVE, 100);
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(UNI, 100);
+        escrowERC20.offerERC20(UNI, 100);
         vm.prank(SELLER);
-        vendoraEscrow.deleteRequestedERC20(LINK, 100);
+        escrowERC20.deleteRequestedERC20(LINK, 100);
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(LINK, 50);
+        escrowERC20.requestERC20(LINK, 50);
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(LINK, 100);
+        escrowERC20.offerERC20(LINK, 100);
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(AAVE, 100);
+        escrowERC20.offerERC20(AAVE, 100);
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(UNI, 100);
+        escrowERC20.offerERC20(UNI, 100);
         vm.prank(SELLER);
-        vendoraEscrow.deleteOfferedERC20(LINK, 100);
+        escrowERC20.deleteOfferedERC20(LINK, 100);
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(LINK, 100);
+        escrowERC20.requestERC20(LINK, 100);
 
-        assertEq(vendoraEscrow.getNumOfAssetsInTradeTerms(), 4);
+        assertEq(escrowERC20.getNumOfAssetsInTradeTerms(), 4);
     }
 
     function testModifyingTermsAfterFinalizedTermsAndOpenDepositsIsCalled()
@@ -208,7 +208,7 @@ contract VendoraEscrowTest is Test {
     {
         vm.prank(SELLER);
         vm.expectRevert();
-        vendoraEscrow.deleteOfferedERC20(UNI, 100);
+        escrowERC20.deleteOfferedERC20(UNI, 100);
     }
 
     function testChangeTermsAndCloseDeposits()
@@ -217,131 +217,130 @@ contract VendoraEscrowTest is Test {
     {
         vm.prank(SELLER);
         vm.expectRevert();
-        vendoraEscrow.deleteOfferedERC20(UNI, 100);
+        escrowERC20.deleteOfferedERC20(UNI, 100);
         vm.prank(SELLER);
-        vendoraEscrow.changeTermsAndCloseDeposits();
+        escrowERC20.changeTermsAndCloseDeposits();
         vm.prank(SELLER);
-        vendoraEscrow.deleteOfferedERC20(UNI, 100);
-        assertEq(vendoraEscrow.getNumOfAssetsInTradeTerms(), 1);
+        escrowERC20.deleteOfferedERC20(UNI, 100);
+        assertEq(escrowERC20.getNumOfAssetsInTradeTerms(), 1);
     }
 
     function testDeposits() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        escrowERC20.offerERC20(linkAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(aaveAddress, tokenAmount);
+        escrowERC20.requestERC20(aaveAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        escrowERC20.finalizeTermsAndOpenDeposits();
         vm.prank(SELLER);
-        link.approve(address(vendoraEscrow), 100e18);
+        link.approve(address(escrowERC20), 100e18);
         vm.prank(SELLER);
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount);
         vm.prank(BUYER);
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
         vm.prank(BUYER);
-        aave.approve(address(vendoraEscrow), 100e18);
+        aave.approve(address(escrowERC20), 100e18);
         vm.prank(BUYER);
-        vendoraEscrow.depositERC20Buyer(aaveAddress, tokenAmount);
+        escrowERC20.depositERC20Buyer(aaveAddress, tokenAmount);
 
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 2);
         assertEq(
-            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            escrowERC20.getUserDepositBalances(SELLER, linkAddress),
             tokenAmount
         );
         assertEq(
-            vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress),
+            escrowERC20.getUserDepositBalances(BUYER, aaveAddress),
             tokenAmount
         );
         assert(
-            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+            escrowERC20.getWithdrawState() == EscrowERC20.WithdrawState.OPEN
         );
 
         vm.prank(SELLER);
-        link.approve(address(vendoraEscrow), 100e18);
+        link.approve(address(escrowERC20), 100e18);
         vm.prank(SELLER);
         vm.expectRevert();
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount);
     }
 
     function testWithdrawOwnAssetsBeforeTermsAreMet() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        escrowERC20.offerERC20(linkAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(uniAddress, tokenAmount);
+        escrowERC20.offerERC20(uniAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.requestERC20(aaveAddress, tokenAmount);
+        escrowERC20.requestERC20(aaveAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.finalizeTermsAndOpenDeposits();
+        escrowERC20.finalizeTermsAndOpenDeposits();
         vm.prank(SELLER);
-        link.approve(address(vendoraEscrow), 100e18);
+        link.approve(address(escrowERC20), 100e18);
         vm.prank(SELLER);
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount);
         vm.prank(BUYER);
-        vendoraEscrow.setBuyer();
+        escrowERC20.setBuyer();
         vm.prank(BUYER);
-        aave.approve(address(vendoraEscrow), 100e18);
+        aave.approve(address(escrowERC20), 100e18);
         vm.prank(BUYER);
-        vendoraEscrow.depositERC20Buyer(aaveAddress, tokenAmount);
+        escrowERC20.depositERC20Buyer(aaveAddress, tokenAmount);
 
         assert(
-            vendoraEscrow.getWithdrawState() ==
-                VendoraEscrow.WithdrawState.CLOSED
+            escrowERC20.getWithdrawState() == EscrowERC20.WithdrawState.CLOSED
         );
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 2);
         assertEq(
-            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            escrowERC20.getUserDepositBalances(SELLER, linkAddress),
             tokenAmount
         );
         assertEq(
-            vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress),
+            escrowERC20.getUserDepositBalances(BUYER, aaveAddress),
             tokenAmount
         );
 
         vm.prank(SELLER);
-        vendoraEscrow.withdrawBeforeTermsAreMetSeller(linkAddress, tokenAmount);
+        escrowERC20.withdrawBeforeTermsAreMetSeller(linkAddress, tokenAmount);
 
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 1);
-        assertEq(vendoraEscrow.getUserDepositBalances(SELLER, linkAddress), 0);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 1);
+        assertEq(escrowERC20.getUserDepositBalances(SELLER, linkAddress), 0);
 
         vm.prank(BUYER);
-        vendoraEscrow.withdrawBeforeTermsAreMetBuyer(aaveAddress, tokenAmount);
+        escrowERC20.withdrawBeforeTermsAreMetBuyer(aaveAddress, tokenAmount);
 
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 0);
-        assertEq(vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress), 0);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 0);
+        assertEq(escrowERC20.getUserDepositBalances(BUYER, aaveAddress), 0);
     }
 
     function testSellerCanWithdraw() public termsMetWitdrawlsOpen {
         assert(
-            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+            escrowERC20.getWithdrawState() == EscrowERC20.WithdrawState.OPEN
         );
 
         assertEq(
-            vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress),
+            escrowERC20.getUserDepositBalances(BUYER, aaveAddress),
             tokenAmount
         );
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 2);
 
         vm.prank(SELLER);
-        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
-        assertEq(vendoraEscrow.getUserDepositBalances(BUYER, aaveAddress), 0);
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 1);
+        escrowERC20.withdrawERC20Seller(aaveAddress, tokenAmount);
+        assertEq(escrowERC20.getUserDepositBalances(BUYER, aaveAddress), 0);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 1);
     }
 
     function testBuyerCanWithdraw() public termsMetWitdrawlsOpen {
         assert(
-            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+            escrowERC20.getWithdrawState() == EscrowERC20.WithdrawState.OPEN
         );
 
         assertEq(
-            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            escrowERC20.getUserDepositBalances(SELLER, linkAddress),
             tokenAmount
         );
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 2);
 
         vm.prank(BUYER);
-        vendoraEscrow.withdrawERC20Buyer(linkAddress, tokenAmount);
-        assertEq(vendoraEscrow.getUserDepositBalances(SELLER, linkAddress), 0);
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 1);
+        escrowERC20.withdrawERC20Buyer(linkAddress, tokenAmount);
+        assertEq(escrowERC20.getUserDepositBalances(SELLER, linkAddress), 0);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 1);
     }
 
     function testUserCanWithdrawOwnDepositAfterTermsAreMetAndWithdrawlsAreOpen()
@@ -350,89 +349,84 @@ contract VendoraEscrowTest is Test {
     {
         vm.prank(SELLER);
         vm.expectRevert();
-        vendoraEscrow.withdrawERC20Seller(linkAddress, tokenAmount);
+        escrowERC20.withdrawERC20Seller(linkAddress, tokenAmount);
         assertEq(
-            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            escrowERC20.getUserDepositBalances(SELLER, linkAddress),
             tokenAmount
         );
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 2);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 2);
     }
 
     function testEndingTrade() public termsMetWitdrawlsOpen {
         vm.prank(SELLER);
-        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        escrowERC20.withdrawERC20Seller(aaveAddress, tokenAmount);
 
         vm.prank(BUYER);
-        vendoraEscrow.withdrawERC20Buyer(linkAddress, tokenAmount);
+        escrowERC20.withdrawERC20Buyer(linkAddress, tokenAmount);
 
-        assertEq(vendoraEscrow.getNumOfAssetsDeposited(), 0);
+        assertEq(escrowERC20.getNumOfAssetsDeposited(), 0);
         assert(
-            vendoraEscrow.getWithdrawState() ==
-                VendoraEscrow.WithdrawState.CLOSED
+            escrowERC20.getWithdrawState() == EscrowERC20.WithdrawState.CLOSED
         );
-        assert(
-            vendoraEscrow.getTradeState() == VendoraEscrow.TradeState.COMPLETED
-        );
+        assert(escrowERC20.getTradeState() == EscrowERC20.TradeState.COMPLETED);
     }
 
     // AI generated test
 
     function testWithdrawByNonParticipant() public termsMetWitdrawlsOpen {
         assert(
-            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+            escrowERC20.getWithdrawState() == EscrowERC20.WithdrawState.OPEN
         );
 
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.withdrawERC20Buyer(aaveAddress, tokenAmount);
+        escrowERC20.withdrawERC20Buyer(aaveAddress, tokenAmount);
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        escrowERC20.withdrawERC20Seller(aaveAddress, tokenAmount);
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.withdrawBeforeTermsAreMetBuyer(aaveAddress, tokenAmount);
+        escrowERC20.withdrawBeforeTermsAreMetBuyer(aaveAddress, tokenAmount);
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.withdrawBeforeTermsAreMetSeller(aaveAddress, tokenAmount);
+        escrowERC20.withdrawBeforeTermsAreMetSeller(aaveAddress, tokenAmount);
     }
 
     function testRepeatedWithdraw() public termsMetWitdrawlsOpen {
         assert(
-            vendoraEscrow.getWithdrawState() == VendoraEscrow.WithdrawState.OPEN
+            escrowERC20.getWithdrawState() == EscrowERC20.WithdrawState.OPEN
         );
 
         vm.prank(SELLER);
-        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        escrowERC20.withdrawERC20Seller(aaveAddress, tokenAmount);
 
         vm.prank(SELLER);
         vm.expectRevert();
-        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        escrowERC20.withdrawERC20Seller(aaveAddress, tokenAmount);
     }
 
     function testTradeCompletionState() public termsMetWitdrawlsOpen {
         vm.prank(SELLER);
-        vendoraEscrow.withdrawERC20Seller(aaveAddress, tokenAmount);
+        escrowERC20.withdrawERC20Seller(aaveAddress, tokenAmount);
         vm.prank(BUYER);
-        vendoraEscrow.withdrawERC20Buyer(linkAddress, tokenAmount);
+        escrowERC20.withdrawERC20Buyer(linkAddress, tokenAmount);
 
-        assert(
-            vendoraEscrow.getTradeState() == VendoraEscrow.TradeState.COMPLETED
-        );
+        assert(escrowERC20.getTradeState() == EscrowERC20.TradeState.COMPLETED);
     }
 
     function testDepositMoreThanAllowed() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        escrowERC20.offerERC20(linkAddress, tokenAmount);
         vm.prank(SELLER);
-        link.approve(address(vendoraEscrow), 100e18);
+        link.approve(address(escrowERC20), 100e18);
         vm.expectRevert();
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount + 1);
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount + 1);
     }
 
     function testWithdrawMoreThanDeposited() public termsMetWitdrawlsOpen {
         vm.prank(SELLER);
         vm.expectRevert();
-        vendoraEscrow.withdrawBeforeTermsAreMetSeller(
+        escrowERC20.withdrawBeforeTermsAreMetSeller(
             linkAddress,
             tokenAmount + 1
         );
@@ -441,34 +435,34 @@ contract VendoraEscrowTest is Test {
     function testOtherUserCannotWithdraw() public termsMetWitdrawlsOpen {
         vm.prank(USER3);
         vm.expectRevert();
-        vendoraEscrow.withdrawBeforeTermsAreMetSeller(linkAddress, tokenAmount);
+        escrowERC20.withdrawBeforeTermsAreMetSeller(linkAddress, tokenAmount);
     }
 
     function testOverApprovalDoesNotAllowOverDeposit() public setSeller {
         vm.prank(SELLER);
-        vendoraEscrow.offerERC20(linkAddress, tokenAmount);
+        escrowERC20.offerERC20(linkAddress, tokenAmount);
         vm.prank(SELLER);
-        link.approve(address(vendoraEscrow), 1000e18); // Excessive approval
+        link.approve(address(escrowERC20), 1000e18); // Excessive approval
         vm.expectRevert();
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount + 1); // Try to deposit more than the terms
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount + 1); // Try to deposit more than the terms
     }
 
     function testZeroTokenAmount() public setSeller {
         vm.prank(SELLER);
         vm.expectRevert();
-        vendoraEscrow.requestERC20(LINK, 0);
+        escrowERC20.requestERC20(LINK, 0);
     }
 
     function testMultipleDepositsBySeller() public sellerSetAndTermsFinalized {
         vm.prank(SELLER);
-        link.approve(address(vendoraEscrow), 200e18);
+        link.approve(address(escrowERC20), 200e18);
         vm.prank(SELLER);
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount);
         vm.prank(SELLER);
-        vendoraEscrow.depositERC20Seller(linkAddress, tokenAmount);
+        escrowERC20.depositERC20Seller(linkAddress, tokenAmount);
 
         assertEq(
-            vendoraEscrow.getUserDepositBalances(SELLER, linkAddress),
+            escrowERC20.getUserDepositBalances(SELLER, linkAddress),
             2 * tokenAmount
         );
     }
