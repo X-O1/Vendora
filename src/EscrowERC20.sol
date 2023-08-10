@@ -4,8 +4,6 @@ pragma solidity ^0.8.19;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 contract EscrowERC20 {
     /** CUSTOM ERRORS */
@@ -49,16 +47,15 @@ contract EscrowERC20 {
     enum TradeState {
         CLOSED,
         OPEN,
-        CLOSING,
         COMPLETED
     }
     enum DepositState {
-        OPEN,
-        CLOSED
+        CLOSED,
+        OPEN
     }
     enum WithdrawState {
-        OPEN,
-        CLOSED
+        CLOSED,
+        OPEN
     }
 
     /** CONTRUCTOR */
@@ -542,7 +539,6 @@ contract EscrowERC20 {
         );
 
         s_depositState = DepositState.CLOSED;
-        s_tradeState = TradeState.CLOSING;
         s_withdrawState = WithdrawState.OPEN;
 
         emit Withdraw_State(s_withdrawState);
