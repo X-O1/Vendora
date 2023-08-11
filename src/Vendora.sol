@@ -138,8 +138,7 @@ contract Vendora {
         // Make sure there's a buyer
         require(terms.buyer != address(0), "This trade does not exist");
 
-        // Check if SELLER owns offered assets. If so seller has met terms.
-
+        // Check if SELLER owns/approved offered assets. If so seller has met terms.
         // NFTs
         for (uint256 i = 0; i < terms.offeredNFTs.length; i++) {
             require(
@@ -149,14 +148,30 @@ contract Vendora {
                 "You do not own one or more NFTs offered in terms"
             );
         }
+        for (uint256 i = 0; i < terms.offeredNFTs.length; i++) {
+            require(
+                IERC721(terms.offeredNFTs[i].nftAddress).getApproved(
+                    terms.offeredNFTs[i].tokenId
+                ) == address(this),
+                "One of more offered NFTs in terms have not been approved to transfer"
+            );
+        }
         // ERC20s
+        for (uint256 i = 0; i < terms.offeredERC20s.length; i++) {
+            require(
+                IERC20(terms.offeredERC20s[i].erc20Address).balanceOf(
+                    terms.seller
+                ) >= terms.offeredERC20s[i].amount,
+                "You do not own one or more amounts of ERC20s offered in terms"
+            );
+        }
         for (uint256 i = 0; i < terms.offeredERC20s.length; i++) {
             require(
                 IERC20(terms.offeredERC20s[i].erc20Address).allowance(
                     terms.seller,
                     address(this)
                 ) >= terms.offeredERC20s[i].amount,
-                "You do not own one or more amounts of ERC20s offered in terms"
+                "You have not approved one or more amounts of ERC20s offered in terms"
             );
         }
         // ETH
@@ -167,8 +182,7 @@ contract Vendora {
 
         terms.sellerMetTerms = true;
 
-        // Check if BUYER owns requested assets. If so buyer has has met terms.
-
+        // Check if BUYER owns/approved requested assets. If so buyer has has met terms.
         // NFTs
         for (uint256 i = 0; i < terms.requestedNFTs.length; i++) {
             require(
@@ -178,14 +192,30 @@ contract Vendora {
                 "You do not own one or more NFTs requested in terms"
             );
         }
+        for (uint256 i = 0; i < terms.requestedNFTs.length; i++) {
+            require(
+                IERC721(terms.requestedNFTs[i].nftAddress).getApproved(
+                    terms.requestedNFTs[i].tokenId
+                ) == address(this),
+                "One or more requested NFTs have not been approved to transfer"
+            );
+        }
         // ERC20s
+        for (uint256 i = 0; i < terms.requestedERC20s.length; i++) {
+            require(
+                IERC20(terms.requestedERC20s[i].erc20Address).balanceOf(
+                    terms.buyer
+                ) >= terms.requestedERC20s[i].amount,
+                "You do not own one or more amounts of ERC20s offered in terms"
+            );
+        }
         for (uint256 i = 0; i < terms.requestedERC20s.length; i++) {
             require(
                 IERC20(terms.requestedERC20s[i].erc20Address).allowance(
                     terms.buyer,
                     address(this)
                 ) >= terms.requestedERC20s[i].amount,
-                "You do not own one or more ERC20 amounts set in terms"
+                "You have not approved one or more amounts of ERC20s offered in terms"
             );
         }
         // ETH
@@ -197,8 +227,21 @@ contract Vendora {
         terms.buyerMetTerms = true;
 
         // If both partys are appoved
-        // Transfer all offered assets from seller to contract
-        // Transfer all requested assets from buyer to contract
+        if (terms.sellerMetTerms == true && terms.buyerMetTerms == true) {
+            // Transfer all offered assets from SELLER to contract
+            // NFTS
+            for (uint256 i = 0; i < terms.offeredNFTs.length; i++) {
+                IERC721(terms.offeredNFTs[i].nftAddress).safeTransferFrom(
+                    terms.seller,
+                    address(this),
+                    terms.offeredNFTs[i].tokenId
+                );
+            }
+            // ERC20s
+            // ETH
+
+            // Transfer all requested assets from buyer to contract
+        }
 
         // Transfer all requested assets in contract to seller
         // Transfer all offered assets in contract to buyer
