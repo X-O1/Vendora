@@ -49,7 +49,7 @@ contract Vendora {
         return keccak256(abi.encodePacked(msg.sender, buyer, block.timestamp));
     }
 
-    function startTrade(address buyer) external returns (bytes32 tradeId) {
+    function startTrade(address buyer) external returns (bytes32) {
         bytes32 tradeId = generateTradeId(buyer);
 
         trades[tradeId].seller = msg.sender;
@@ -59,6 +59,8 @@ contract Vendora {
         trades[tradeId].sellerMetTerms = false;
         trades[tradeId].buyerMetTerms = false;
         trades[tradeId].tradeCompleted = false;
+
+        return tradeId;
     }
 
     function addErc721(
