@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.19;
 
-// import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-// import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import {ERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+// import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 // contract EscrowERC20 {
 //     /** CUSTOM ERRORS */
@@ -51,6 +51,7 @@ pragma solidity ^0.8.19;
 //         CLOSED,
 //         OPEN
 //     }
+
 //     /** CONTRUCTOR */
 //     constructor() {
 //         i_owner = msg.sender;
@@ -66,6 +67,7 @@ pragma solidity ^0.8.19;
 //         s_numOfBuyerDeposits = 0;
 //         s_allDepositsAreCompleted = false;
 //     }
+
 //     /** MODIFIERS */
 //     modifier onlySeller() {
 //         if (msg.sender != s_seller) {
@@ -155,6 +157,7 @@ pragma solidity ^0.8.19;
 //         require(s_withdrawState == WithdrawState.OPEN, "Withdraw are CLOSED");
 //         _;
 //     }
+
 //     /** ESCROW */
 //     // SET SELLER
 //     function setSeller() external {
@@ -180,6 +183,7 @@ pragma solidity ^0.8.19;
 //         s_sellerIsSet = true;
 //         emit Seller_Set(s_sellerIsSet, s_seller);
 //     }
+
 //     // ADD ERC20 REQUEST TO TRADE TERMS
 //     function requestERC20(
 //         address token,
@@ -191,6 +195,7 @@ pragma solidity ^0.8.19;
 //         }
 //         s_requestedERC20[s_seller][token] += amount;
 //     }
+
 //     // DELETE ERC20 REQUEST IN TRADE TERMS
 //     function deleteRequestedERC20(
 //         address token,
@@ -210,6 +215,7 @@ pragma solidity ^0.8.19;
 //             s_numOfAssetsInTradeTerms--;
 //         }
 //     }
+
 //     // ADD ERC20 OFFER TO TRADE TERMS
 //     function offerERC20(
 //         address token,
@@ -221,6 +227,7 @@ pragma solidity ^0.8.19;
 //         }
 //         s_offeredERC20[s_seller][token] += amount;
 //     }
+
 //     // DELETE ERC20 OFFER IN TRADE TERMS
 //     function deleteOfferedERC20(
 //         address token,
@@ -240,6 +247,7 @@ pragma solidity ^0.8.19;
 //             s_numOfAssetsInTradeTerms--;
 //         }
 //     }
+
 //     // FINALIZE TERMS AND OPEN DEPOSITS
 //     function finalizeTermsAndOpenDeposits() external onlySeller {
 //         require(s_tradeState == TradeState.CLOSED, "Trade is not Live");
@@ -258,6 +266,7 @@ pragma solidity ^0.8.19;
 //         emit Trade_State(s_tradeState);
 //         emit Deposit_State(s_depositState);
 //     }
+
 //     // CLOSE DEPOSITS AND CHANGE TERMS OF TRADE AFTER THEY'VE BEEN FINALIZED
 //     function changeTermsAndCloseDeposits() external onlySeller {
 //         require(
@@ -283,6 +292,7 @@ pragma solidity ^0.8.19;
 //         s_tradeState = TradeState.CLOSED;
 //         s_depositState = DepositState.CLOSED;
 //     }
+
 //     // SET BUYER
 //     function setBuyer() external {
 //         require(s_tradeState == TradeState.OPEN, "Trade is Closed");
@@ -301,6 +311,7 @@ pragma solidity ^0.8.19;
 //         s_buyerIsSet = true;
 //         emit Seller_Set(s_buyerIsSet, s_buyer);
 //     }
+
 //     // BUYER LEAVES TRADE
 //     function leaveTradeBuyer() external onlyBuyer {
 //         require(s_tradeState == TradeState.OPEN, "Trade is Closed");
@@ -320,6 +331,7 @@ pragma solidity ^0.8.19;
 //         s_buyerIsSet = false;
 //         emit Buyer_Changed(s_buyer);
 //     }
+
 //     // DEPOSIT ERC20 TOKENS (SELLER)
 //     function depositERC20Seller(
 //         address token,
@@ -352,6 +364,7 @@ pragma solidity ^0.8.19;
 //             s_allDepositsAreCompleted = false;
 //         }
 //     }
+
 //     // DEPOSIT ERC20 TOKENS (BUYER)
 //     function depositERC20Buyer(
 //         address token,
@@ -385,6 +398,7 @@ pragma solidity ^0.8.19;
 //             s_allDepositsAreCompleted = false;
 //         }
 //     }
+
 //     // WITHDRAW YOUR OWN ASSETS BEFORE TERMS ARE MET (SELLER)
 //     function withdrawBeforeTermsAreMetSeller(
 //         address token,
@@ -423,6 +437,7 @@ pragma solidity ^0.8.19;
 //             }
 //         }
 //     }
+
 //     // WITHDRAW YOUR OWN ASSETS BEFORE TERMS ARE MET (BUYER)
 //     function withdrawBeforeTermsAreMetBuyer(
 //         address token,
@@ -462,6 +477,7 @@ pragma solidity ^0.8.19;
 //             }
 //         }
 //     }
+
 //     // OPEN WITHDRAWS
 //     function checkIfAllDepositsAreMadeAndOpenWithdrawls()
 //         internal
@@ -481,6 +497,7 @@ pragma solidity ^0.8.19;
 //         emit Withdraw_State(s_withdrawState);
 //         return s_allDepositsAreCompleted;
 //     }
+
 //     // WITHDRAW ASSETS SET IN TERMS OF DEAL (SELLER)
 //     function withdrawERC20Seller(
 //         address token,
@@ -509,6 +526,7 @@ pragma solidity ^0.8.19;
 //             s_withdrawState = WithdrawState.CLOSED;
 //         }
 //     }
+
 //     // WITHDRAW ASSETS SET IN TERMS OF DEAL (BUYER)
 //     function withdrawERC20Buyer(
 //         address token,
@@ -537,55 +555,69 @@ pragma solidity ^0.8.19;
 //             s_withdrawState = WithdrawState.CLOSED;
 //         }
 //     }
+
 //     /** GET FUNCTIONS*/
 //     function getSellerAddress() external view returns (address) {
 //         return s_seller;
 //     }
+
 //     function getBuyerAddress() external view returns (address) {
 //         return s_buyer;
 //     }
+
 //     function getSellerIsSet() external view returns (bool) {
 //         return s_sellerIsSet;
 //     }
+
 //     function getBuyerIsSet() external view returns (bool) {
 //         return s_buyerIsSet;
 //     }
+
 //     function getTradeState() external view returns (TradeState) {
 //         return s_tradeState;
 //     }
+
 //     function getDepositState() external view returns (DepositState) {
 //         return s_depositState;
 //     }
+
 //     function getWithdrawState() external view returns (WithdrawState) {
 //         return s_withdrawState;
 //     }
+
 //     function getAllDepositsAreCompleted() external view returns (bool) {
 //         return s_allDepositsAreCompleted;
 //     }
+
 //     function getNumOfAssetsInTradeTerms() external view returns (uint256) {
 //         return s_numOfAssetsInTradeTerms;
 //     }
+
 //     function getNumOfAssetsDeposited() external view returns (uint256) {
 //         return s_numOfAssetsDeposited;
 //     }
+
 //     function getUserDepositBalances(
 //         address user,
 //         address token
 //     ) external view returns (uint256 amount) {
 //         return s_userBalanceERC20[user][token];
 //     }
+
 //     function getRequestedERC20Tokens(
 //         address buyer,
 //         address token
 //     ) external view returns (uint256 amount) {
 //         return s_requestedERC20[buyer][token];
 //     }
+
 //     function getOfferedERC20Tokens(
 //         address seller,
 //         address token
 //     ) external view returns (uint256 amount) {
 //         return s_offeredERC20[seller][token];
 //     }
+
 //     function getIfOtherUserOwnsThisAsset(
 //         address user,
 //         address token
@@ -598,6 +630,7 @@ pragma solidity ^0.8.19;
 //         }
 //         return s_otherUserOwnsThisAsset;
 //     }
+
 //     function getIfUserOwnsThisAsset(
 //         address user,
 //         address token
