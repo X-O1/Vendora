@@ -11,7 +11,5 @@ contract VendoraTest is Test {
     address SELLER = makeAddr("user");
     address BUYER = makeAddr("user2");
 
-    function setUp() external {
-        // Vendora vendora = new Vendora();
-    }
+    function setUp() external {}
 }
