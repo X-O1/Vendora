@@ -27,6 +27,7 @@ contract Vendora {
         Erc20Details[] requestedErc20s;
         uint256 offeredEthAmount;
         uint256 requestedEthAmount;
+        bool termsFinalized;
         bool sellerReady;
         bool buyerReady;
         bool sellerMetTerms;
@@ -37,15 +38,20 @@ contract Vendora {
     }
     /** MAPPINGS */
     mapping(bytes32 => Terms) public trades;
+    mapping(bytes32 => Terms) public completedTrades;
 
     /** EVENTS */
     event Trade_Started(bytes32 indexed tradeId);
-    event Seller_Ready(bool indexed sellerReady);
-    event Buyer_Ready(bool indexed buyerReady);
-    event Seller_Met_Terms(bool indexed sellerMetTerms);
-    event Buyer_Met_Terms(bool indexed buyerMetTerms);
-    event Trade_Canceled(bool indexed tradeCanceled);
-    event Trade_Completed(bool indexed tradeCompleted);
+    event Terms_Finalized(bytes32 indexed tradeId, bool indexed termsFinalized);
+    event Seller_Ready(bytes32 indexed tradeId, bool indexed sellerReady);
+    event Buyer_Ready(bytes32 indexed tradeId, bool indexed buyerReady);
+    event Seller_Met_Terms(
+        bytes32 indexed tradeId,
+        bool indexed sellerMetTerms
+    );
+    event Buyer_Met_Terms(bytes32 indexed tradeId, bool indexed buyerMetTerms);
+    event Trade_Canceled(bytes32 indexed tradeId, bool indexed tradeCanceled);
+    event Trade_Completed(bytes32 indexed tradeId, bool indexed tradeCompleted);
 
     // START NEW TRADE
     function startTrade(address buyer) external returns (bytes32) {
@@ -54,6 +60,7 @@ contract Vendora {
 
         terms.seller = msg.sender;
         terms.buyer = buyer;
+        terms.termsFinalized = false;
         terms.sellerReady = false;
         terms.buyerReady = false;
         terms.sellerMetTerms = false;
@@ -82,6 +89,10 @@ contract Vendora {
         );
         require(nftAddress != address(0), "Invalid address");
         require(tokenId > 0, "Invalid token id");
+        require(
+            terms.termsFinalized == false,
+            "Can not change terms after terms are finalized"
+        );
 
         offeringAsset
             ? terms.offeredNfts.push(
@@ -106,6 +117,10 @@ contract Vendora {
         );
         require(erc20Address != address(0), "Invalid erc20 address");
         require(amount > 0, "Invalid erc20 amount, must be greater than zero");
+        require(
+            terms.termsFinalized == false,
+            "Can not change terms after terms are finalized"
+        );
 
         offeringAsset
             ? terms.offeredErc20s.push(
@@ -128,10 +143,24 @@ contract Vendora {
             "Only seller can add assets to terms"
         );
         require(ethAmount > 0, "Invalid eth amount, must be greater than zero");
+        require(
+            terms.termsFinalized == false,
+            "Can not change terms after terms are finalized"
+        );
 
         offeringAsset
             ? terms.offeredEthAmount = ethAmount
             : terms.requestedEthAmount = ethAmount;
+    }
+
+    function finalizeTerms(bytes32 tradeId) external {
+        Terms storage terms = trades[tradeId];
+        require(terms.buyer != address(0), "This trade does not exist");
+        require(msg.sender == terms.seller, "Only seller can finalize terms");
+        require(terms.termsFinalized == false, "Terms are aleady finalized");
+
+        terms.termsFinalized = true;
+        emit Terms_Finalized(tradeId, terms.termsFinalized);
     }
 
     // VERIFY BOTH PARTIES HAVE ASSETS SET IN TERMS
@@ -142,6 +171,7 @@ contract Vendora {
             msg.sender == terms.seller || msg.sender == terms.buyer,
             "Not a memeber in this trade"
         );
+        require(terms.termsFinalized == true, "Terms not finalized");
 
         if (msg.sender == terms.seller) {
             // Check if seller has same amount of eth offered in terms
@@ -194,7 +224,7 @@ contract Vendora {
             }
 
             terms.sellerReady = true;
-            emit Seller_Ready(terms.sellerReady);
+            emit Seller_Ready(tradeId, terms.sellerReady);
         }
 
         // Check if seller has same amount of eth offered in terms
@@ -247,7 +277,7 @@ contract Vendora {
             }
 
             terms.buyerReady = true;
-            emit Buyer_Ready(terms.buyerReady);
+            emit Buyer_Ready(tradeId, terms.buyerReady);
         }
     }
 
@@ -263,15 +293,17 @@ contract Vendora {
             terms.sellerReady == true && terms.buyerReady == true,
             "Buyer and Seller are not ready to complete trade"
         );
+        require(terms.termsFinalized == true, "Terms not finalized");
 
         if (msg.sender == terms.seller) {
+            // Deposit seller's eth
             if (terms.offeredEthAmount > 0) {
                 require(
                     msg.value == terms.offeredEthAmount,
                     "Send exact amount of ETH set in terms"
                 );
             }
-
+            // Deposit seller's Nfts
             uint256 offeredNftListLength = terms.offeredNfts.length;
             if (offeredNftListLength > 0) {
                 for (uint256 i = 0; i < offeredNftListLength; i++) {
@@ -282,7 +314,7 @@ contract Vendora {
                     );
                 }
             }
-
+            // Deposit seller's Erc20s
             uint256 offeredErc20ListLength = terms.offeredErc20s.length;
             if (offeredErc20ListLength > 0) {
                 for (uint256 i = 0; i < offeredErc20ListLength; i++) {
@@ -295,17 +327,18 @@ contract Vendora {
             }
 
             terms.sellerMetTerms = true;
-            emit Seller_Met_Terms(terms.sellerMetTerms);
+            emit Seller_Met_Terms(tradeId, terms.sellerMetTerms);
         }
 
         if (msg.sender == terms.buyer) {
+            // Deposit buyer's Eth
             if (terms.requestedEthAmount > 0) {
                 require(
                     msg.value == terms.requestedEthAmount,
                     "Send exact amount of ETH set in terms"
                 );
             }
-
+            // Deposit buyer's Nfts
             uint256 requestedNftListLength = terms.requestedNfts.length;
             if (requestedNftListLength > 0) {
                 for (uint256 i = 0; i < requestedNftListLength; i++) {
@@ -316,7 +349,7 @@ contract Vendora {
                         );
                 }
             }
-
+            // Deposit buyer's Erc20s
             uint256 requestedErc20ListLength = terms.requestedErc20s.length;
             if (requestedErc20ListLength > 0) {
                 for (uint256 i = 0; i < requestedErc20ListLength; i++) {
@@ -328,8 +361,10 @@ contract Vendora {
                 }
             }
             terms.buyerMetTerms = true;
-            emit Buyer_Met_Terms(terms.buyerMetTerms);
+            emit Buyer_Met_Terms(tradeId, terms.buyerMetTerms);
         }
+
+        // If all deposits were successful complete the trade
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == true) {
             terms.allTermsMet = true;
             Vendora.completeTrade(tradeId);
@@ -349,6 +384,7 @@ contract Vendora {
             "All assets must be deposited to complete the trade"
         );
         require(terms.tradeCanceled == false, "Trade already canceled");
+        require(terms.termsFinalized == true, "Terms not finalized");
 
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == false) {
             if (terms.offeredEthAmount > 0) {
@@ -404,7 +440,7 @@ contract Vendora {
             }
         }
         terms.tradeCanceled = true;
-        emit Trade_Canceled(terms.tradeCanceled);
+        emit Trade_Canceled(tradeId, terms.tradeCanceled);
 
         delete trades[tradeId];
     }
@@ -422,6 +458,7 @@ contract Vendora {
             "All assets must be deposited to complete the trade"
         );
         require(terms.tradeCanceled == false, "Trade canceled");
+        require(terms.termsFinalized == true, "Terms not finalized");
 
         if (terms.offeredEthAmount > 0) {
             payable(terms.buyer).transfer(terms.offeredEthAmount);
@@ -473,12 +510,14 @@ contract Vendora {
         }
 
         terms.tradeCompleted = true;
-        emit Trade_Completed(terms.tradeCompleted);
+        completedTrades[tradeId] = terms;
+        emit Trade_Completed(tradeId, terms.tradeCompleted);
 
         delete trades[tradeId];
     }
 
-    // GET FUNCTONS
+    /** GET */
+
     // Generate tradeId
     function generateTradeId(address buyer) internal view returns (bytes32) {
         return keccak256(abi.encodePacked(msg.sender, buyer, block.timestamp));
@@ -490,6 +529,8 @@ contract Vendora {
         external
         view
         returns (
+            address seller,
+            address buyer,
             NftDetails[] memory,
             NftDetails[] memory,
             Erc20Details[] memory,
@@ -499,8 +540,9 @@ contract Vendora {
         )
     {
         Terms storage terms = trades[tradeId];
-
         return (
+            terms.seller,
+            terms.buyer,
             terms.offeredNfts,
             terms.requestedNfts,
             terms.offeredErc20s,
