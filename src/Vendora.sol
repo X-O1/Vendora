@@ -8,6 +8,11 @@ import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Recei
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Vendora {
+    /** EVENTS */
+    event Trade_Started(bytes32 indexed tradeId);
+    event Seller_Ready(bool indexed sellerReady);
+    event Buyer_Ready(bool indexed buyerReady);
+
     /** STRUCTS */
     struct NftDetails {
         address nftAddress;
@@ -17,13 +22,7 @@ contract Vendora {
         address erc20Address;
         uint256 amount;
     }
-    struct AssetDetails {
-        address[] nftAddresses;
-        uint256[] nftTokenIds;
-        address[] erc20Addresses;
-        uint256[] erc20Amounts;
-        uint256[] ethAmounts;
-    }
+
     struct Terms {
         address seller;
         address buyer;
@@ -42,8 +41,6 @@ contract Vendora {
     /** MAPPINGS */
     mapping(bytes32 => Terms) public trades;
 
-    /** FUNCTIONS */
-
     // Generate a tradeId
     function generateTradeId(address buyer) internal view returns (bytes32) {
         return keccak256(abi.encodePacked(msg.sender, buyer, block.timestamp));
@@ -51,14 +48,17 @@ contract Vendora {
 
     function startTrade(address buyer) external returns (bytes32) {
         bytes32 tradeId = generateTradeId(buyer);
+        Terms storage terms = trades[tradeId];
 
-        trades[tradeId].seller = msg.sender;
-        trades[tradeId].buyer = buyer;
-        trades[tradeId].sellerReady = false;
-        trades[tradeId].buyerReady = false;
-        trades[tradeId].sellerMetTerms = false;
-        trades[tradeId].buyerMetTerms = false;
-        trades[tradeId].tradeCompleted = false;
+        terms.seller = msg.sender;
+        terms.buyer = buyer;
+        terms.sellerReady = false;
+        terms.buyerReady = false;
+        terms.sellerMetTerms = false;
+        terms.buyerMetTerms = false;
+        terms.tradeCompleted = false;
+
+        emit Trade_Started(tradeId);
 
         return tradeId;
     }
@@ -71,6 +71,10 @@ contract Vendora {
     ) external {
         Terms storage terms = trades[tradeId];
         require(terms.buyer != address(0), "This trade does not exist");
+        require(
+            msg.sender == terms.seller,
+            "Only seller can add assets to terms"
+        );
         require(nftAddress != address(0), "Invalid address");
         require(tokenId > 0, "Invalid token id");
 
@@ -91,6 +95,10 @@ contract Vendora {
     ) external {
         Terms storage terms = trades[tradeId];
         require(terms.buyer != address(0), "This trade does not exist");
+        require(
+            msg.sender == terms.seller,
+            "Only seller can add assets to terms"
+        );
         require(erc20Address != address(0), "Invalid erc20 address");
         require(amount > 0, "Invalid erc20 amount, must be greater than zero");
 
@@ -110,6 +118,10 @@ contract Vendora {
     ) external {
         Terms storage terms = trades[tradeId];
         require(terms.buyer != address(0), "Trade does not exist");
+        require(
+            msg.sender == terms.seller,
+            "Only seller can add assets to terms"
+        );
         require(ethAmount > 0, "Invalid eth amount, must be greater than zero");
 
         offeringAsset
@@ -117,18 +129,124 @@ contract Vendora {
             : terms.requestedEthAmount = ethAmount;
     }
 
-    /** GET FUNCTIONS */
-    function getOfferedNfts(
-        bytes32 tradeId
-    ) external view returns (NftDetails[] memory) {
+    // CHECK IF BOTH PARTIES HAVE ASSETS SET IN TERMS
+    function verifyUserAssets(bytes32 tradeId) external {
         Terms storage terms = trades[tradeId];
-        return terms.offeredNfts;
-    }
+        require(terms.buyer != address(0), "This trade does not exist");
+        require(
+            msg.sender == terms.seller || msg.sender == terms.buyer,
+            "Not a memeber in this trade"
+        );
 
-    function getRequestedNfts(
-        bytes32 tradeId
-    ) external view returns (NftDetails[] memory) {
-        Terms storage terms = trades[tradeId];
-        return terms.requestedNfts;
+        if (msg.sender == terms.seller) {
+            // Check if seller has same amount of eth offered in terms
+            if (terms.offeredEthAmount > 0) {
+                require(
+                    terms.seller.balance >= terms.offeredEthAmount,
+                    "You do not hold amount of eth set in terms"
+                );
+            }
+
+            // Check if seller has same NFTs(ERC721) offered in terms and approved them for transfer
+            uint256 offeredNftListLength = terms.offeredNfts.length;
+            if (offeredNftListLength > 0) {
+                for (uint256 i = 0; i < offeredNftListLength; i++) {
+                    require(
+                        IERC721(terms.offeredNfts[i].nftAddress).ownerOf(
+                            terms.offeredNfts[i].tokenId
+                        ) == terms.seller,
+                        "You do not own one of more NFTs set in terms"
+                    );
+
+                    require(
+                        IERC721(terms.offeredNfts[i].nftAddress).getApproved(
+                            terms.offeredNfts[i].tokenId
+                        ) == address(this),
+                        "One of more Nfts have not been approved for transfer"
+                    );
+                }
+            }
+
+            // Check if seller has same amounts of ERC20s offered in terms and approved them for transfer
+            uint256 offeredErc20ListLength = terms.offeredErc20s.length;
+            if (offeredErc20ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc20ListLength; i++) {
+                    require(
+                        IERC20(terms.offeredErc20s[i].erc20Address).balanceOf(
+                            terms.seller
+                        ) >= terms.offeredErc20s[i].amount,
+                        "You do not own one or more amounts of ERC20s offered in terms"
+                    );
+
+                    require(
+                        IERC20(terms.offeredErc20s[i].erc20Address).allowance(
+                            terms.seller,
+                            address(this)
+                        ) >= terms.offeredErc20s[i].amount,
+                        "One or more amounts of ERC20s have not been approved for transfer"
+                    );
+                }
+            }
+
+            terms.sellerReady = true;
+            emit Seller_Ready(terms.sellerReady);
+        }
+
+        // Check if seller has same amount of eth offered in terms
+        if (msg.sender == terms.buyer) {
+            if (terms.requestedEthAmount > 0) {
+                require(
+                    terms.buyer.balance >= terms.requestedEthAmount,
+                    "You do not hold amount of eth set in terms"
+                );
+            }
+            // Check if seller has same NFTs(ERC721) offered in terms and approved them for transfer
+            uint256 requestedNftListLength = terms.requestedNfts.length;
+            if (requestedNftListLength > 0) {
+                for (uint256 i = 0; i < requestedNftListLength; i++) {
+                    require(
+                        IERC721(terms.requestedNfts[i].nftAddress).ownerOf(
+                            terms.requestedNfts[i].tokenId
+                        ) == terms.buyer,
+                        "You do not own one of more NFTs set in terms"
+                    );
+
+                    require(
+                        IERC721(terms.requestedNfts[i].nftAddress).getApproved(
+                            terms.requestedNfts[i].tokenId
+                        ) == address(this),
+                        "One of more Nfts have not been approved for transfer"
+                    );
+                }
+            }
+
+            // Check if seller has same amounts of ERC20s offered in terms and approved them for transfer
+            uint256 requestedERC20ListLength = terms.requestedErc20s.length;
+            if (requestedERC20ListLength > 0) {
+                for (uint256 i = 0; i < requestedERC20ListLength; i++) {
+                    require(
+                        IERC20(terms.requestedErc20s[i].erc20Address).balanceOf(
+                            terms.buyer
+                        ) >= terms.requestedErc20s[i].amount,
+                        "You do not own one or more amounts of ERC20s offered in terms"
+                    );
+
+                    require(
+                        IERC20(terms.requestedErc20s[i].erc20Address).allowance(
+                            terms.buyer,
+                            address(this)
+                        ) >= terms.requestedErc20s[i].amount,
+                        "One or more amounts of ERC20s have not been approved for transfer"
+                    );
+                }
+            }
+
+            terms.buyerReady = true;
+            emit Buyer_Ready(terms.buyerReady);
+        }
+
+        // if (terms.sellerReady == true && terms.buyerReady == true) {
+        //     Vendora.completeTrade(tradeId);
+        // }
     }
 }
