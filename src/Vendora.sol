@@ -8,14 +8,6 @@ import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Recei
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Vendora {
-    /** EVENTS */
-    event Trade_Started(bytes32 indexed tradeId);
-    event Seller_Ready(bool indexed sellerReady);
-    event Buyer_Ready(bool indexed buyerReady);
-    event Seller_Met_Terms(bool indexed sellerMetTerms);
-    event Buyer_Met_Terms(bool indexed buyerMetTerms);
-    event Trade_Completed(bool indexed tradeCompleted);
-
     /** STRUCTS */
     struct NftDetails {
         address nftAddress;
@@ -39,15 +31,21 @@ contract Vendora {
         bool buyerReady;
         bool sellerMetTerms;
         bool buyerMetTerms;
+        bool allTermsMet;
+        bool tradeCanceled;
         bool tradeCompleted;
     }
     /** MAPPINGS */
     mapping(bytes32 => Terms) public trades;
 
-    // Generate a tradeId
-    function generateTradeId(address buyer) internal view returns (bytes32) {
-        return keccak256(abi.encodePacked(msg.sender, buyer, block.timestamp));
-    }
+    /** EVENTS */
+    event Trade_Started(bytes32 indexed tradeId);
+    event Seller_Ready(bool indexed sellerReady);
+    event Buyer_Ready(bool indexed buyerReady);
+    event Seller_Met_Terms(bool indexed sellerMetTerms);
+    event Buyer_Met_Terms(bool indexed buyerMetTerms);
+    event Trade_Canceled(bool indexed tradeCanceled);
+    event Trade_Completed(bool indexed tradeCompleted);
 
     // START NEW TRADE
     function startTrade(address buyer) external returns (bytes32) {
@@ -60,6 +58,8 @@ contract Vendora {
         terms.buyerReady = false;
         terms.sellerMetTerms = false;
         terms.buyerMetTerms = false;
+        terms.allTermsMet = false;
+        terms.tradeCanceled = false;
         terms.tradeCompleted = false;
 
         emit Trade_Started(tradeId);
@@ -331,8 +331,82 @@ contract Vendora {
             emit Buyer_Met_Terms(terms.buyerMetTerms);
         }
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == true) {
+            terms.allTermsMet = true;
             Vendora.completeTrade(tradeId);
         }
+    }
+
+    // CANCEL TRADE
+    function cancelAndDeleteTrade(bytes32 tradeId) external {
+        Terms storage terms = trades[tradeId];
+        require(terms.buyer != address(0), "Trade does not exist");
+        require(
+            msg.sender == terms.seller || msg.sender == terms.buyer,
+            "Not a member of this trade"
+        );
+        require(
+            terms.allTermsMet == false,
+            "All assets must be deposited to complete the trade"
+        );
+        require(terms.tradeCanceled == false, "Trade already canceled");
+
+        if (terms.sellerMetTerms == true && terms.buyerMetTerms == false) {
+            if (terms.offeredEthAmount > 0) {
+                payable(terms.seller).transfer(terms.offeredEthAmount);
+            }
+
+            uint256 offeredNftListLength = terms.offeredNfts.length;
+            if (offeredNftListLength > 0) {
+                for (uint256 i = 0; i < offeredNftListLength; i++) {
+                    IERC721(terms.offeredNfts[i].nftAddress).safeTransferFrom(
+                        address(this),
+                        terms.seller,
+                        terms.offeredNfts[i].tokenId
+                    );
+                }
+            }
+
+            uint256 offeredErc20ListLength = terms.offeredErc20s.length;
+            if (offeredErc20ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc20ListLength; i++) {
+                    IERC20(terms.offeredErc20s[i].erc20Address).transfer(
+                        terms.seller,
+                        terms.offeredErc20s[i].amount
+                    );
+                }
+            }
+        }
+
+        if (terms.buyerMetTerms == true && terms.sellerMetTerms == false) {
+            if (terms.requestedEthAmount > 0) {
+                payable(terms.buyer).transfer(terms.requestedEthAmount);
+            }
+
+            uint256 requestedNftListLength = terms.requestedNfts.length;
+            if (requestedNftListLength > 0) {
+                for (uint256 i = 0; i < requestedNftListLength; i++) {
+                    IERC721(terms.requestedNfts[i].nftAddress).safeTransferFrom(
+                            address(this),
+                            terms.buyer,
+                            terms.requestedNfts[i].tokenId
+                        );
+                }
+            }
+
+            uint256 requestedErc20ListLength = terms.requestedErc20s.length;
+            if (requestedErc20ListLength > 0) {
+                for (uint256 i = 0; i < requestedErc20ListLength; i++) {
+                    IERC20(terms.requestedErc20s[i].erc20Address).transfer(
+                        terms.buyer,
+                        terms.requestedErc20s[i].amount
+                    );
+                }
+            }
+        }
+        terms.tradeCanceled = true;
+        emit Trade_Canceled(terms.tradeCanceled);
+
+        delete trades[tradeId];
     }
 
     // TRANFER ALL ASSETS TO RIGHTFUL OWNER AND COMPLETE THE TRADE
@@ -344,9 +418,10 @@ contract Vendora {
             "Not a member of this trade"
         );
         require(
-            terms.sellerMetTerms == true && terms.buyerMetTerms == true,
+            terms.allTermsMet == true,
             "All assets must be deposited to complete the trade"
         );
+        require(terms.tradeCanceled == false, "Trade canceled");
 
         if (terms.offeredEthAmount > 0) {
             payable(terms.buyer).transfer(terms.offeredEthAmount);
@@ -401,5 +476,37 @@ contract Vendora {
         emit Trade_Completed(terms.tradeCompleted);
 
         delete trades[tradeId];
+    }
+
+    // GET FUNCTONS
+    // Generate tradeId
+    function generateTradeId(address buyer) internal view returns (bytes32) {
+        return keccak256(abi.encodePacked(msg.sender, buyer, block.timestamp));
+    }
+
+    function getTerms(
+        bytes32 tradeId
+    )
+        external
+        view
+        returns (
+            NftDetails[] memory,
+            NftDetails[] memory,
+            Erc20Details[] memory,
+            Erc20Details[] memory,
+            uint256 offeredEth,
+            uint256 requestedEth
+        )
+    {
+        Terms storage terms = trades[tradeId];
+
+        return (
+            terms.offeredNfts,
+            terms.requestedNfts,
+            terms.offeredErc20s,
+            terms.requestedErc20s,
+            terms.offeredEthAmount,
+            terms.requestedEthAmount
+        );
     }
 }
