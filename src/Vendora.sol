@@ -5,13 +5,20 @@ pragma solidity ^0.8.18;
 /** IMPORTS */
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {IERC1155} from "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
+import {IERC1155Receiver} from "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Vendora {
     /** STRUCTS */
-    struct NftDetails {
-        address nftAddress;
+    struct Erc721Details {
+        address erc721Address;
         uint256 tokenId;
+    }
+    struct Erc1155Details {
+        address erc1155Address;
+        uint256 tokenId;
+        uint256 amount;
     }
     struct Erc20Details {
         address erc20Address;
@@ -21,8 +28,10 @@ contract Vendora {
     struct Terms {
         address seller;
         address buyer;
-        NftDetails[] offeredNfts;
-        NftDetails[] requestedNfts;
+        Erc721Details[] offeredErc721s;
+        Erc721Details[] requestedErc721s;
+        Erc1155Details[] offeredErc1155s;
+        Erc1155Details[] requestedErc1155s;
         Erc20Details[] offeredErc20s;
         Erc20Details[] requestedErc20s;
         uint256 offeredEthAmount;
@@ -77,7 +86,7 @@ contract Vendora {
     // ADD ASSETS TO TRADE TERMS
     function addErc721(
         bytes32 tradeId,
-        address nftAddress,
+        address erc721Address,
         uint256 tokenId,
         bool offeringAsset
     ) external {
@@ -87,7 +96,7 @@ contract Vendora {
             msg.sender == terms.seller,
             "Only seller can add assets to terms"
         );
-        require(nftAddress != address(0), "Invalid address");
+        require(erc721Address != address(0), "Invalid address");
         require(tokenId > 0, "Invalid token id");
         require(
             terms.termsFinalized == false,
@@ -95,11 +104,49 @@ contract Vendora {
         );
 
         offeringAsset
-            ? terms.offeredNfts.push(
-                NftDetails({nftAddress: nftAddress, tokenId: tokenId})
+            ? terms.offeredErc721s.push(
+                Erc721Details({erc721Address: erc721Address, tokenId: tokenId})
             )
-            : terms.requestedNfts.push(
-                NftDetails({nftAddress: nftAddress, tokenId: tokenId})
+            : terms.requestedErc721s.push(
+                Erc721Details({erc721Address: erc721Address, tokenId: tokenId})
+            );
+    }
+
+    function addErc1155(
+        bytes32 tradeId,
+        address erc1155Address,
+        uint256 tokenId,
+        uint256 amount,
+        bool offeringAsset
+    ) external {
+        Terms storage terms = trades[tradeId];
+        require(terms.buyer != address(0), "This trade does not exist");
+        require(
+            msg.sender == terms.seller,
+            "Only seller can add assets to terms"
+        );
+        require(erc1155Address != address(0), "Invalid address");
+        require(tokenId > 0, "Invalid token id");
+        require(amount > 0, "Invalid amount, must be greater than 0");
+        require(
+            terms.termsFinalized == false,
+            "Can not change terms after terms are finalized"
+        );
+
+        offeringAsset
+            ? terms.offeredErc1155s.push(
+                Erc1155Details({
+                    erc1155Address: erc1155Address,
+                    tokenId: tokenId,
+                    amount: amount
+                })
+            )
+            : terms.requestedErc1155s.push(
+                Erc1155Details({
+                    erc1155Address: erc1155Address,
+                    tokenId: tokenId,
+                    amount: amount
+                })
             );
     }
 
@@ -183,20 +230,42 @@ contract Vendora {
             }
 
             // Check if seller has same NFTs(ERC721) offered in terms and approved them for transfer
-            uint256 offeredNftListLength = terms.offeredNfts.length;
-            if (offeredNftListLength > 0) {
-                for (uint256 i = 0; i < offeredNftListLength; i++) {
+            uint256 offeredErc721ListLength = terms.offeredErc721s.length;
+            if (offeredErc721ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc721ListLength; i++) {
                     require(
-                        IERC721(terms.offeredNfts[i].nftAddress).ownerOf(
-                            terms.offeredNfts[i].tokenId
+                        IERC721(terms.offeredErc721s[i].erc721Address).ownerOf(
+                            terms.offeredErc721s[i].tokenId
                         ) == terms.seller,
                         "You do not own one of more NFTs set in terms"
                     );
 
                     require(
-                        IERC721(terms.offeredNfts[i].nftAddress).getApproved(
-                            terms.offeredNfts[i].tokenId
-                        ) == address(this),
+                        IERC721(terms.offeredErc721s[i].erc721Address)
+                            .getApproved(terms.offeredErc721s[i].tokenId) ==
+                            address(this),
+                        "One of more Nfts have not been approved for transfer"
+                    );
+                }
+            }
+
+            // Check if seller has same NFTs(ERC1155) offered in terms and approved them for transfer
+            uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
+            if (offeredErc1155ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
+                    require(
+                        IERC1155(terms.offeredErc1155s[i].erc1155Address)
+                            .balanceOf(
+                                terms.seller,
+                                terms.offeredErc1155s[i].tokenId
+                            ) >= terms.offeredErc1155s[i].amount,
+                        "You do not own one or more amounts of Erc1155s set in terms"
+                    );
+
+                    require(
+                        IERC1155(terms.offeredErc1155s[i].erc1155Address)
+                            .isApprovedForAll(terms.seller, address(this)) ==
+                            true,
                         "One of more Nfts have not been approved for transfer"
                     );
                 }
@@ -236,21 +305,43 @@ contract Vendora {
                 );
             }
             // Check if seller has same NFTs(ERC721) offered in terms and approved them for transfer
-            uint256 requestedNftListLength = terms.requestedNfts.length;
-            if (requestedNftListLength > 0) {
-                for (uint256 i = 0; i < requestedNftListLength; i++) {
+            uint256 requestedErc721ListLength = terms.requestedErc721s.length;
+            if (requestedErc721ListLength > 0) {
+                for (uint256 i = 0; i < requestedErc721ListLength; i++) {
                     require(
-                        IERC721(terms.requestedNfts[i].nftAddress).ownerOf(
-                            terms.requestedNfts[i].tokenId
-                        ) == terms.buyer,
+                        IERC721(terms.requestedErc721s[i].erc721Address)
+                            .ownerOf(terms.requestedErc721s[i].tokenId) ==
+                            terms.buyer,
                         "You do not own one of more NFTs set in terms"
                     );
 
                     require(
-                        IERC721(terms.requestedNfts[i].nftAddress).getApproved(
-                            terms.requestedNfts[i].tokenId
-                        ) == address(this),
+                        IERC721(terms.requestedErc721s[i].erc721Address)
+                            .getApproved(terms.requestedErc721s[i].tokenId) ==
+                            address(this),
                         "One of more Nfts have not been approved for transfer"
+                    );
+                }
+            }
+
+            // Check if buyer has same NFTs(ERC1155) offered in terms and approved them for transfer
+            uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
+            if (requestedErc1155ListLength > 0) {
+                for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
+                    require(
+                        IERC1155(terms.requestedErc1155s[i].erc1155Address)
+                            .balanceOf(
+                                terms.buyer,
+                                terms.requestedErc1155s[i].tokenId
+                            ) >= terms.requestedErc1155s[i].amount,
+                        "You do not own one or more amounts of Erc1155s set in terms"
+                    );
+
+                    require(
+                        IERC1155(terms.requestedErc1155s[i].erc1155Address)
+                            .isApprovedForAll(terms.buyer, address(this)) ==
+                            true,
+                        "One of more amounts of ERC155s have not been approved for transfer"
                     );
                 }
             }
@@ -303,15 +394,29 @@ contract Vendora {
                     "Send exact amount of ETH set in terms"
                 );
             }
-            // Deposit seller's Nfts
-            uint256 offeredNftListLength = terms.offeredNfts.length;
-            if (offeredNftListLength > 0) {
-                for (uint256 i = 0; i < offeredNftListLength; i++) {
-                    IERC721(terms.offeredNfts[i].nftAddress).safeTransferFrom(
-                        terms.seller,
-                        address(this),
-                        terms.offeredNfts[i].tokenId
-                    );
+            // Deposit seller's ERC721s
+            uint256 offeredErc721ListLength = terms.offeredErc721s.length;
+            if (offeredErc721ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc721ListLength; i++) {
+                    IERC721(terms.offeredErc721s[i].erc721Address)
+                        .safeTransferFrom(
+                            terms.seller,
+                            address(this),
+                            terms.offeredErc721s[i].tokenId
+                        );
+                }
+            }
+            // Deposit seller's ERC1155s
+            uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
+            if (offeredErc1155ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
+                    IERC1155(terms.offeredErc1155s[i].erc1155Address)
+                        .safeTransferFrom(
+                            terms.seller,
+                            address(this),
+                            terms.offeredErc1155s[i].tokenId,
+                            terms.offeredErc1155s[i].amount
+                        );
                 }
             }
             // Deposit seller's Erc20s
@@ -338,14 +443,29 @@ contract Vendora {
                     "Send exact amount of ETH set in terms"
                 );
             }
-            // Deposit buyer's Nfts
-            uint256 requestedNftListLength = terms.requestedNfts.length;
-            if (requestedNftListLength > 0) {
-                for (uint256 i = 0; i < requestedNftListLength; i++) {
-                    IERC721(terms.requestedNfts[i].nftAddress).safeTransferFrom(
+            // Deposit buyer's ERC721s
+            uint256 requestedErc721ListLength = terms.requestedErc721s.length;
+            if (requestedErc721ListLength > 0) {
+                for (uint256 i = 0; i < requestedErc721ListLength; i++) {
+                    IERC721(terms.requestedErc721s[i].erc721Address)
+                        .safeTransferFrom(
                             terms.buyer,
                             address(this),
-                            terms.requestedNfts[i].tokenId
+                            terms.requestedErc721s[i].tokenId
+                        );
+                }
+            }
+
+            // Deposit buyer's ERC1155s
+            uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
+            if (requestedErc1155ListLength > 0) {
+                for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
+                    IERC1155(terms.requestedErc1155s[i].erc1155Address)
+                        .safeTransferFrom(
+                            terms.buyer,
+                            address(this),
+                            terms.requestedErc1155s[i].tokenId,
+                            terms.requestedErc1155s[i].amount
                         );
                 }
             }
@@ -387,21 +507,36 @@ contract Vendora {
         );
 
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == false) {
+            // Send back seller's Eth
             if (terms.offeredEthAmount > 0) {
                 payable(terms.seller).transfer(terms.offeredEthAmount);
             }
-
-            uint256 offeredNftListLength = terms.offeredNfts.length;
-            if (offeredNftListLength > 0) {
-                for (uint256 i = 0; i < offeredNftListLength; i++) {
-                    IERC721(terms.offeredNfts[i].nftAddress).safeTransferFrom(
-                        address(this),
-                        terms.seller,
-                        terms.offeredNfts[i].tokenId
-                    );
+            // Send back seller's ERC721s
+            uint256 offeredErc721ListLength = terms.offeredErc721s.length;
+            if (offeredErc721ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc721ListLength; i++) {
+                    IERC721(terms.offeredErc721s[i].erc721Address)
+                        .safeTransferFrom(
+                            address(this),
+                            terms.seller,
+                            terms.offeredErc721s[i].tokenId
+                        );
                 }
             }
-
+            // Send back seller's ERC1155s
+            uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
+            if (offeredErc1155ListLength > 0) {
+                for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
+                    IERC1155(terms.offeredErc1155s[i].erc1155Address)
+                        .safeTransferFrom(
+                            address(this),
+                            terms.seller,
+                            terms.offeredErc1155s[i].tokenId,
+                            terms.offeredErc1155s[i].amount
+                        );
+                }
+            }
+            // Send back seller's ERC20s
             uint256 offeredErc20ListLength = terms.offeredErc20s.length;
             if (offeredErc20ListLength > 0) {
                 for (uint256 i = 0; i < offeredErc20ListLength; i++) {
@@ -414,21 +549,36 @@ contract Vendora {
         }
 
         if (terms.buyerMetTerms == true && terms.sellerMetTerms == false) {
+            // Send back buyer's Eth
             if (terms.requestedEthAmount > 0) {
                 payable(terms.buyer).transfer(terms.requestedEthAmount);
             }
-
-            uint256 requestedNftListLength = terms.requestedNfts.length;
-            if (requestedNftListLength > 0) {
-                for (uint256 i = 0; i < requestedNftListLength; i++) {
-                    IERC721(terms.requestedNfts[i].nftAddress).safeTransferFrom(
+            // Send back buyer's ERC721s
+            uint256 requestedErc721ListLength = terms.requestedErc721s.length;
+            if (requestedErc721ListLength > 0) {
+                for (uint256 i = 0; i < requestedErc721ListLength; i++) {
+                    IERC721(terms.requestedErc721s[i].erc721Address)
+                        .safeTransferFrom(
                             address(this),
                             terms.buyer,
-                            terms.requestedNfts[i].tokenId
+                            terms.requestedErc721s[i].tokenId
                         );
                 }
             }
-
+            // Send back buyer's ERC1155s
+            uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
+            if (requestedErc1155ListLength > 0) {
+                for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
+                    IERC1155(terms.requestedErc1155s[i].erc1155Address)
+                        .safeTransferFrom(
+                            address(this),
+                            terms.buyer,
+                            terms.requestedErc1155s[i].tokenId,
+                            terms.requestedErc1155s[i].amount
+                        );
+                }
+            }
+            // Send back buyer's ERC20s
             uint256 requestedErc20ListLength = terms.requestedErc20s.length;
             if (requestedErc20ListLength > 0) {
                 for (uint256 i = 0; i < requestedErc20ListLength; i++) {
@@ -439,6 +589,8 @@ contract Vendora {
                 }
             }
         }
+
+        // Cancel and delete trade
         terms.tradeCanceled = true;
         emit Trade_Canceled(tradeId, terms.tradeCanceled);
 
@@ -467,25 +619,52 @@ contract Vendora {
             payable(terms.seller).transfer(terms.requestedEthAmount);
         }
 
-        uint256 offeredNftListLength = terms.offeredNfts.length;
-        if (offeredNftListLength > 0) {
-            for (uint256 i = 0; i < offeredNftListLength; i++) {
-                IERC721(terms.offeredNfts[i].nftAddress).safeTransferFrom(
-                    address(this),
-                    terms.buyer,
-                    terms.offeredNfts[i].tokenId
-                );
+        uint256 offeredErc721ListLength = terms.offeredErc721s.length;
+        if (offeredErc721ListLength > 0) {
+            for (uint256 i = 0; i < offeredErc721ListLength; i++) {
+                IERC721(terms.offeredErc721s[i].erc721Address).safeTransferFrom(
+                        address(this),
+                        terms.buyer,
+                        terms.offeredErc721s[i].tokenId
+                    );
             }
         }
 
-        uint256 requestedNftListLength = terms.requestedNfts.length;
-        if (requestedNftListLength > 0) {
-            for (uint256 i = 0; i < requestedNftListLength; i++) {
-                IERC721(terms.requestedNfts[i].nftAddress).safeTransferFrom(
-                    address(this),
-                    terms.seller,
-                    terms.requestedNfts[i].tokenId
-                );
+        uint256 requestedErc721ListLength = terms.requestedErc721s.length;
+        if (requestedErc721ListLength > 0) {
+            for (uint256 i = 0; i < requestedErc721ListLength; i++) {
+                IERC721(terms.requestedErc721s[i].erc721Address)
+                    .safeTransferFrom(
+                        address(this),
+                        terms.seller,
+                        terms.requestedErc721s[i].tokenId
+                    );
+            }
+        }
+
+        uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
+        if (offeredErc1155ListLength > 0) {
+            for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
+                IERC1155(terms.offeredErc1155s[i].erc1155Address)
+                    .safeTransferFrom(
+                        address(this),
+                        terms.buyer,
+                        terms.offeredErc1155s[i].tokenId,
+                        terms.offeredErc1155s[i].amount
+                    );
+            }
+        }
+
+        uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
+        if (requestedErc1155ListLength > 0) {
+            for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
+                IERC1155(terms.requestedErc1155s[i].erc1155Address)
+                    .safeTransferFrom(
+                        address(this),
+                        terms.seller,
+                        terms.requestedErc1155s[i].tokenId,
+                        terms.requestedErc1155s[i].amount
+                    );
             }
         }
 
@@ -517,7 +696,6 @@ contract Vendora {
     }
 
     /** GET */
-
     // Generate tradeId
     function generateTradeId(address buyer) internal view returns (bytes32) {
         return keccak256(abi.encodePacked(msg.sender, buyer, block.timestamp));
@@ -531,8 +709,10 @@ contract Vendora {
         returns (
             address seller,
             address buyer,
-            NftDetails[] memory,
-            NftDetails[] memory,
+            Erc721Details[] memory,
+            Erc721Details[] memory,
+            Erc1155Details[] memory,
+            Erc1155Details[] memory,
             Erc20Details[] memory,
             Erc20Details[] memory,
             uint256 offeredEth,
@@ -543,8 +723,10 @@ contract Vendora {
         return (
             terms.seller,
             terms.buyer,
-            terms.offeredNfts,
-            terms.requestedNfts,
+            terms.offeredErc721s,
+            terms.requestedErc721s,
+            terms.offeredErc1155s,
+            terms.requestedErc1155s,
             terms.offeredErc20s,
             terms.requestedErc20s,
             terms.offeredEthAmount,
