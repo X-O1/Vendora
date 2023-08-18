@@ -12,12 +12,12 @@ contract MockNft1 is ERC721 {
 
 contract MockNft2 is ERC721 {
     constructor() ERC721("Mock2", "Mock2") {
-        _safeMint(msg.sender, 10);
+        _safeMint(msg.sender, 2);
     }
 }
 
 contract MockNft3 is ERC721 {
     constructor() ERC721("Mock3", "Mock3") {
-        _safeMint(msg.sender, 11);
+        _safeMint(msg.sender, 3);
     }
 }

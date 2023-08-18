@@ -7,6 +7,7 @@ import {Vendora} from "../../src/Vendora.sol";
 import {DeployVendora} from "../../script/DeployVendora.s.sol";
 import {MOCKLINK, MOCKAAVE, MOCKUNI} from "../../src/mocks/MockERC20.sol";
 import {MockNft1, MockNft2, MockNft3} from "../../src/mocks/MockERC721.sol";
+import {MockResources1, MockResources2, MockResources3} from "../../src/mocks/MockERC1155.sol";
 
 contract VendoraTest is Test {
     Vendora vendora;
@@ -25,6 +26,13 @@ contract VendoraTest is Test {
     address public mockNft2Address;
     address public mockNft3Address;
 
+    MockResources1 public mockResources1;
+    MockResources2 public mockResources2;
+    MockResources3 public mockResources3;
+    address public mockResources1Address;
+    address public mockResources2Address;
+    address public mockResources3Address;
+
     address SELLER = makeAddr("user");
     address BUYER = makeAddr("user2");
 
@@ -39,5 +47,9 @@ contract VendoraTest is Test {
         mockNft1 = new MockNft1();
         mockNft2 = new MockNft2();
         mockNft3 = new MockNft3();
+
+        mockResources1 = new MockResources1();
+        mockResources2 = new MockResources2();
+        mockResources3 = new MockResources3();
     }
 }
