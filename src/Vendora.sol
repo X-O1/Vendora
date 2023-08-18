@@ -289,11 +289,11 @@ contract Vendora {
             msg.sender == terms.seller || msg.sender == terms.buyer,
             "Not a member of this trade"
         );
+        require(terms.termsFinalized == true, "Terms not finalized");
         require(
             terms.sellerReady == true && terms.buyerReady == true,
             "Buyer and Seller are not ready to complete trade"
         );
-        require(terms.termsFinalized == true, "Terms not finalized");
 
         if (msg.sender == terms.seller) {
             // Deposit seller's eth
@@ -379,12 +379,12 @@ contract Vendora {
             msg.sender == terms.seller || msg.sender == terms.buyer,
             "Not a member of this trade"
         );
+        require(terms.termsFinalized == true, "Terms not finalized");
+        require(terms.tradeCanceled == false, "Trade already canceled");
         require(
             terms.allTermsMet == false,
             "All assets must be deposited to complete the trade"
         );
-        require(terms.tradeCanceled == false, "Trade already canceled");
-        require(terms.termsFinalized == true, "Terms not finalized");
 
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == false) {
             if (terms.offeredEthAmount > 0) {
@@ -453,12 +453,12 @@ contract Vendora {
             msg.sender == terms.seller || msg.sender == terms.buyer,
             "Not a member of this trade"
         );
+        require(terms.termsFinalized == true, "Terms not finalized");
+        require(terms.tradeCanceled == false, "Trade canceled");
         require(
             terms.allTermsMet == true,
             "All assets must be deposited to complete the trade"
         );
-        require(terms.tradeCanceled == false, "Trade canceled");
-        require(terms.termsFinalized == true, "Terms not finalized");
 
         if (terms.offeredEthAmount > 0) {
             payable(terms.buyer).transfer(terms.offeredEthAmount);
