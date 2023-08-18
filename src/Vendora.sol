@@ -415,7 +415,8 @@ contract Vendora {
                             terms.seller,
                             address(this),
                             terms.offeredErc1155s[i].tokenId,
-                            terms.offeredErc1155s[i].amount
+                            terms.offeredErc1155s[i].amount,
+                            bytes("")
                         );
                 }
             }
@@ -465,7 +466,8 @@ contract Vendora {
                             terms.buyer,
                             address(this),
                             terms.requestedErc1155s[i].tokenId,
-                            terms.requestedErc1155s[i].amount
+                            terms.requestedErc1155s[i].amount,
+                            bytes("")
                         );
                 }
             }
@@ -532,7 +534,8 @@ contract Vendora {
                             address(this),
                             terms.seller,
                             terms.offeredErc1155s[i].tokenId,
-                            terms.offeredErc1155s[i].amount
+                            terms.offeredErc1155s[i].amount,
+                            bytes("")
                         );
                 }
             }
@@ -574,7 +577,8 @@ contract Vendora {
                             address(this),
                             terms.buyer,
                             terms.requestedErc1155s[i].tokenId,
-                            terms.requestedErc1155s[i].amount
+                            terms.requestedErc1155s[i].amount,
+                            bytes("")
                         );
                 }
             }
@@ -650,7 +654,8 @@ contract Vendora {
                         address(this),
                         terms.buyer,
                         terms.offeredErc1155s[i].tokenId,
-                        terms.offeredErc1155s[i].amount
+                        terms.offeredErc1155s[i].amount,
+                        bytes("")
                     );
             }
         }
@@ -663,7 +668,8 @@ contract Vendora {
                         address(this),
                         terms.seller,
                         terms.requestedErc1155s[i].tokenId,
-                        terms.requestedErc1155s[i].amount
+                        terms.requestedErc1155s[i].amount,
+                        bytes("")
                     );
             }
         }
