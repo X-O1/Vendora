@@ -63,9 +63,133 @@ contract Vendora {
     event Trade_Completed(bytes32 indexed tradeId, bool indexed tradeCompleted);
 
     // START NEW TRADE
-    function startTrade(address buyer) external returns (bytes32) {
+    function startTrade(
+        address buyer,
+        Erc721Details[] memory offeredErc721s,
+        Erc721Details[] memory requestedErc721s,
+        Erc1155Details[] memory offeredErc1155s,
+        Erc1155Details[] memory requestedErc1155s,
+        Erc20Details[] memory offeredErc20s,
+        Erc20Details[] memory requestedErc20s,
+        uint256 offeredEthAmount,
+        uint256 requestedEthAmount
+    ) external returns (bytes32) {
         bytes32 tradeId = generateTradeId(buyer);
         Terms storage terms = trades[tradeId];
+        require(terms.seller == address(0), "This trade already exists");
+
+        if (offeredErc721s.length > 0) {
+            for (uint256 i = 0; i < offeredErc721s.length; i++) {
+                require(
+                    offeredErc721s[i].erc721Address != address(0),
+                    "Invalid Erc721 address"
+                );
+                require(offeredErc721s[i].tokenId > 0, "Invalid token id");
+
+                terms.offeredErc721s.push(
+                    Erc721Details({
+                        erc721Address: offeredErc721s[i].erc721Address,
+                        tokenId: offeredErc721s[i].tokenId
+                    })
+                );
+            }
+        }
+
+        if (requestedErc721s.length > 0) {
+            for (uint256 i = 0; i < requestedErc721s.length; i++) {
+                require(
+                    requestedErc721s[i].erc721Address != address(0),
+                    "Invalid Erc721 address"
+                );
+                require(requestedErc721s[i].tokenId > 0, "Invalid token id");
+                terms.requestedErc721s.push(
+                    Erc721Details({
+                        erc721Address: requestedErc721s[i].erc721Address,
+                        tokenId: requestedErc721s[i].tokenId
+                    })
+                );
+            }
+        }
+
+        if (offeredErc1155s.length > 0) {
+            for (uint256 i = 0; i < offeredErc1155s.length; i++) {
+                require(
+                    offeredErc1155s[i].erc1155Address != address(0),
+                    "Invalid Erc1155 address"
+                );
+                require(offeredErc1155s[i].tokenId > 0, "Invalid token id");
+                require(
+                    offeredErc1155s[i].amount > 0,
+                    "Invalid amount, must be greater than 0"
+                );
+
+                terms.offeredErc1155s.push(
+                    Erc1155Details({
+                        erc1155Address: offeredErc1155s[i].erc1155Address,
+                        tokenId: offeredErc1155s[i].tokenId,
+                        amount: offeredErc1155s[i].amount
+                    })
+                );
+            }
+        }
+        if (requestedErc1155s.length > 0) {
+            for (uint256 i = 0; i < requestedErc1155s.length; i++) {
+                require(
+                    requestedErc1155s[i].erc1155Address != address(0),
+                    "Invalid Erc1155 address"
+                );
+                require(requestedErc1155s[i].tokenId > 0, "Invalid token id");
+                require(
+                    requestedErc1155s[i].amount > 0,
+                    "Invalid amount, must be greater than 0"
+                );
+                terms.requestedErc1155s.push(
+                    Erc1155Details({
+                        erc1155Address: requestedErc1155s[i].erc1155Address,
+                        tokenId: requestedErc1155s[i].tokenId,
+                        amount: requestedErc1155s[i].amount
+                    })
+                );
+            }
+        }
+
+        if (offeredErc20s.length > 0) {
+            for (uint256 i = 0; i < offeredErc20s.length; i++) {
+                require(
+                    offeredErc20s[i].erc20Address != address(0),
+                    "Invalid erc20 address"
+                );
+                require(
+                    offeredErc20s[i].amount > 0,
+                    "Invalid erc20 amount, must be greater than zero"
+                );
+                terms.offeredErc20s.push(
+                    Erc20Details({
+                        erc20Address: offeredErc20s[i].erc20Address,
+                        amount: offeredErc20s[i].amount
+                    })
+                );
+            }
+        }
+
+        if (requestedErc20s.length > 0) {
+            for (uint256 i = 0; i < requestedErc20s.length; i++) {
+                require(
+                    requestedErc20s[i].erc20Address != address(0),
+                    "Invalid erc20 address"
+                );
+                require(
+                    requestedErc20s[i].amount > 0,
+                    "Invalid erc20 amount, must be greater than zero"
+                );
+                terms.requestedErc20s.push(
+                    Erc20Details({
+                        erc20Address: requestedErc20s[i].erc20Address,
+                        amount: requestedErc20s[i].amount
+                    })
+                );
+            }
+        }
 
         terms.seller = msg.sender;
         terms.buyer = buyer;
@@ -77,127 +201,12 @@ contract Vendora {
         terms.allTermsMet = false;
         terms.tradeCanceled = false;
         terms.tradeCompleted = false;
+        terms.offeredEthAmount = offeredEthAmount;
+        terms.requestedEthAmount = requestedEthAmount;
 
         emit Trade_Started(tradeId);
 
         return tradeId;
-    }
-
-    // ADD ASSETS TO TRADE TERMS
-    function addErc721(
-        bytes32 tradeId,
-        address erc721Address,
-        uint256 tokenId,
-        bool offeringAsset
-    ) external {
-        Terms storage terms = trades[tradeId];
-        require(terms.buyer != address(0), "This trade does not exist");
-        require(
-            msg.sender == terms.seller,
-            "Only seller can add assets to terms"
-        );
-        require(erc721Address != address(0), "Invalid address");
-        require(tokenId > 0, "Invalid token id");
-        require(
-            terms.termsFinalized == false,
-            "Can not change terms after terms are finalized"
-        );
-
-        offeringAsset
-            ? terms.offeredErc721s.push(
-                Erc721Details({erc721Address: erc721Address, tokenId: tokenId})
-            )
-            : terms.requestedErc721s.push(
-                Erc721Details({erc721Address: erc721Address, tokenId: tokenId})
-            );
-    }
-
-    function addErc1155(
-        bytes32 tradeId,
-        address erc1155Address,
-        uint256 tokenId,
-        uint256 amount,
-        bool offeringAsset
-    ) external {
-        Terms storage terms = trades[tradeId];
-        require(terms.buyer != address(0), "This trade does not exist");
-        require(
-            msg.sender == terms.seller,
-            "Only seller can add assets to terms"
-        );
-        require(erc1155Address != address(0), "Invalid address");
-        require(tokenId > 0, "Invalid token id");
-        require(amount > 0, "Invalid amount, must be greater than 0");
-        require(
-            terms.termsFinalized == false,
-            "Can not change terms after terms are finalized"
-        );
-
-        offeringAsset
-            ? terms.offeredErc1155s.push(
-                Erc1155Details({
-                    erc1155Address: erc1155Address,
-                    tokenId: tokenId,
-                    amount: amount
-                })
-            )
-            : terms.requestedErc1155s.push(
-                Erc1155Details({
-                    erc1155Address: erc1155Address,
-                    tokenId: tokenId,
-                    amount: amount
-                })
-            );
-    }
-
-    function addErc20(
-        bytes32 tradeId,
-        address erc20Address,
-        uint256 amount,
-        bool offeringAsset
-    ) external {
-        Terms storage terms = trades[tradeId];
-        require(terms.buyer != address(0), "This trade does not exist");
-        require(
-            msg.sender == terms.seller,
-            "Only seller can add assets to terms"
-        );
-        require(erc20Address != address(0), "Invalid erc20 address");
-        require(amount > 0, "Invalid erc20 amount, must be greater than zero");
-        require(
-            terms.termsFinalized == false,
-            "Can not change terms after terms are finalized"
-        );
-
-        offeringAsset
-            ? terms.offeredErc20s.push(
-                Erc20Details({erc20Address: erc20Address, amount: amount})
-            )
-            : terms.requestedErc20s.push(
-                Erc20Details({erc20Address: erc20Address, amount: amount})
-            );
-    }
-
-    function addEth(
-        bytes32 tradeId,
-        uint256 ethAmount,
-        bool offeringAsset
-    ) external {
-        Terms storage terms = trades[tradeId];
-        require(terms.buyer != address(0), "Trade does not exist");
-        require(
-            msg.sender == terms.seller,
-            "Only seller can add assets to terms"
-        );
-        require(ethAmount > 0, "Invalid eth amount, must be greater than zero");
-        require(
-            terms.termsFinalized == false,
-            "Can not change terms after terms are finalized"
-        );
-
-        offeringAsset
-            ? terms.offeredEthAmount = ethAmount
-            : terms.requestedEthAmount = ethAmount;
     }
 
     function finalizeTerms(bytes32 tradeId) external {
@@ -505,7 +514,7 @@ contract Vendora {
         require(terms.tradeCanceled == false, "Trade already canceled");
         require(
             terms.allTermsMet == false,
-            "All assets must be deposited to complete the trade"
+            "Can not cancel trade after all terms have been met"
         );
 
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == false) {
