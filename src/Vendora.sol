@@ -3,11 +3,11 @@
 pragma solidity ^0.8.18;
 
 /** IMPORTS */
-import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import {IERC721} from "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
-import {IERC721Receiver} from "lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol";
-import {IERC1155} from "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155.sol";
-import {IERC1155Receiver} from "lib/openzeppelin-contracts/contracts/token/ERC1155/IERC1155Receiver.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
 contract Vendora {
     /** STRUCTS */
@@ -47,7 +47,6 @@ contract Vendora {
     }
     /** MAPPINGS */
     mapping(bytes32 => Terms) public trades;
-    mapping(bytes32 => Terms) public completedTrades;
 
     /** EVENTS */
     event Trade_Started(bytes32 indexed tradeId);
@@ -79,116 +78,22 @@ contract Vendora {
         require(terms.seller == address(0), "This trade already exists");
 
         if (offeredErc721s.length > 0) {
-            for (uint256 i = 0; i < offeredErc721s.length; i++) {
-                require(
-                    offeredErc721s[i].erc721Address != address(0),
-                    "Invalid Erc721 address"
-                );
-                require(offeredErc721s[i].tokenId > 0, "Invalid token id");
-
-                terms.offeredErc721s.push(
-                    Erc721Details({
-                        erc721Address: offeredErc721s[i].erc721Address,
-                        tokenId: offeredErc721s[i].tokenId
-                    })
-                );
-            }
+            _addErc721Details(offeredErc721s, terms.offeredErc721s);
         }
-
         if (requestedErc721s.length > 0) {
-            for (uint256 i = 0; i < requestedErc721s.length; i++) {
-                require(
-                    requestedErc721s[i].erc721Address != address(0),
-                    "Invalid Erc721 address"
-                );
-                require(requestedErc721s[i].tokenId > 0, "Invalid token id");
-                terms.requestedErc721s.push(
-                    Erc721Details({
-                        erc721Address: requestedErc721s[i].erc721Address,
-                        tokenId: requestedErc721s[i].tokenId
-                    })
-                );
-            }
+            _addErc721Details(requestedErc721s, terms.requestedErc721s);
         }
-
         if (offeredErc1155s.length > 0) {
-            for (uint256 i = 0; i < offeredErc1155s.length; i++) {
-                require(
-                    offeredErc1155s[i].erc1155Address != address(0),
-                    "Invalid Erc1155 address"
-                );
-                require(offeredErc1155s[i].tokenId > 0, "Invalid token id");
-                require(
-                    offeredErc1155s[i].amount > 0,
-                    "Invalid amount, must be greater than 0"
-                );
-
-                terms.offeredErc1155s.push(
-                    Erc1155Details({
-                        erc1155Address: offeredErc1155s[i].erc1155Address,
-                        tokenId: offeredErc1155s[i].tokenId,
-                        amount: offeredErc1155s[i].amount
-                    })
-                );
-            }
+            _addErc1155Details(offeredErc1155s, terms.offeredErc1155s);
         }
         if (requestedErc1155s.length > 0) {
-            for (uint256 i = 0; i < requestedErc1155s.length; i++) {
-                require(
-                    requestedErc1155s[i].erc1155Address != address(0),
-                    "Invalid Erc1155 address"
-                );
-                require(requestedErc1155s[i].tokenId > 0, "Invalid token id");
-                require(
-                    requestedErc1155s[i].amount > 0,
-                    "Invalid amount, must be greater than 0"
-                );
-                terms.requestedErc1155s.push(
-                    Erc1155Details({
-                        erc1155Address: requestedErc1155s[i].erc1155Address,
-                        tokenId: requestedErc1155s[i].tokenId,
-                        amount: requestedErc1155s[i].amount
-                    })
-                );
-            }
+            _addErc1155Details(requestedErc1155s, terms.requestedErc1155s);
         }
-
         if (offeredErc20s.length > 0) {
-            for (uint256 i = 0; i < offeredErc20s.length; i++) {
-                require(
-                    offeredErc20s[i].erc20Address != address(0),
-                    "Invalid erc20 address"
-                );
-                require(
-                    offeredErc20s[i].amount > 0,
-                    "Invalid erc20 amount, must be greater than zero"
-                );
-                terms.offeredErc20s.push(
-                    Erc20Details({
-                        erc20Address: offeredErc20s[i].erc20Address,
-                        amount: offeredErc20s[i].amount
-                    })
-                );
-            }
+            _addErc20Details(offeredErc20s, terms.offeredErc20s);
         }
-
         if (requestedErc20s.length > 0) {
-            for (uint256 i = 0; i < requestedErc20s.length; i++) {
-                require(
-                    requestedErc20s[i].erc20Address != address(0),
-                    "Invalid erc20 address"
-                );
-                require(
-                    requestedErc20s[i].amount > 0,
-                    "Invalid erc20 amount, must be greater than zero"
-                );
-                terms.requestedErc20s.push(
-                    Erc20Details({
-                        erc20Address: requestedErc20s[i].erc20Address,
-                        amount: requestedErc20s[i].amount
-                    })
-                );
-            }
+            _addErc20Details(requestedErc20s, terms.requestedErc20s);
         }
 
         terms.seller = msg.sender;
@@ -205,7 +110,6 @@ contract Vendora {
         terms.requestedEthAmount = requestedEthAmount;
 
         emit Trade_Started(tradeId);
-
         return tradeId;
     }
 
@@ -238,67 +142,19 @@ contract Vendora {
                 );
             }
 
-            // Check if seller has same NFTs(ERC721) offered in terms and approved them for transfer
-            uint256 offeredErc721ListLength = terms.offeredErc721s.length;
-            if (offeredErc721ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc721ListLength; i++) {
-                    require(
-                        IERC721(terms.offeredErc721s[i].erc721Address).ownerOf(
-                            terms.offeredErc721s[i].tokenId
-                        ) == terms.seller,
-                        "You do not own one of more NFTs set in terms"
-                    );
-
-                    require(
-                        IERC721(terms.offeredErc721s[i].erc721Address)
-                            .getApproved(terms.offeredErc721s[i].tokenId) ==
-                            address(this),
-                        "One of more Nfts have not been approved for transfer"
-                    );
-                }
+            // Check if seller has NFTs(ERC721) offered in terms/approved them for transfer
+            if (terms.offeredErc721s.length > 0) {
+                _verifyUserErc721(terms.offeredErc721s, terms.seller);
             }
 
-            // Check if seller has same NFTs(ERC1155) offered in terms and approved them for transfer
-            uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
-            if (offeredErc1155ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
-                    require(
-                        IERC1155(terms.offeredErc1155s[i].erc1155Address)
-                            .balanceOf(
-                                terms.seller,
-                                terms.offeredErc1155s[i].tokenId
-                            ) >= terms.offeredErc1155s[i].amount,
-                        "You do not own one or more amounts of Erc1155s set in terms"
-                    );
-
-                    require(
-                        IERC1155(terms.offeredErc1155s[i].erc1155Address)
-                            .isApprovedForAll(terms.seller, address(this)) ==
-                            true,
-                        "One of more Nfts have not been approved for transfer"
-                    );
-                }
+            // Check if seller has NFTs(ERC1155) offered in terms/approved them for transfer
+            if (terms.offeredErc1155s.length > 0) {
+                _verifyUserErc1155(terms.offeredErc1155s, terms.seller);
             }
 
-            // Check if seller has same amounts of ERC20s offered in terms and approved them for transfer
-            uint256 offeredErc20ListLength = terms.offeredErc20s.length;
-            if (offeredErc20ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc20ListLength; i++) {
-                    require(
-                        IERC20(terms.offeredErc20s[i].erc20Address).balanceOf(
-                            terms.seller
-                        ) >= terms.offeredErc20s[i].amount,
-                        "You do not own one or more amounts of ERC20s offered in terms"
-                    );
-
-                    require(
-                        IERC20(terms.offeredErc20s[i].erc20Address).allowance(
-                            terms.seller,
-                            address(this)
-                        ) >= terms.offeredErc20s[i].amount,
-                        "One or more amounts of ERC20s have not been approved for transfer"
-                    );
-                }
+            // Check if seller has amounts of ERC20s offered in terms/approved them for transfer
+            if (terms.offeredErc20s.length > 0) {
+                _verifyErc20(terms.offeredErc20s, terms.seller);
             }
 
             terms.sellerReady = true;
@@ -313,67 +169,20 @@ contract Vendora {
                     "You do not hold amount of eth set in terms"
                 );
             }
-            // Check if seller has same NFTs(ERC721) offered in terms and approved them for transfer
-            uint256 requestedErc721ListLength = terms.requestedErc721s.length;
-            if (requestedErc721ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc721ListLength; i++) {
-                    require(
-                        IERC721(terms.requestedErc721s[i].erc721Address)
-                            .ownerOf(terms.requestedErc721s[i].tokenId) ==
-                            terms.buyer,
-                        "You do not own one of more NFTs set in terms"
-                    );
 
-                    require(
-                        IERC721(terms.requestedErc721s[i].erc721Address)
-                            .getApproved(terms.requestedErc721s[i].tokenId) ==
-                            address(this),
-                        "One of more Nfts have not been approved for transfer"
-                    );
-                }
+            // Check if buyer has NFTs(ERC721) requested in terms/approved them for transfer
+            if (terms.requestedErc721s.length > 0) {
+                _verifyUserErc721(terms.requestedErc721s, terms.buyer);
             }
 
-            // Check if buyer has same NFTs(ERC1155) offered in terms and approved them for transfer
-            uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
-            if (requestedErc1155ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
-                    require(
-                        IERC1155(terms.requestedErc1155s[i].erc1155Address)
-                            .balanceOf(
-                                terms.buyer,
-                                terms.requestedErc1155s[i].tokenId
-                            ) >= terms.requestedErc1155s[i].amount,
-                        "You do not own one or more amounts of Erc1155s set in terms"
-                    );
-
-                    require(
-                        IERC1155(terms.requestedErc1155s[i].erc1155Address)
-                            .isApprovedForAll(terms.buyer, address(this)) ==
-                            true,
-                        "One of more amounts of ERC155s have not been approved for transfer"
-                    );
-                }
+            // Check if buyer has NFTs(ERC1155) requested in terms/approved them for transfer
+            if (terms.requestedErc1155s.length > 0) {
+                _verifyUserErc1155(terms.requestedErc1155s, terms.buyer);
             }
 
-            // Check if seller has same amounts of ERC20s offered in terms and approved them for transfer
-            uint256 requestedERC20ListLength = terms.requestedErc20s.length;
-            if (requestedERC20ListLength > 0) {
-                for (uint256 i = 0; i < requestedERC20ListLength; i++) {
-                    require(
-                        IERC20(terms.requestedErc20s[i].erc20Address).balanceOf(
-                            terms.buyer
-                        ) >= terms.requestedErc20s[i].amount,
-                        "You do not own one or more amounts of ERC20s offered in terms"
-                    );
-
-                    require(
-                        IERC20(terms.requestedErc20s[i].erc20Address).allowance(
-                            terms.buyer,
-                            address(this)
-                        ) >= terms.requestedErc20s[i].amount,
-                        "One or more amounts of ERC20s have not been approved for transfer"
-                    );
-                }
+            // Check if buyer has amounts of ERC20s requested in terms/approved them for transfer
+            if (terms.requestedErc20s.length > 0) {
+                _verifyErc20(terms.requestedErc20s, terms.buyer);
             }
 
             terms.buyerReady = true;
@@ -404,41 +213,16 @@ contract Vendora {
                 );
             }
             // Deposit seller's ERC721s
-            uint256 offeredErc721ListLength = terms.offeredErc721s.length;
-            if (offeredErc721ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc721ListLength; i++) {
-                    IERC721(terms.offeredErc721s[i].erc721Address)
-                        .safeTransferFrom(
-                            terms.seller,
-                            address(this),
-                            terms.offeredErc721s[i].tokenId
-                        );
-                }
+            if (terms.offeredErc721s.length > 0) {
+                _depositErc721(terms.offeredErc721s, terms.seller);
             }
             // Deposit seller's ERC1155s
-            uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
-            if (offeredErc1155ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
-                    IERC1155(terms.offeredErc1155s[i].erc1155Address)
-                        .safeTransferFrom(
-                            terms.seller,
-                            address(this),
-                            terms.offeredErc1155s[i].tokenId,
-                            terms.offeredErc1155s[i].amount,
-                            bytes("")
-                        );
-                }
+            if (terms.offeredErc1155s.length > 0) {
+                _depositErc1155(terms.offeredErc1155s, terms.seller);
             }
             // Deposit seller's Erc20s
-            uint256 offeredErc20ListLength = terms.offeredErc20s.length;
-            if (offeredErc20ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc20ListLength; i++) {
-                    IERC20(terms.offeredErc20s[i].erc20Address).transferFrom(
-                        terms.seller,
-                        address(this),
-                        terms.offeredErc20s[i].amount
-                    );
-                }
+            if (terms.offeredErc20s.length > 0) {
+                _depositErc20(terms.offeredErc20s, terms.seller);
             }
 
             terms.sellerMetTerms = true;
@@ -454,43 +238,19 @@ contract Vendora {
                 );
             }
             // Deposit buyer's ERC721s
-            uint256 requestedErc721ListLength = terms.requestedErc721s.length;
-            if (requestedErc721ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc721ListLength; i++) {
-                    IERC721(terms.requestedErc721s[i].erc721Address)
-                        .safeTransferFrom(
-                            terms.buyer,
-                            address(this),
-                            terms.requestedErc721s[i].tokenId
-                        );
-                }
+            if (terms.requestedErc721s.length > 0) {
+                _depositErc721(terms.requestedErc721s, terms.buyer);
             }
 
             // Deposit buyer's ERC1155s
-            uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
-            if (requestedErc1155ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
-                    IERC1155(terms.requestedErc1155s[i].erc1155Address)
-                        .safeTransferFrom(
-                            terms.buyer,
-                            address(this),
-                            terms.requestedErc1155s[i].tokenId,
-                            terms.requestedErc1155s[i].amount,
-                            bytes("")
-                        );
-                }
+            if (terms.requestedErc1155s.length > 0) {
+                _depositErc1155(terms.requestedErc1155s, terms.buyer);
             }
             // Deposit buyer's Erc20s
-            uint256 requestedErc20ListLength = terms.requestedErc20s.length;
-            if (requestedErc20ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc20ListLength; i++) {
-                    IERC20(terms.requestedErc20s[i].erc20Address).transferFrom(
-                        terms.buyer,
-                        address(this),
-                        terms.requestedErc20s[i].amount
-                    );
-                }
+            if (terms.requestedErc20s.length > 0) {
+                _depositErc20(terms.requestedErc20s, terms.buyer);
             }
+
             terms.buyerMetTerms = true;
             emit Buyer_Met_Terms(tradeId, terms.buyerMetTerms);
         }
@@ -523,40 +283,16 @@ contract Vendora {
                 payable(terms.seller).transfer(terms.offeredEthAmount);
             }
             // Send back seller's ERC721s
-            uint256 offeredErc721ListLength = terms.offeredErc721s.length;
-            if (offeredErc721ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc721ListLength; i++) {
-                    IERC721(terms.offeredErc721s[i].erc721Address)
-                        .safeTransferFrom(
-                            address(this),
-                            terms.seller,
-                            terms.offeredErc721s[i].tokenId
-                        );
-                }
+            if (terms.offeredErc721s.length > 0) {
+                _sendErc721(terms.offeredErc721s, terms.seller);
             }
             // Send back seller's ERC1155s
-            uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
-            if (offeredErc1155ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
-                    IERC1155(terms.offeredErc1155s[i].erc1155Address)
-                        .safeTransferFrom(
-                            address(this),
-                            terms.seller,
-                            terms.offeredErc1155s[i].tokenId,
-                            terms.offeredErc1155s[i].amount,
-                            bytes("")
-                        );
-                }
+            if (terms.offeredErc1155s.length > 0) {
+                _sendErc1155(terms.offeredErc1155s, terms.seller);
             }
             // Send back seller's ERC20s
-            uint256 offeredErc20ListLength = terms.offeredErc20s.length;
-            if (offeredErc20ListLength > 0) {
-                for (uint256 i = 0; i < offeredErc20ListLength; i++) {
-                    IERC20(terms.offeredErc20s[i].erc20Address).transfer(
-                        terms.seller,
-                        terms.offeredErc20s[i].amount
-                    );
-                }
+            if (terms.offeredErc20s.length > 0) {
+                _sendErc20(terms.offeredErc20s, terms.seller);
             }
         }
 
@@ -566,47 +302,22 @@ contract Vendora {
                 payable(terms.buyer).transfer(terms.requestedEthAmount);
             }
             // Send back buyer's ERC721s
-            uint256 requestedErc721ListLength = terms.requestedErc721s.length;
-            if (requestedErc721ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc721ListLength; i++) {
-                    IERC721(terms.requestedErc721s[i].erc721Address)
-                        .safeTransferFrom(
-                            address(this),
-                            terms.buyer,
-                            terms.requestedErc721s[i].tokenId
-                        );
-                }
+            if (terms.requestedErc721s.length > 0) {
+                _sendErc721(terms.requestedErc721s, terms.buyer);
             }
             // Send back buyer's ERC1155s
-            uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
-            if (requestedErc1155ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
-                    IERC1155(terms.requestedErc1155s[i].erc1155Address)
-                        .safeTransferFrom(
-                            address(this),
-                            terms.buyer,
-                            terms.requestedErc1155s[i].tokenId,
-                            terms.requestedErc1155s[i].amount,
-                            bytes("")
-                        );
-                }
+            if (terms.requestedErc1155s.length > 0) {
+                _sendErc1155(terms.requestedErc1155s, terms.buyer);
             }
             // Send back buyer's ERC20s
-            uint256 requestedErc20ListLength = terms.requestedErc20s.length;
-            if (requestedErc20ListLength > 0) {
-                for (uint256 i = 0; i < requestedErc20ListLength; i++) {
-                    IERC20(terms.requestedErc20s[i].erc20Address).transfer(
-                        terms.buyer,
-                        terms.requestedErc20s[i].amount
-                    );
-                }
+            if (terms.requestedErc20s.length > 0) {
+                _sendErc20(terms.requestedErc20s, terms.buyer);
             }
         }
 
         // Cancel and delete trade
         terms.tradeCanceled = true;
         emit Trade_Canceled(tradeId, terms.tradeCanceled);
-
         delete trades[tradeId];
     }
 
@@ -625,6 +336,7 @@ contract Vendora {
             "All assets must be deposited to complete the trade"
         );
 
+        // Send Eth
         if (terms.offeredEthAmount > 0) {
             payable(terms.buyer).transfer(terms.offeredEthAmount);
         }
@@ -632,85 +344,241 @@ contract Vendora {
             payable(terms.seller).transfer(terms.requestedEthAmount);
         }
 
-        uint256 offeredErc721ListLength = terms.offeredErc721s.length;
-        if (offeredErc721ListLength > 0) {
-            for (uint256 i = 0; i < offeredErc721ListLength; i++) {
-                IERC721(terms.offeredErc721s[i].erc721Address).safeTransferFrom(
-                        address(this),
-                        terms.buyer,
-                        terms.offeredErc721s[i].tokenId
-                    );
-            }
+        // Send Erc721s
+        if (terms.offeredErc721s.length > 0) {
+            _sendErc721(terms.offeredErc721s, terms.buyer);
+        }
+        if (terms.requestedErc721s.length > 0) {
+            _sendErc721(terms.requestedErc721s, terms.seller);
         }
 
-        uint256 requestedErc721ListLength = terms.requestedErc721s.length;
-        if (requestedErc721ListLength > 0) {
-            for (uint256 i = 0; i < requestedErc721ListLength; i++) {
-                IERC721(terms.requestedErc721s[i].erc721Address)
-                    .safeTransferFrom(
-                        address(this),
-                        terms.seller,
-                        terms.requestedErc721s[i].tokenId
-                    );
-            }
+        // Send Erc1155s
+        if (terms.offeredErc1155s.length > 0) {
+            _sendErc1155(terms.offeredErc1155s, terms.buyer);
+        }
+        if (terms.requestedErc1155s.length > 0) {
+            _sendErc1155(terms.requestedErc1155s, terms.seller);
         }
 
-        uint256 offeredErc1155ListLength = terms.offeredErc1155s.length;
-        if (offeredErc1155ListLength > 0) {
-            for (uint256 i = 0; i < offeredErc1155ListLength; i++) {
-                IERC1155(terms.offeredErc1155s[i].erc1155Address)
-                    .safeTransferFrom(
-                        address(this),
-                        terms.buyer,
-                        terms.offeredErc1155s[i].tokenId,
-                        terms.offeredErc1155s[i].amount,
-                        bytes("")
-                    );
-            }
+        // Send Erc20s
+        if (terms.offeredErc20s.length > 0) {
+            _sendErc20(terms.offeredErc20s, terms.buyer);
         }
-
-        uint256 requestedErc1155ListLength = terms.requestedErc1155s.length;
-        if (requestedErc1155ListLength > 0) {
-            for (uint256 i = 0; i < requestedErc1155ListLength; i++) {
-                IERC1155(terms.requestedErc1155s[i].erc1155Address)
-                    .safeTransferFrom(
-                        address(this),
-                        terms.seller,
-                        terms.requestedErc1155s[i].tokenId,
-                        terms.requestedErc1155s[i].amount,
-                        bytes("")
-                    );
-            }
-        }
-
-        uint256 offeredErc20ListLength = terms.offeredErc20s.length;
-        if (offeredErc20ListLength > 0) {
-            for (uint256 i = 0; i < offeredErc20ListLength; i++) {
-                IERC20(terms.offeredErc20s[i].erc20Address).transfer(
-                    terms.buyer,
-                    terms.offeredErc20s[i].amount
-                );
-            }
-        }
-
-        uint256 requestedErc20ListLength = terms.requestedErc20s.length;
-        if (requestedErc20ListLength > 0) {
-            for (uint256 i = 0; i < requestedErc20ListLength; i++) {
-                IERC20(terms.requestedErc20s[i].erc20Address).transfer(
-                    terms.seller,
-                    terms.requestedErc20s[i].amount
-                );
-            }
+        if (terms.requestedErc20s.length > 0) {
+            _sendErc20(terms.requestedErc20s, terms.seller);
         }
 
         terms.tradeCompleted = true;
-        completedTrades[tradeId] = terms;
         emit Trade_Completed(tradeId, terms.tradeCompleted);
-
         delete trades[tradeId];
     }
 
-    /** GET */
+    /** HELPER FUNCTIONS */
+    function _addErc721Details(
+        Erc721Details[] memory details,
+        Erc721Details[] storage terms
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            require(
+                details[i].erc721Address != address(0),
+                "Invalid Erc721 address"
+            );
+            require(details[i].tokenId > 0, "Invalid token id");
+            terms.push(
+                Erc721Details({
+                    erc721Address: details[i].erc721Address,
+                    tokenId: details[i].tokenId
+                })
+            );
+        }
+    }
+
+    function _addErc1155Details(
+        Erc1155Details[] memory details,
+        Erc1155Details[] storage terms
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            require(
+                details[i].erc1155Address != address(0),
+                "Invalid Erc1155 address"
+            );
+            require(details[i].tokenId > 0, "Invalid token id");
+            require(
+                details[i].amount > 0,
+                "Invalid amount, must be greater than 0"
+            );
+            terms.push(
+                Erc1155Details({
+                    erc1155Address: details[i].erc1155Address,
+                    tokenId: details[i].tokenId,
+                    amount: details[i].amount
+                })
+            );
+        }
+    }
+
+    function _addErc20Details(
+        Erc20Details[] memory details,
+        Erc20Details[] storage terms
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            require(
+                details[i].erc20Address != address(0),
+                "Invalid erc20 address"
+            );
+            require(
+                details[i].amount > 0,
+                "Invalid erc20 amount, must be greater than zero"
+            );
+            terms.push(
+                Erc20Details({
+                    erc20Address: details[i].erc20Address,
+                    amount: details[i].amount
+                })
+            );
+        }
+    }
+
+    function _verifyUserErc721(
+        Erc721Details[] storage details,
+        address user
+    ) private view {
+        for (uint256 i = 0; i < details.length; i++) {
+            require(
+                IERC721(details[i].erc721Address).ownerOf(details[i].tokenId) ==
+                    user,
+                "You do not own one of more NFTs set in terms"
+            );
+
+            require(
+                IERC721(details[i].erc721Address).getApproved(
+                    details[i].tokenId
+                ) == address(this),
+                "One of more Nfts have not been approved for transfer"
+            );
+        }
+    }
+
+    function _verifyUserErc1155(
+        Erc1155Details[] storage details,
+        address user
+    ) private view {
+        for (uint256 i = 0; i < details.length; i++) {
+            require(
+                IERC1155(details[i].erc1155Address).balanceOf(
+                    user,
+                    details[i].tokenId
+                ) >= details[i].amount,
+                "You do not own one or more amounts of Erc1155s set in terms"
+            );
+
+            require(
+                IERC1155(details[i].erc1155Address).isApprovedForAll(
+                    user,
+                    address(this)
+                ) == true,
+                "One of more Nfts have not been approved for transfer"
+            );
+        }
+    }
+
+    function _verifyErc20(
+        Erc20Details[] storage details,
+        address user
+    ) private view {
+        for (uint256 i = 0; i < details.length; i++) {
+            require(
+                IERC20(details[i].erc20Address).balanceOf(user) >=
+                    details[i].amount,
+                "You do not own one or more amounts of ERC20s offered in terms"
+            );
+
+            require(
+                IERC20(details[i].erc20Address).allowance(
+                    user,
+                    address(this)
+                ) >= details[i].amount,
+                "One or more amounts of ERC20s have not been approved for transfer"
+            );
+        }
+    }
+
+    function _depositErc721(
+        Erc721Details[] storage details,
+        address user
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            IERC721(details[i].erc721Address).safeTransferFrom(
+                user,
+                address(this),
+                details[i].tokenId
+            );
+        }
+    }
+
+    function _depositErc1155(
+        Erc1155Details[] storage details,
+        address user
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            IERC1155(details[i].erc1155Address).safeTransferFrom(
+                user,
+                address(this),
+                details[i].tokenId,
+                details[i].amount,
+                bytes("")
+            );
+        }
+    }
+
+    function _depositErc20(
+        Erc20Details[] storage details,
+        address user
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            IERC20(details[i].erc20Address).transferFrom(
+                user,
+                address(this),
+                details[i].amount
+            );
+        }
+    }
+
+    function _sendErc721(
+        Erc721Details[] storage details,
+        address user
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            IERC721(details[i].erc721Address).safeTransferFrom(
+                address(this),
+                user,
+                details[i].tokenId
+            );
+        }
+    }
+
+    function _sendErc1155(
+        Erc1155Details[] storage details,
+        address user
+    ) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            IERC1155(details[i].erc1155Address).safeTransferFrom(
+                address(this),
+                user,
+                details[i].tokenId,
+                details[i].amount,
+                bytes("")
+            );
+        }
+    }
+
+    function _sendErc20(Erc20Details[] storage details, address user) private {
+        for (uint256 i = 0; i < details.length; i++) {
+            IERC20(details[i].erc20Address).transfer(user, details[i].amount);
+        }
+    }
+
+    /** GET FUNCTIONS */
     // Generate tradeId
     function generateTradeId(address buyer) internal view returns (bytes32) {
         return keccak256(abi.encodePacked(msg.sender, buyer, block.timestamp));
