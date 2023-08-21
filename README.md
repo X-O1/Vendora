@@ -63,8 +63,13 @@ The contract interfaces with standard Ethereum token contracts:
 
 ## Events
 
-- `Trade_Canceled`: Emits when a trade is successfully canceled.
+- `Trade_Initiated`: Emits when a new trade is initiated.
+- `Trade_TermsAdded`: Emits when terms are added to an existing trade.
+- `Trade_Finalized`: Emits when a trade is finalized by both parties.
+- `Seller_AssetsDeposited`: Emits when the seller's assets are deposited.
+- `Buyer_AssetsDeposited`: Emits when the buyer's assets are deposited.
 - `Trade_Completed`: Emits when a trade is successfully completed.
+- `Trade_Canceled`: Emits when a trade is successfully canceled.
 
 ## Conclusion
 
