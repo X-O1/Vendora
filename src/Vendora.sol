@@ -46,7 +46,7 @@ contract Vendora {
         bool tradeCompleted;
     }
     /** MAPPINGS */
-    mapping(bytes32 => Terms) public trades;
+    mapping(bytes32 => Terms) private trades;
 
     /** EVENTS */
     event Trade_Started(bytes32 indexed tradeId);
@@ -108,12 +108,13 @@ contract Vendora {
         terms.tradeCompleted = false;
         terms.offeredEthAmount = offeredEthAmount;
         terms.requestedEthAmount = requestedEthAmount;
+        terms.termsFinalized = true;
 
         emit Trade_Started(tradeId);
         return tradeId;
     }
 
-    function finalizeTerms(bytes32 tradeId) external {
+    function finalizeTerms(bytes32 tradeId) private {
         Terms storage terms = trades[tradeId];
         require(terms.buyer != address(0), "This trade does not exist");
         require(msg.sender == terms.seller, "Only seller can finalize terms");
@@ -144,12 +145,12 @@ contract Vendora {
 
             // Check if seller has NFTs(ERC721) offered in terms/approved them for transfer
             if (terms.offeredErc721s.length > 0) {
-                _verifyUserErc721(terms.offeredErc721s, terms.seller);
+                _verifyErc721(terms.offeredErc721s, terms.seller);
             }
 
             // Check if seller has NFTs(ERC1155) offered in terms/approved them for transfer
             if (terms.offeredErc1155s.length > 0) {
-                _verifyUserErc1155(terms.offeredErc1155s, terms.seller);
+                _verifyErc1155(terms.offeredErc1155s, terms.seller);
             }
 
             // Check if seller has amounts of ERC20s offered in terms/approved them for transfer
@@ -172,12 +173,12 @@ contract Vendora {
 
             // Check if buyer has NFTs(ERC721) requested in terms/approved them for transfer
             if (terms.requestedErc721s.length > 0) {
-                _verifyUserErc721(terms.requestedErc721s, terms.buyer);
+                _verifyErc721(terms.requestedErc721s, terms.buyer);
             }
 
             // Check if buyer has NFTs(ERC1155) requested in terms/approved them for transfer
             if (terms.requestedErc1155s.length > 0) {
-                _verifyUserErc1155(terms.requestedErc1155s, terms.buyer);
+                _verifyErc1155(terms.requestedErc1155s, terms.buyer);
             }
 
             // Check if buyer has amounts of ERC20s requested in terms/approved them for transfer
@@ -322,7 +323,7 @@ contract Vendora {
     }
 
     // TRANFER ALL ASSETS TO RIGHTFUL OWNER AND COMPLETE THE TRADE
-    function completeTrade(bytes32 tradeId) internal {
+    function completeTrade(bytes32 tradeId) private {
         Terms storage terms = trades[tradeId];
         require(terms.buyer != address(0), "Trade does not exist");
         require(
@@ -439,7 +440,7 @@ contract Vendora {
         }
     }
 
-    function _verifyUserErc721(
+    function _verifyErc721(
         Erc721Details[] storage details,
         address user
     ) private view {
@@ -459,7 +460,7 @@ contract Vendora {
         }
     }
 
-    function _verifyUserErc1155(
+    function _verifyErc1155(
         Erc1155Details[] storage details,
         address user
     ) private view {
@@ -592,17 +593,18 @@ contract Vendora {
         returns (
             address seller,
             address buyer,
-            Erc721Details[] memory,
-            Erc721Details[] memory,
-            Erc1155Details[] memory,
-            Erc1155Details[] memory,
-            Erc20Details[] memory,
-            Erc20Details[] memory,
+            Erc721Details[] memory offeredErc721s,
+            Erc721Details[] memory requestedErc721s,
+            Erc1155Details[] memory offeredErc1155s,
+            Erc1155Details[] memory requestedErc1155s,
+            Erc20Details[] memory offeredErc20s,
+            Erc20Details[] memory requestedErc20s,
             uint256 offeredEth,
             uint256 requestedEth
         )
     {
         Terms storage terms = trades[tradeId];
+        require(terms.buyer != address(0), "Trade does not exist");
         return (
             terms.seller,
             terms.buyer,
