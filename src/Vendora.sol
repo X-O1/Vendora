@@ -5,11 +5,14 @@ pragma solidity ^0.8.18;
 /** IMPORTS */
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-contract Vendora {
+contract Vendora is IERC721Receiver, IERC1155Receiver {
     /** STRUCTS */
     struct Erc721Details {
         address erc721Address;
@@ -60,6 +63,15 @@ contract Vendora {
     event Buyer_Met_Terms(bytes32 indexed tradeId, bool indexed buyerMetTerms);
     event Trade_Canceled(bytes32 indexed tradeId, bool indexed tradeCanceled);
     event Trade_Completed(bytes32 indexed tradeId, bool indexed tradeCompleted);
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external pure override returns (bool) {
+        return
+            interfaceId == type(IERC721Receiver).interfaceId ||
+            interfaceId == type(IERC1155Receiver).interfaceId ||
+            interfaceId == type(IERC165).interfaceId;
+    }
 
     // START NEW TRADE
     function startTrade(
@@ -259,7 +271,7 @@ contract Vendora {
         // If all deposits were successful complete the trade
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == true) {
             terms.allTermsMet = true;
-            Vendora.completeTrade(tradeId);
+            completeTrade(tradeId);
         }
     }
 
@@ -617,5 +629,34 @@ contract Vendora {
             terms.offeredEthAmount,
             terms.requestedEthAmount
         );
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] calldata,
+        uint256[] calldata,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
     }
 }
