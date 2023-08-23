@@ -52,8 +52,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
     mapping(bytes32 => Terms) private trades;
 
     /** EVENTS */
-    event Trade_Started(bytes32 indexed tradeId);
-    event Terms_Finalized(bytes32 indexed tradeId, bool indexed termsFinalized);
+    event Trade_Started(bytes32 indexed tradeId, bool indexed termsFinalized);
     event Seller_Ready(bytes32 indexed tradeId, bool indexed sellerReady);
     event Buyer_Ready(bytes32 indexed tradeId, bool indexed buyerReady);
     event Seller_Met_Terms(
@@ -63,15 +62,6 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
     event Buyer_Met_Terms(bytes32 indexed tradeId, bool indexed buyerMetTerms);
     event Trade_Canceled(bytes32 indexed tradeId, bool indexed tradeCanceled);
     event Trade_Completed(bytes32 indexed tradeId, bool indexed tradeCompleted);
-
-    function supportsInterface(
-        bytes4 interfaceId
-    ) external pure override returns (bool) {
-        return
-            interfaceId == type(IERC721Receiver).interfaceId ||
-            interfaceId == type(IERC1155Receiver).interfaceId ||
-            interfaceId == type(IERC165).interfaceId;
-    }
 
     // START NEW TRADE
     function startTrade(
@@ -84,7 +74,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         Erc20Details[] memory requestedErc20s,
         uint256 offeredEthAmount,
         uint256 requestedEthAmount
-    ) external returns (bytes32) {
+    ) external {
         bytes32 tradeId = generateTradeId(buyer);
         Terms storage terms = trades[tradeId];
         require(terms.seller == address(0), "This trade already exists");
@@ -118,22 +108,11 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         terms.allTermsMet = false;
         terms.tradeCanceled = false;
         terms.tradeCompleted = false;
+        terms.termsFinalized = true;
         terms.offeredEthAmount = offeredEthAmount;
         terms.requestedEthAmount = requestedEthAmount;
-        terms.termsFinalized = true;
 
-        emit Trade_Started(tradeId);
-        return tradeId;
-    }
-
-    function finalizeTerms(bytes32 tradeId) private {
-        Terms storage terms = trades[tradeId];
-        require(terms.buyer != address(0), "This trade does not exist");
-        require(msg.sender == terms.seller, "Only seller can finalize terms");
-        require(terms.termsFinalized == false, "Terms are aleady finalized");
-
-        terms.termsFinalized = true;
-        emit Terms_Finalized(tradeId, terms.termsFinalized);
+        emit Trade_Started(tradeId, terms.termsFinalized);
     }
 
     // VERIFY BOTH PARTIES HAVE ASSETS SET IN TERMS
@@ -214,7 +193,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         require(terms.termsFinalized == true, "Terms not finalized");
         require(
             terms.sellerReady == true && terms.buyerReady == true,
-            "Buyer and Seller are not ready to complete trade"
+            "Buyer and/or Seller have not verified they own all assets in terms"
         );
 
         if (msg.sender == terms.seller) {
@@ -629,6 +608,39 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             terms.offeredEthAmount,
             terms.requestedEthAmount
         );
+    }
+
+    function getTradeState(
+        bytes32 tradeId
+    )
+        external
+        view
+        returns (
+            bool termsFinalized,
+            bool sellerReady,
+            bool buyerReady,
+            bool sellerMetTerms,
+            bool buyerMetTerms
+        )
+    {
+        Terms storage terms = trades[tradeId];
+        require(terms.buyer != address(0), "Trade does not exist");
+        return (
+            terms.termsFinalized,
+            terms.sellerReady,
+            terms.buyerReady,
+            terms.sellerMetTerms,
+            terms.buyerMetTerms
+        );
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external pure override returns (bool) {
+        return
+            interfaceId == type(IERC721Receiver).interfaceId ||
+            interfaceId == type(IERC1155Receiver).interfaceId ||
+            interfaceId == type(IERC165).interfaceId;
     }
 
     function onERC721Received(

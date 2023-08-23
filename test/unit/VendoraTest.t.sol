@@ -5,38 +5,19 @@ pragma solidity ^0.8.18;
 import {Test, console} from "forge-std/Test.sol";
 import {Vendora} from "../../src/Vendora.sol";
 import {DeployVendora} from "../../script/DeployVendora.s.sol";
-import {MOCKLINK, MOCKAAVE} from "../../src/mocks/MockERC20.sol";
-import {MockNft1, MockNft2} from "../../src/mocks/MockERC721.sol";
-import {MockResources1, MockResources2} from "../../src/mocks/MockERC1155.sol";
+import {MockNft1, MockNft2, MockResources1, MockResources2, MOCKLINK, MOCKAAVE} from "../../src/mocks/MockAssets.sol";
 
 contract VendoraTest is Test {
     Vendora vendora;
-
-    /** STRUCTS */
-    struct Erc721Details {
-        address erc721Address;
-        uint256 tokenId;
-    }
-    struct Erc1155Details {
-        address erc1155Address;
-        uint256 tokenId;
-        uint256 amount;
-    }
-    struct Erc20Details {
-        address erc20Address;
-        uint256 amount;
-    }
 
     MOCKLINK public link;
     MOCKAAVE public aave;
     address public linkAddress = 0x2e234DAe75C793f67A35089C9d99245E1C58470b;
     address public aaveAddress = 0xF62849F9A0B5Bf2913b396098F7c7019b51A820a;
-
     MockNft1 public nft1;
     MockNft2 public nft2;
     address public nft1Address = 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9;
     address public nft2Address = 0xc7183455a4C133Ae270771860664b6B7ec320bB1;
-
     MockResources1 public resources1;
     MockResources2 public resources2;
     address public resource1Address =
@@ -64,18 +45,242 @@ contract VendoraTest is Test {
         resources2 = new MockResources2();
     }
 
-    // function testStartingNewTrade() public {
-    //     vm.prank(SELLER);
-    //     vendora.startTrade(
-    //         BUYER,
-    //         [[nft1Address, 1]],
-    //         [[nft2Address, 2]],
-    //         [[resource1Address, 1, 10]],
-    //         [[resource2Address, 2, 10]],
-    //         [[linkAddress, 10]],
-    //         [[aaveAddress, 10]],
-    //         5 ether,
-    //         5 ether
-    //     );
-    // }
+    modifier tradeStarted() {
+        Vendora.Erc721Details[]
+            memory offeredErc721s = new Vendora.Erc721Details[](1);
+        Vendora.Erc721Details[]
+            memory requestedErc721s = new Vendora.Erc721Details[](1);
+
+        Vendora.Erc1155Details[]
+            memory offeredErc1155s = new Vendora.Erc1155Details[](1);
+        Vendora.Erc1155Details[]
+            memory requestedErc1155s = new Vendora.Erc1155Details[](1);
+
+        Vendora.Erc20Details[]
+            memory offeredErc20s = new Vendora.Erc20Details[](1);
+        Vendora.Erc20Details[]
+            memory requestedErc20s = new Vendora.Erc20Details[](1);
+
+        offeredErc721s[0] = Vendora.Erc721Details(nft1Address, 1);
+        requestedErc721s[0] = Vendora.Erc721Details(nft2Address, 2);
+
+        offeredErc1155s[0] = Vendora.Erc1155Details(resource1Address, 1, 10);
+        requestedErc1155s[0] = Vendora.Erc1155Details(resource2Address, 2, 10);
+
+        offeredErc20s[0] = Vendora.Erc20Details(linkAddress, 10e18);
+        requestedErc20s[0] = Vendora.Erc20Details(aaveAddress, 10e18);
+
+        uint256 offeredEthAmount = 1 ether;
+        uint256 requestedEthAmount = 0.5 ether;
+
+        vm.prank(SELLER);
+        vendora.startTrade(
+            BUYER,
+            offeredErc721s,
+            requestedErc721s,
+            offeredErc1155s,
+            requestedErc1155s,
+            offeredErc20s,
+            requestedErc20s,
+            offeredEthAmount,
+            requestedEthAmount
+        );
+        _;
+    }
+    modifier tradeStartedAndAssetsVerfied() {
+        Vendora.Erc721Details[]
+            memory offeredErc721s = new Vendora.Erc721Details[](1);
+        Vendora.Erc721Details[]
+            memory requestedErc721s = new Vendora.Erc721Details[](1);
+
+        Vendora.Erc1155Details[]
+            memory offeredErc1155s = new Vendora.Erc1155Details[](1);
+        Vendora.Erc1155Details[]
+            memory requestedErc1155s = new Vendora.Erc1155Details[](1);
+
+        Vendora.Erc20Details[]
+            memory offeredErc20s = new Vendora.Erc20Details[](1);
+        Vendora.Erc20Details[]
+            memory requestedErc20s = new Vendora.Erc20Details[](1);
+
+        offeredErc721s[0] = Vendora.Erc721Details(nft1Address, 1);
+        requestedErc721s[0] = Vendora.Erc721Details(nft2Address, 2);
+
+        offeredErc1155s[0] = Vendora.Erc1155Details(resource1Address, 1, 10);
+        requestedErc1155s[0] = Vendora.Erc1155Details(resource2Address, 2, 10);
+
+        offeredErc20s[0] = Vendora.Erc20Details(linkAddress, 10e18);
+        requestedErc20s[0] = Vendora.Erc20Details(aaveAddress, 10e18);
+
+        uint256 offeredEthAmount = 1 ether;
+        uint256 requestedEthAmount = 0.5 ether;
+
+        vm.prank(SELLER);
+        vendora.startTrade(
+            BUYER,
+            offeredErc721s,
+            requestedErc721s,
+            offeredErc1155s,
+            requestedErc1155s,
+            offeredErc20s,
+            requestedErc20s,
+            offeredEthAmount,
+            requestedEthAmount
+        );
+
+        vm.prank(SELLER);
+        nft1.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 1);
+        vm.prank(SELLER);
+        resources1.setApprovalForAll(
+            0x90193C961A926261B756D1E5bb255e67ff9498A1,
+            true
+        );
+        vm.prank(SELLER);
+        link.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
+        vm.prank(SELLER);
+        vendora.verifyUserAssets(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+
+        vm.prank(BUYER);
+        nft2.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 2);
+        vm.prank(BUYER);
+        resources2.setApprovalForAll(
+            0x90193C961A926261B756D1E5bb255e67ff9498A1,
+            true
+        );
+        vm.prank(BUYER);
+        aave.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
+        vm.prank(BUYER);
+        vendora.verifyUserAssets(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+        _;
+    }
+
+    function testStartingNewTrade() public {
+        // Mock details for ERC721, ERC1155, and ERC20
+        Vendora.Erc721Details[]
+            memory offeredErc721s = new Vendora.Erc721Details[](1);
+        Vendora.Erc721Details[]
+            memory requestedErc721s = new Vendora.Erc721Details[](1);
+
+        Vendora.Erc1155Details[]
+            memory offeredErc1155s = new Vendora.Erc1155Details[](1);
+        Vendora.Erc1155Details[]
+            memory requestedErc1155s = new Vendora.Erc1155Details[](1);
+
+        Vendora.Erc20Details[]
+            memory offeredErc20s = new Vendora.Erc20Details[](1);
+        Vendora.Erc20Details[]
+            memory requestedErc20s = new Vendora.Erc20Details[](1);
+
+        offeredErc721s[0] = Vendora.Erc721Details(nft1Address, 1);
+        requestedErc721s[0] = Vendora.Erc721Details(nft2Address, 2);
+
+        offeredErc1155s[0] = Vendora.Erc1155Details(resource1Address, 1, 10);
+        requestedErc1155s[0] = Vendora.Erc1155Details(resource2Address, 2, 10);
+
+        offeredErc20s[0] = Vendora.Erc20Details(linkAddress, 10e18);
+        requestedErc20s[0] = Vendora.Erc20Details(aaveAddress, 10e18);
+
+        uint256 offeredEthAmount = 1 ether;
+        uint256 requestedEthAmount = 0.5 ether;
+
+        vm.prank(SELLER);
+        vendora.startTrade(
+            BUYER,
+            offeredErc721s,
+            requestedErc721s,
+            offeredErc1155s,
+            requestedErc1155s,
+            offeredErc20s,
+            requestedErc20s,
+            offeredEthAmount,
+            requestedEthAmount
+        );
+    }
+
+    function testVerifingUserAssets() public tradeStarted {
+        vm.prank(SELLER);
+        nft1.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 1);
+        vm.prank(SELLER);
+        resources1.setApprovalForAll(
+            0x90193C961A926261B756D1E5bb255e67ff9498A1,
+            true
+        );
+        vm.prank(SELLER);
+        link.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
+        vm.prank(SELLER);
+        vendora.verifyUserAssets(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+
+        vm.prank(BUYER);
+        nft2.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 2);
+        vm.prank(BUYER);
+        resources2.setApprovalForAll(
+            0x90193C961A926261B756D1E5bb255e67ff9498A1,
+            true
+        );
+        vm.prank(BUYER);
+        aave.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
+        vm.prank(BUYER);
+        vendora.verifyUserAssets(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+    }
+
+    function testUserMustHaveAllAssetsInTermsAndApprovedThemBeforeDepositsOpen()
+        public
+        tradeStarted
+    {
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendora.depositAssets(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+    }
+
+    function testSellerDeposits() public tradeStartedAndAssetsVerfied {
+        vm.prank(SELLER);
+        vendora.depositAssets{value: 1 ether}(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+    }
+
+    function testBuyerDeposits() public tradeStartedAndAssetsVerfied {
+        vm.prank(BUYER);
+        vendora.depositAssets{value: 0.5 ether}(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+    }
+
+    function testCancelingTrade() public tradeStartedAndAssetsVerfied {
+        vm.prank(SELLER);
+        vendora.depositAssets{value: 1 ether}(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+        vm.prank(SELLER);
+        vendora.cancelAndDeleteTrade(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+        vm.prank(SELLER);
+        vm.expectRevert();
+        vendora.depositAssets{value: 1 ether}(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+    }
+
+    function testCompletingTrade() public tradeStartedAndAssetsVerfied {
+        vm.prank(SELLER);
+        vendora.depositAssets{value: 1 ether}(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+
+        vm.prank(BUYER);
+        vendora.depositAssets{value: 0.5 ether}(
+            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        );
+    }
 }
