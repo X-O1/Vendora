@@ -45,7 +45,7 @@ contract VendoraTest is Test {
         resources2 = new MockResources2();
     }
 
-    modifier tradeStarted() {
+    modifier termsSet() {
         Vendora.Erc721Details[]
             memory offeredErc721s = new Vendora.Erc721Details[](1);
         Vendora.Erc721Details[]
@@ -74,8 +74,7 @@ contract VendoraTest is Test {
         uint256 requestedEthAmount = 0.5 ether;
 
         vm.prank(SELLER);
-        vendora.startTrade(
-            BUYER,
+        vendora.setTerms(
             offeredErc721s,
             requestedErc721s,
             offeredErc1155s,
@@ -87,7 +86,8 @@ contract VendoraTest is Test {
         );
         _;
     }
-    modifier tradeStartedAndAssetsVerfied() {
+
+    modifier termsSetTradeStarted() {
         Vendora.Erc721Details[]
             memory offeredErc721s = new Vendora.Erc721Details[](1);
         Vendora.Erc721Details[]
@@ -116,8 +116,7 @@ contract VendoraTest is Test {
         uint256 requestedEthAmount = 0.5 ether;
 
         vm.prank(SELLER);
-        vendora.startTrade(
-            BUYER,
+        vendora.setTerms(
             offeredErc721s,
             requestedErc721s,
             offeredErc1155s,
@@ -126,6 +125,57 @@ contract VendoraTest is Test {
             requestedErc20s,
             offeredEthAmount,
             requestedEthAmount
+        );
+
+        vm.prank(BUYER);
+        vendora.startTrade(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
+        );
+        _;
+    }
+    modifier termsSetTradeStartedAssetsVerfied() {
+        Vendora.Erc721Details[]
+            memory offeredErc721s = new Vendora.Erc721Details[](1);
+        Vendora.Erc721Details[]
+            memory requestedErc721s = new Vendora.Erc721Details[](1);
+
+        Vendora.Erc1155Details[]
+            memory offeredErc1155s = new Vendora.Erc1155Details[](1);
+        Vendora.Erc1155Details[]
+            memory requestedErc1155s = new Vendora.Erc1155Details[](1);
+
+        Vendora.Erc20Details[]
+            memory offeredErc20s = new Vendora.Erc20Details[](1);
+        Vendora.Erc20Details[]
+            memory requestedErc20s = new Vendora.Erc20Details[](1);
+
+        offeredErc721s[0] = Vendora.Erc721Details(nft1Address, 1);
+        requestedErc721s[0] = Vendora.Erc721Details(nft2Address, 2);
+
+        offeredErc1155s[0] = Vendora.Erc1155Details(resource1Address, 1, 10);
+        requestedErc1155s[0] = Vendora.Erc1155Details(resource2Address, 2, 10);
+
+        offeredErc20s[0] = Vendora.Erc20Details(linkAddress, 10e18);
+        requestedErc20s[0] = Vendora.Erc20Details(aaveAddress, 10e18);
+
+        uint256 offeredEthAmount = 1 ether;
+        uint256 requestedEthAmount = 0.5 ether;
+
+        vm.prank(SELLER);
+        vendora.setTerms(
+            offeredErc721s,
+            requestedErc721s,
+            offeredErc1155s,
+            requestedErc1155s,
+            offeredErc20s,
+            requestedErc20s,
+            offeredEthAmount,
+            requestedEthAmount
+        );
+
+        vm.prank(BUYER);
+        vendora.startTrade(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
 
         vm.prank(SELLER);
@@ -138,8 +188,8 @@ contract VendoraTest is Test {
         vm.prank(SELLER);
         link.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
         vm.prank(SELLER);
-        vendora.verifyUserAssets(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        vendora.verifySellerAssets(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
 
         vm.prank(BUYER);
@@ -152,13 +202,13 @@ contract VendoraTest is Test {
         vm.prank(BUYER);
         aave.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
         vm.prank(BUYER);
-        vendora.verifyUserAssets(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        vendora.verifyBuyerAssets(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
         _;
     }
 
-    function testStartingNewTrade() public {
+    function testSettingTerms() public {
         // Mock details for ERC721, ERC1155, and ERC20
         Vendora.Erc721Details[]
             memory offeredErc721s = new Vendora.Erc721Details[](1);
@@ -188,8 +238,7 @@ contract VendoraTest is Test {
         uint256 requestedEthAmount = 0.5 ether;
 
         vm.prank(SELLER);
-        vendora.startTrade(
-            BUYER,
+        vendora.setTerms(
             offeredErc721s,
             requestedErc721s,
             offeredErc1155s,
@@ -201,7 +250,14 @@ contract VendoraTest is Test {
         );
     }
 
-    function testVerifingUserAssets() public tradeStarted {
+    function testStartingTrade() public termsSet {
+        vm.prank(BUYER);
+        vendora.startTrade(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
+        );
+    }
+
+    function testVerifingUserAssets() public termsSetTradeStarted {
         vm.prank(SELLER);
         nft1.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 1);
         vm.prank(SELLER);
@@ -212,8 +268,8 @@ contract VendoraTest is Test {
         vm.prank(SELLER);
         link.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
         vm.prank(SELLER);
-        vendora.verifyUserAssets(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        vendora.verifySellerAssets(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
 
         vm.prank(BUYER);
@@ -226,61 +282,61 @@ contract VendoraTest is Test {
         vm.prank(BUYER);
         aave.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
         vm.prank(BUYER);
-        vendora.verifyUserAssets(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        vendora.verifyBuyerAssets(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 
     function testUserMustHaveAllAssetsInTermsAndApprovedThemBeforeDepositsOpen()
         public
-        tradeStarted
+        termsSetTradeStarted
     {
         vm.prank(SELLER);
         vm.expectRevert();
         vendora.depositAssets(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 
-    function testSellerDeposits() public tradeStartedAndAssetsVerfied {
+    function testSellerDeposits() public termsSetTradeStartedAssetsVerfied {
         vm.prank(SELLER);
         vendora.depositAssets{value: 1 ether}(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 
-    function testBuyerDeposits() public tradeStartedAndAssetsVerfied {
+    function testBuyerDeposits() public termsSetTradeStartedAssetsVerfied {
         vm.prank(BUYER);
         vendora.depositAssets{value: 0.5 ether}(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 
-    function testCancelingTrade() public tradeStartedAndAssetsVerfied {
+    function testCancelingTrade() public termsSetTradeStartedAssetsVerfied {
         vm.prank(SELLER);
         vendora.depositAssets{value: 1 ether}(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
         vm.prank(SELLER);
-        vendora.cancelAndDeleteTrade(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+        vendora.cancelTradeAndWithdraw(
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
         vm.prank(SELLER);
         vm.expectRevert();
         vendora.depositAssets{value: 1 ether}(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 
-    function testCompletingTrade() public tradeStartedAndAssetsVerfied {
+    function testCompletingTrade() public termsSetTradeStartedAssetsVerfied {
         vm.prank(SELLER);
         vendora.depositAssets{value: 1 ether}(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
 
         vm.prank(BUYER);
         vendora.depositAssets{value: 0.5 ether}(
-            0x628f1674b60818eeed49f9854e536af5faa0fef27f276bd9cf25f7c14ed4c733
+            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 }
