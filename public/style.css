@@ -1,3 +1,139 @@
 body {
-    background-color: #0D0F1E;
+    width: 100vw;
+    height: 100vh;
+    color: #7F87A2;
+    font-family: 'Dosis', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    background-color: #0F1222;
+}
+
+a {
+    color: #7F87A2;
+    text-decoration: none;
+}
+
+header {
+    width: 100%;
+    height: 5%;
+
+}
+
+.header-container {
+    padding-top: 10px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    text-transform: uppercase;
+
+}
+
+.logo {
+    font-size: 25px;
+    margin-left: 10px
+}
+
+.connect {
+    background-color: #223666;
+    color: #4575E4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: inherit;
+    margin-right: 10px;
+    padding: 15px;
+}
+
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 95%;
+    flex-direction: column;
+}
+
+.trade-box {
+    border: 1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 20px;
+    height: 90%;
+    max-height: 750px;
+    width: 90%;
+    max-width: 450px;
+    background-color: #0D111C;
+    padding: 10px;
+
+}
+
+.trade-links {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: left;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 0px 12px;
+    gap: 16px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.new-trade-link:hover,
+.enter-trade-link:hover,
+.connect:hover {
+    color: rgb(255, 255, 255);
+
+}
+
+
+.build-terms {
+    border-radius: 20px;
+    height: 85%;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.build-terms h2 {
+    margin: 0px auto 5px;
+    text-transform: uppercase;
+    font-size: 21px;
+}
+
+.what-do-you-want {
+    height: 50%;
+    width: 100%;
+    padding-top: 10px;
+    background-color: #0F1222;
+    border-radius: 20px;
+    border: 1px solid #0D111C;
+
+}
+
+.what-do-you-want:hover,
+.what-will-you-give:hover {
+    border: 1px solid rgba(152, 161, 192, 0.24);
+    color: rgb(255, 255, 255);
+}
+
+.what-will-you-give {
+    height: 50%;
+    width: 100%;
+    padding-top: 10px;
+    background-color: #0F1222;
+    border-radius: 20px;
+    border: 1px solid #0D111C;
+}
+
+.enter-trade {
+    display: none;
 }
