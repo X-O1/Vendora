@@ -14,7 +14,7 @@
         rel="stylesheet">
 
 
-    <script src="../src/app.ts" defer></script>
+    <script src="../src/app.js" defer></script>
 </head>
 
 <body>
@@ -27,19 +27,72 @@
 
     <section class="main-container">
 
+        <h1 class="build-terms-title">Set Terms of Trade</h1>
         <div class="trade-box">
             <div class="trade-links">
-                <div class="new-trade-link">New Trade</div>
-                <div class="enter-trade-link">Enter Existing Trade</div>
+                <div class="new-trade-link">Wanted</div>
+                <div class="enter-trade-link">Giving</div>
+                <div class="set-terms">Finalize Terms</div>
             </div>
 
             <div class="build-terms">
                 <div class="what-do-you-want">
-                    <h2>Which Assets Do You Want</h1>
-                        
+                    <h2>Select Assets you want</h1>
+                        <div class="asset-lists">
+                            <div class="erc721-list">
+                                <span>ERC-721s...</span>
+                            </div>
+                            <div class="erc20-list">
+                                <span>Erc-20s...</span>
+                            </div>
+                            <div class="erc1155-list">
+                                <span>Erc-1155s...</span>
+                            </div>
+                            <input class="eth-amount" type="text" placeholder="ETH amount">
+                        </div>
                 </div>
-                <div class="what-will-you-give">
-                    <h2>Which Assets Will You Give</h1>
+                <div class="wanted-assets">
+                    <h2>Wanted Assets</h2>
+                    <div class="selected-assets">
+
+                        <div class="wanted-erc721s">
+                            <h4>ERC-721s</h4>
+                            <div class="selected-asset">
+                                <img class="erc721-image" src="./images/rareship2.png" alt="Erc721 Image">
+                                <span class="erc721-symbol">RSHP</span>
+                                <span class="erc721-tokenId">#2</span>
+                            </div>
+                            <div class="selected-asset">
+                                <img class="erc721-image" src="./images/rshp1.png" alt="Erc721 Image">
+                                <span class="erc721-symbol">RSHP</span>
+                                <span class="erc721-tokenId">#1</span>
+                            </div>
+                            <div class="selected-asset">
+                                <img class="erc721-image" src="./images/rshp3.png" alt="Erc721 Image">
+                                <span class="erc721-symbol">RSHP</span>
+                                <span class="erc721-tokenId">#3</span>
+                            </div>
+                        </div>
+                        <div class="wanted-erc20s">
+                            <h4>ERC-20s</h4>
+                            <div class="selected-asset">
+                                <img class="erc20-image" src="./images/linktokenimage.png" alt="LINK Token Image">
+                                <span class="erc20-symbol">LINK</span>
+                                <span class="erc20-amount">100</span>
+                            </div>
+
+                        </div>
+                        <div class="wanted-erc1155s">
+                            <h4>ERC-1155s</h4>
+                            <div class="selected-asset">
+                                <img class="erc1155-image" src="./images/rareship2.png" alt="erc1155 Image">
+                                <span class="erc1155-symbol">Blood Crystals</span>
+                                <span class="erc1155-tokenId">#2</span>
+                                <span class="erc1155-amount">20</span>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
             <div class="set-terms"></div>
