@@ -216,8 +216,7 @@ header {
     height: auto;
 }
 
-.wanted-erc721s .selected-asset img,
-.wanted-erc1155s .selected-asset img {
+.wanted-erc721s .selected-asset img {
     width: 100px;
     height: auto;
     border-radius: 5px;
