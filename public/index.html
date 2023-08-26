@@ -38,19 +38,44 @@
             <div class="build-terms">
                 <div class="what-do-you-want">
                     <h2>Select Assets you want</h1>
-                        <div class="asset-lists">
-                            <div class="erc721-list">
-                                <span>ERC-721s...</span>
-                            </div>
-                            <div class="erc20-list">
-                                <span>Erc-20s...</span>
-                            </div>
-                            <div class="erc1155-list">
-                                <span>Erc-1155s...</span>
-                            </div>
-                            <input class="eth-amount" type="text" placeholder="ETH amount">
+
+                        <div class="token-standard-options">
+                            <div class="choose-erc721 standard-option">Erc721s ></div>
+                            <div class="choose-erc20 standard-option">Erc20s ></div>
+                            <div class="choose-erc1155 standard-option">Erc1155s ></div>
+                            <div class="choose-eth standard-option">ETH Amount ></div>
                         </div>
                 </div>
+
+
+                <div class="asset-popups">
+                    <div class="toggle-fullscreen"><img
+                            src="./images/site-icons/icons8-expand-arrow-UP.png" alt=""></div>
+                    <div class="close-fullscreen"><img
+                            src="./images/site-icons/icons8-expand-arrow-48.png" alt=""></div>
+
+                    <div class="erc721-popup">
+                        <span class="section-title">Erc-721s</span>
+
+                        <div class="erc721-option options">
+                            <div class="option-image">
+                                <img src="./images/erc721-project-images/rareshipLogo.png"
+                                    alt="Rareships Image">
+                            </div>
+                            <div class="token-details">
+                                <div class="option-name">Rareships</div>
+                                <div class="option-symbol">RSHPS</div>
+                            </div>
+                            <div class="erc721-choice-details">
+                                <input type="text" class="erc721-token-id" placeholder="Token Id">
+                                <button class="add-asset">Add</button>
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </div>
+
                 <div class="wanted-assets">
                     <h2>Wanted Assets</h2>
                     <div class="selected-assets">
@@ -58,23 +83,13 @@
                         <div class="wanted-erc721s">
                             <h4>ERC-721s</h4>
                             <div class="selected-asset">
-                                <img class="erc721-image" src="./images/rareship2.png"
+                                <img class="erc721-image"
+                                    src="./images/erc721-project-images/rareships.jpg"
                                     alt="Erc721 Image">
                                 <span class="erc721-symbol">RSHP</span>
                                 <span class="erc721-tokenId">#2</span>
                             </div>
-                            <div class="selected-asset">
-                                <img class="erc721-image" src="./images/rshp1.png"
-                                    alt="Erc721 Image">
-                                <span class="erc721-symbol">RSHP</span>
-                                <span class="erc721-tokenId">#1</span>
-                            </div>
-                            <div class="selected-asset">
-                                <img class="erc721-image" src="./images/rshp3.png"
-                                    alt="Erc721 Image">
-                                <span class="erc721-symbol">RSHP</span>
-                                <span class="erc721-tokenId">#3</span>
-                            </div>
+
                         </div>
                         <div class="wanted-erc20s">
                             <h4>ERC-20s</h4>
