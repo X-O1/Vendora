@@ -1,0 +1,10 @@
+export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, };
+const assetPopUpContainer = document.querySelector(".asset-popups");
+const erc721MenuToggle = document.querySelector(".choose-erc721");
+const erc1155MenuToggle = document.querySelector(".choose-erc1155");
+const erc20MenuToggle = document.querySelector(".choose-erc20");
+const erc721MenuPopUp = document.querySelector(".erc721-menu-popup");
+const erc1155MenuPopUp = document.querySelector(".erc1155-menu-popup");
+const erc20MenuPopUp = document.querySelector(".erc20-menu-popup");
+const toggleFullscreen = document.querySelector(".toggle-fullscreen img");
+const closeFullscreen = document.querySelector(".close-fullscreen img");

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendora</title>
+    <link rel="stylesheet" href="Vendora_files/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="Vendora_files/css2.css" rel="stylesheet">
+
+
+        <!-- <script src="../dist/DisplayTokens.js" defer></script> -->
+        <script src="Vendora_files/DisplayTokens.js" defer="defer"></script>
+        <script src="Vendora_files/TokenList.js" defer="defer"></script>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Vendora</div>
+            <div class="connect">Connect</div>
+        </div>
+    </header>
+
+    <section class="main-container">
+
+        <h1 class="build-terms-title">Set Terms of Trade</h1>
+        <div class="trade-box">
+            <div class="trade-links">
+                <div class="new-trade-link">Wanted</div>
+                <div class="enter-trade-link">Giving</div>
+                <div class="set-terms">Finalize Terms</div>
+            </div>
+
+            <div class="build-terms">
+                <div class="what-do-you-want">
+                    <h2>Select Assets you want</h2>
+
+                        <div class="token-standard-options">
+                            <div class="choose-erc721">Erc721s &gt;</div>
+                            <div class="choose-erc20">Erc20s &gt;</div>
+                            <div class="choose-erc1155">Erc1155s &gt;</div>
+                            <div class="choose-eth">ETH Amount &gt;</div>
+                        </div>
+                </div>
+
+                <div class="asset-popups">
+                    <div class="toggle-fullscreen"><img src="Vendora_files/icons8-expand-arrow-UP.png" alt=""></div>
+                    <div class="close-fullscreen"><img src="Vendora_files/icons8-expand-arrow-48.png" alt=""></div>
+
+                    <div class="erc721-menu-popup">
+                        <span class="section-title">Erc-721s</span>
+                    <div class="token-option"><div class="option-image"><img src="Vendora_files/rareshipLogo.png"></div><div class="token-details"><div class="option-name">Rareships</div><div class="option-symbol">RSHPS</div></div><div class="erc721-choice-details"><input type="text" placeholder="Token ID" class="option-token-id"><button class="add-asset">Add</button></div></div></div>
+                    <div class="erc1155-menu-popup">
+                        <span class="section-title">Erc-1155s</span>
+                    <div class="token-option"><div class="option-image"><img src="Vendora_files/bloodcrystal.png"></div><div class="token-details"><div class="option-name">Blood Crytals</div><div class="option-symbol">BLOOD</div></div><div class="erc721-choice-details"><input type="text" placeholder="Token ID" class="option-token-id"><input placeholder="Amount" type="text" class="option-amount"><button class="add-asset">Add</button></div></div></div>
+                    <div class="erc20-menu-popup">
+                        <span class="section-title">Erc-20s</span>
+                    <div class="token-option"><div class="option-image"><img src="Vendora_files/linktokenimage_002.png"></div><div class="token-details"><div class="option-name">Chainlink</div><div class="option-symbol">LINK</div></div><div class="erc721-choice-details"><input type="text" placeholder="Amount" class="option-amount"><button class="add-asset">Add</button></div></div></div>
+                </div>
+
+                <div class="wanted-assets">
+                    <h2>Wanted Assets</h2>
+                    <div class="selected-assets">
+
+                        <div class="wanted-erc721s">
+                            <h4>ERC-721s</h4>
+                            <div class="selected-asset">
+                                <img class="erc721-image" src="Vendora_files/rareships.jpg" alt="Erc721 Image">
+                                <span class="erc721-symbol">RSHP</span>
+                                <span class="erc721-tokenId">#2</span>
+                            </div>
+
+                        </div>
+                        <div class="wanted-erc20s">
+                            <h4>ERC-20s</h4>
+                            <div class="selected-asset">
+                                <img class="erc20-image" src="Vendora_files/linktokenimage.png" alt="LINK Token Image">
+                                <span class="erc20-symbol">LINK</span>
+                                <span class="erc20-amount">100</span>
+                            </div>
+
+                        </div>
+                        <div class="wanted-erc1155s">
+                            <h4>ERC-1155s</h4>
+                            <div class="selected-asset">
+                                <img class="erc1155-image" src="Vendora_files/bloodcrystal_002.png" alt="erc1155 Image">
+                                <span class="erc1155-symbol">Blood Crystals</span>
+                                <span class="erc1155-tokenId">#2</span>
+                                <span class="erc1155-amount">20</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="set-terms"></div>
+            <div class="enter-trade">
+            </div>
+        </div>
+    </section>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body></html>
