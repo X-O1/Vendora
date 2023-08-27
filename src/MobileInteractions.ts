@@ -1,5 +1,8 @@
 import {
   assetPopUpContainer,
+  erc721MenuPopUp,
+  erc1155MenuPopUp,
+  erc20MenuPopUp,
   toggleFullscreen,
   closeFullscreen,
 } from "./FrontEndElements.js";
@@ -12,22 +15,51 @@ assetPopUpContainer.addEventListener("touchstart", (e: TouchEvent) => {
 assetPopUpContainer.addEventListener("touchmove", (e: TouchEvent) => {
   let currentY = e.touches[0].clientY;
 
-  //   if (currentY > startY) {
-  //     if (assetPopUpContainer.style.height == "50%") {
-  //       assetPopUpContainer.style.height = "0";
-  //       if (assetPopUpContainer.style.height == "0") {
-  //         assetPopUpContainer.style.display = "none";
-  //       }
-  //     } else if (assetPopUpContainer.style.height == "100%") {
-  //       assetPopUpContainer.style.height = "50%";
-  //     }
-  //   }
-
   if (currentY < startY) {
-    if (assetPopUpContainer.style.height == "50%") {
-      assetPopUpContainer.style.height = "100%";
-      closeFullscreen.style.display = "block";
-      toggleFullscreen.style.display = "none";
+    openAssetList();
+  }
+});
+
+erc721MenuPopUp.addEventListener("touchend", (e: TouchEvent) => {
+  let endY = e.changedTouches[0].clientY;
+
+  if (erc721MenuPopUp.scrollTop === 0) {
+    if (endY > startY) {
+      closeAssetList();
     }
   }
 });
+erc1155MenuPopUp.addEventListener("touchend", (e: TouchEvent) => {
+  let endY = e.changedTouches[0].clientY;
+
+  if (erc1155MenuPopUp.scrollTop === 0) {
+    if (endY > startY) {
+      closeAssetList();
+    }
+  }
+});
+erc20MenuPopUp.addEventListener("touchend", (e: TouchEvent) => {
+  let endY = e.changedTouches[0].clientY;
+
+  if (erc20MenuPopUp.scrollTop === 0) {
+    if (endY > startY) {
+      closeAssetList();
+    }
+  }
+});
+
+const openAssetList = (): void => {
+  if (assetPopUpContainer.style.height == "50%") {
+    assetPopUpContainer.style.height = "100%";
+    closeFullscreen.style.display = "block";
+    toggleFullscreen.style.display = "none";
+  }
+};
+
+const closeAssetList = (): void => {
+  if (assetPopUpContainer.style.height == "100%") {
+    assetPopUpContainer.style.height = "0";
+    closeFullscreen.style.display = "none";
+    toggleFullscreen.style.display = "none";
+  }
+};
