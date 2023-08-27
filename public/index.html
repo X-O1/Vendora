@@ -14,7 +14,9 @@
         rel="stylesheet">
 
 
-    <script src="../dist/TokenList.js" defer></script>
+        <!-- <script src="../dist/DisplayTokens.js" defer></script> -->
+        <script src="../dist/DisplayTokens.js" defer></script>
+        <script src="../dist/TokenList.js" defer></script>
 </head>
 
 <body>
@@ -40,13 +42,12 @@
                     <h2>Select Assets you want</h1>
 
                         <div class="token-standard-options">
-                            <div class="choose-erc721 standard-option">Erc721s ></div>
-                            <div class="choose-erc20 standard-option">Erc20s ></div>
-                            <div class="choose-erc1155 standard-option">Erc1155s ></div>
-                            <div class="choose-eth standard-option">ETH Amount ></div>
+                            <div class="choose-erc721">Erc721s ></div>
+                            <div class="choose-erc20">Erc20s ></div>
+                            <div class="choose-erc1155">Erc1155s ></div>
+                            <div class="choose-eth">ETH Amount ></div>
                         </div>
                 </div>
-
 
                 <div class="asset-popups">
                     <div class="toggle-fullscreen"><img
@@ -54,9 +55,14 @@
                     <div class="close-fullscreen"><img
                             src="./images/site-icons/icons8-expand-arrow-48.png" alt=""></div>
 
-                    <div class="token-menu-popup">
+                    <div class="erc721-menu-popup">
                         <span class="section-title">Erc-721s</span>
-        
+                    </div>
+                    <div class="erc1155-menu-popup">
+                        <span class="section-title">Erc-1155s</span>
+                    </div>
+                    <div class="erc20-menu-popup">
+                        <span class="section-title">Erc-20s</span>
                     </div>
                 </div>
 
