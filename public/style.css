@@ -94,6 +94,7 @@ header {
 
 .build-terms-title {
     margin-top: 40px;
+    
 }
 
 .build-terms {
@@ -109,6 +110,8 @@ header {
     margin: 5px auto 0px;
     text-transform: uppercase;
     font-size: 21px;
+    color: rgb(255, 255, 255);
+
 
 }
 
@@ -157,15 +160,18 @@ header {
     right: 50%;
     top: 5px;
     cursor: pointer;
+    display: none;
+
 }
 
-.close-fullscreen {
-    display: none;
+.close-fullscreen img {
     width: 20px;
     position: absolute;
     right: 50%;
     top: 5px;
     cursor: pointer;
+    display: none;
+
 }
 
 .asset-popups {
@@ -173,40 +179,42 @@ header {
     bottom: 0;
     left: 0;
     height: 50%;
-    /* toggles to 100% */
+    /* toggles to 100% on scroll*/
     width: 100%;
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 20px;
     background: rgb(13, 17, 28);
     padding: 20px;
     box-sizing: border-box;
+    /* display: none; */
 }
 
 .section-title {
     padding-left: 5px;
 }
 
-.erc721-popup {
+.token-menu-popup {
     width: 100%;
     height: 100%;
     background: rgb(13, 17, 28);
     overflow-y: auto;
     overflow-x: hidden;
     padding-top: 10px;
+    /* display: none; */
 }
 
  /* Hide scrollbar for Chrome, Safari and Opera */
- .erc721-popup::-webkit-scrollbar {
+ .token-menu-popup::-webkit-scrollbar {
     display: none;
   }
   
   /* Hide scrollbar for IE, Edge and Firefox */
-  .erc721-popup {
+  .token-menu-popup {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   } 
 
-.options {
+.token-option {
     display: flex;
     padding-top: 10px;
     align-items: center;
@@ -217,7 +225,7 @@ header {
     margin-bottom: 5px;
 }
 
-.options img {
+.token-option img {
     width: 100%;
 }
 
@@ -233,16 +241,17 @@ header {
 }
 
 .option-name {
-    font-size: 22px;
+    font-size: 21px;
     color: rgb(255, 255, 255);
 }
 
-.erc721-choice-details {
+.option-order-details {
     display: flex;
     gap: 10px;
 }
 
-.erc721-token-id,
+.option-token-id,
+.option-amount,
 .add-asset {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
@@ -255,8 +264,8 @@ header {
 }
 
 .eth-amount::placeholder,
-.erc721-token-id::placeholder,
-.erc20-amount::placeholder,
+.option-token-id::placeholder,
+.option-amount::placeholder,
 .erc1155-token-id::placeholder,
 .erc1155-amount::placeholder,
 .add-asset {
