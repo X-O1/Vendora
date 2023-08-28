@@ -8,6 +8,7 @@ export {
   erc20MenuPopUp,
   toggleFullscreen,
   closeFullscreen,
+  closeMenu,
 };
 
 const assetPopUpContainer = document.querySelector(
@@ -37,3 +38,4 @@ const toggleFullscreen = document.querySelector(
 const closeFullscreen = document.querySelector(
   ".close-fullscreen img"
 ) as HTMLImageElement;
+const closeMenu = document.querySelector(".close-menu") as HTMLDivElement;

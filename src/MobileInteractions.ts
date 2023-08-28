@@ -5,6 +5,7 @@ import {
   erc20MenuPopUp,
   toggleFullscreen,
   closeFullscreen,
+  closeMenu,
 } from "./FrontEndElements.js";
 
 let startY: number;
@@ -49,17 +50,14 @@ erc20MenuPopUp.addEventListener("touchend", (e: TouchEvent) => {
 });
 
 const openAssetList = (): void => {
-  if (assetPopUpContainer.style.height == "50%") {
-    assetPopUpContainer.style.height = "100%";
-    closeFullscreen.style.display = "block";
-    toggleFullscreen.style.display = "none";
-  }
+  assetPopUpContainer.style.height = "100%";
+  closeFullscreen.style.display = "block";
+  toggleFullscreen.style.display = "none";
 };
 
 const closeAssetList = (): void => {
-  if (assetPopUpContainer.style.height == "100%") {
-    assetPopUpContainer.style.height = "0";
-    closeFullscreen.style.display = "none";
-    toggleFullscreen.style.display = "none";
-  }
+  assetPopUpContainer.style.height = "0";
+  closeFullscreen.style.display = "none";
+  toggleFullscreen.style.display = "none";
+  closeMenu.style.display = "none";
 };

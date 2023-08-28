@@ -1,4 +1,4 @@
-import { assetPopUpContainer, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, } from "./FrontEndElements.js";
+import { assetPopUpContainer, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, } from "./FrontEndElements.js";
 let startY;
 assetPopUpContainer.addEventListener("touchstart", (e) => {
     startY = e.touches[0].clientY;
@@ -34,16 +34,13 @@ erc20MenuPopUp.addEventListener("touchend", (e) => {
     }
 });
 const openAssetList = () => {
-    if (assetPopUpContainer.style.height == "50%") {
-        assetPopUpContainer.style.height = "100%";
-        closeFullscreen.style.display = "block";
-        toggleFullscreen.style.display = "none";
-    }
+    assetPopUpContainer.style.height = "100%";
+    closeFullscreen.style.display = "block";
+    toggleFullscreen.style.display = "none";
 };
 const closeAssetList = () => {
-    if (assetPopUpContainer.style.height == "100%") {
-        assetPopUpContainer.style.height = "0";
-        closeFullscreen.style.display = "none";
-        toggleFullscreen.style.display = "none";
-    }
+    assetPopUpContainer.style.height = "0";
+    closeFullscreen.style.display = "none";
+    toggleFullscreen.style.display = "none";
+    closeMenu.style.display = "none";
 };
