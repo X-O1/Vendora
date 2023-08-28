@@ -1,4 +1,4 @@
-import { erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, assetPopUpContainer, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, whatDoYouWant, } from "./FrontEndElements.js";
+import { erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, assetPopUpContainer, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, } from "./FrontEndElements.js";
 erc721MenuToggle.addEventListener("click", () => {
     erc1155MenuPopUp.style.display = "none";
     erc20MenuPopUp.style.display = "none";
@@ -58,13 +58,6 @@ closeFullscreen.addEventListener("click", () => {
     }
 });
 closeMenu.addEventListener("click", () => {
-    assetPopUpContainer.style.height = "0";
-    toggleFullscreen.style.display = "none";
-    closeFullscreen.style.display = "none";
-    assetPopUpContainer.style.border = "none";
-    closeMenu.style.display = "none";
-});
-whatDoYouWant.addEventListener("click", () => {
     assetPopUpContainer.style.height = "0";
     toggleFullscreen.style.display = "none";
     closeFullscreen.style.display = "none";

@@ -1,4 +1,4 @@
-export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, whatDoYouWant, };
+export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, };
 const assetPopUpContainer = document.querySelector(".asset-popups");
 const erc721MenuToggle = document.querySelector(".choose-erc721");
 const erc1155MenuToggle = document.querySelector(".choose-erc1155");
@@ -9,4 +9,3 @@ const erc20MenuPopUp = document.querySelector(".erc20-menu-popup");
 const toggleFullscreen = document.querySelector(".toggle-fullscreen img");
 const closeFullscreen = document.querySelector(".close-fullscreen img");
 const closeMenu = document.querySelector(".close-menu");
-const whatDoYouWant = document.querySelector(".what-do-you-want");
