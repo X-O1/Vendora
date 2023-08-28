@@ -11,8 +11,6 @@ body {
     background-repeat: no-repeat;
 }
 
-
-
 a {
     color: #7F87A2;
     text-decoration: none;
@@ -94,7 +92,6 @@ header {
 
 .build-terms-title {
     margin-top: 40px;
-
 }
 
 .build-terms {
@@ -111,8 +108,6 @@ header {
     text-transform: uppercase;
     font-size: 21px;
     color: rgb(255, 255, 255);
-
-
 }
 
 .what-do-you-want {
@@ -136,24 +131,47 @@ header {
     text-align: center;
 }
 
-.choose-erc721,
-.choose-erc20,
-.choose-erc1155,
-.choose-eth {
-    width: 80%;
-    border: 1px solid rgba(152, 161, 192, 0.24);
-    border-radius: 30px;
-    padding: 9px 10px;
-    cursor: pointer;
+.toggleMenu {
+    padding: 12px 24px;
+    width: 100%;
+    font-size: 17px;
+    font-weight: 600;
+    color: #7F87A2;
     background: none;
-    font-size: 18px;
+    border: .1px inset #7F87A2;
+    box-shadow: 2px 2px 4px #101a2d; 
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s linear;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
-.choose-erc721:hover,
-.choose-erc20:hover,
-.choose-erc1155:hover,
-.choose-eth:hover 
- {
+.toggleMenu:hover {
+    background: linear-gradient(145deg, #12243c, #0a1629);
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(255, 255, 255, 0.2) inset;
+    color: rgb(255, 255, 255);
+
+}
+
+.toggleMenu:active {
+    background: linear-gradient(145deg, #0a1629, #00080f);
+    transform: translateY(1px); /* Slightly reduced effect */
+    box-shadow: inset 1px 1px 2px #0a121f; /* Toned down the shadow */
+}
+
+.toggleMenu:hover:after {
+    opacity: 1;
+}
+
+.toggleMenu:focus {
+    background: linear-gradient(145deg, #12243c, #0a1629);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 120, 255, 0.6) inset, 0 0 15px rgba(0, 120, 255, 0.7) inset; 
+    transform: translateY(2px); 
+    outline: none;
     color: rgb(255, 255, 255);
 
 }
@@ -361,3 +379,9 @@ header {
     height: auto;
     border-radius: 5px;
 }
+
+
+
+
+
+
