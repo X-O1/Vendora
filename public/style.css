@@ -11,6 +11,8 @@ body {
     background-repeat: no-repeat;
 }
 
+
+
 a {
     color: #7F87A2;
     text-decoration: none;
@@ -261,7 +263,8 @@ header {
     width: 100%;
 }
 
-.option-image {
+.option-image,
+.wanted-image {
     width: 50px;
     height: 50px;
     border-radius: 100px;
@@ -354,20 +357,3 @@ header {
     margin-bottom: 5px;
 
 }
-
-.selected-asset img {
-    width: 50px;
-    height: auto;
-}
-
-.wanted-erc721s .selected-asset img {
-    width: 100px;
-    height: auto;
-    border-radius: 5px;
-}
-
-
-
-
-
-

@@ -1,4 +1,11 @@
-export { defaultErc721s, defaultErc1155s, defaultErc20s };
+export {
+  defaultErc721s,
+  defaultErc1155s,
+  defaultErc20s,
+  Erc721Option,
+  Erc1155Option,
+  Erc20Option,
+};
 
 type Erc721Option = {
   imgSrc: string;
@@ -6,12 +13,14 @@ type Erc721Option = {
   symbol: string;
   address: string;
 };
+
 type Erc1155Option = {
   imgSrc: string;
   name: string;
   symbol: string;
   address: string;
 };
+
 type Erc20Option = {
   imgSrc: string;
   name: string;
@@ -29,122 +38,8 @@ const defaultErc721s: Erc721Option[] = [
   },
   {
     imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
-    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
-  },
-  {
-    imgSrc: "./images/erc721-project-images/rareshipLogo.png",
-    name: "Rareships",
-    symbol: "RSHPS",
+    name: "Moonsama",
+    symbol: "MSAMA",
     address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
   },
 ];

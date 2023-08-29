@@ -37,6 +37,7 @@ const openAssetList = () => {
     assetPopUpContainer.style.height = "100%";
     closeFullscreen.style.display = "block";
     toggleFullscreen.style.display = "none";
+    closeMenu.style.display = "none";
 };
 const closeAssetList = () => {
     assetPopUpContainer.style.height = "0";
