@@ -27,6 +27,18 @@ const closeFullscreen = document.querySelector(
 ) as HTMLImageElement;
 const closeMenu = document.querySelector(".close-menu") as HTMLDivElement;
 
+const tokenOption = document.querySelector(".token-option") as HTMLDivElement;
+const optionImage = document.querySelector(
+  "option-image img"
+) as HTMLImageElement;
+const optionName = document.querySelector(".option-name") as HTMLDivElement;
+const optionSymbol = document.querySelector(".option-symbol") as HTMLDivElement;
+const optionTokenId = document.querySelector(
+  ".option-token-id input"
+) as HTMLInputElement;
+const optionAmount = document.querySelector(
+  ".option-amount"
+) as HTMLInputElement;
 export {
   assetPopUpContainer,
   erc721MenuToggle,
@@ -38,4 +50,10 @@ export {
   toggleFullscreen,
   closeFullscreen,
   closeMenu,
+  tokenOption,
+  optionImage,
+  optionName,
+  optionSymbol,
+  optionTokenId,
+  optionAmount,
 };

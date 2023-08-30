@@ -290,7 +290,9 @@ header {
 
 .option-token-id,
 .option-amount,
-.add-asset {
+.add-erc721,
+.add-erc1155,
+.add-erc20 {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
     padding: 9px 10px;
@@ -315,7 +317,9 @@ header {
     border: .1px solid rgba(152, 161, 192, 0.24);
 }
 
-.add-asset:hover {
+.add-erc721:hover,
+.add-erc1155:hover,
+.add-erc20:hover {
     color: rgb(255, 255, 255);
 }
 
