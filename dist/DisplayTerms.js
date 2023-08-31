@@ -36,10 +36,6 @@ const createWantedList = async (wantedTokenType) => {
                 termErc20s.appendChild(selectedTermAssetDiv);
                 selectedTermAssetDiv.appendChild(termAssetAmount);
             }
-            termAssetImage.src = "";
-            termAssetSymbol.innerHTML = "";
-            "amount" in token ? (termAssetAmount.innerHTML = "") : null;
-            "tokenId" in token ? (termAssetTokenId.innerHTML = "") : null;
             termAssetImage.src = token.imgSrc;
             termAssetSymbol.innerHTML = token.symbol;
             "amount" in token ? (termAssetAmount.innerHTML = token.amount) : null;

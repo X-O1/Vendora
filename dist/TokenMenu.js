@@ -1,5 +1,5 @@
 import { defaultErc721s, defaultErc1155s, defaultErc20s, } from "./TokenList.js";
-import { erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, } from "./FrontEndElements.js";
+import { erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, termErc721s, termErc1155s, termErc20s, } from "./FrontEndElements.js";
 import { createWantedList } from "./DisplayTerms.js";
 document.addEventListener("DOMContentLoaded", async () => {
     await createTokenList(defaultErc721s);
@@ -98,8 +98,8 @@ const createTokenList = async (tokenTypeList) => {
                         });
                         setItem("wantedErc721s", wantedErc721s);
                     }
+                    termErc721s.innerHTML = "";
                     createWantedList(wantedErc721s);
-                    console.log(wantedErc721s);
                     console.log("Wanted Erc721s:", getErc721sInStorage("wantedErc721s"));
                 });
             }
@@ -128,8 +128,9 @@ const createTokenList = async (tokenTypeList) => {
                             tokenId: optionTokenId.value,
                             amount: optionAmount.value,
                         });
+                        setItem("wantedErc1155s", wantedErc1155s);
                     }
-                    setItem("wantedErc1155s", wantedErc1155s);
+                    termErc1155s.innerHTML = "";
                     createWantedList(wantedErc1155s);
                     console.log("Wanted Erc1155s:", getErc1155sInStorage("wantedErc1155s"));
                 });
@@ -153,8 +154,9 @@ const createTokenList = async (tokenTypeList) => {
                             symbol: optionSymbol.innerHTML,
                             amount: optionAmount.value,
                         });
+                        setItem("wantedErc20s", wantedErc20s);
                     }
-                    setItem("wantedErc20s", wantedErc20s);
+                    termErc20s.innerHTML = "";
                     createWantedList(wantedErc20s);
                     console.log("Wanted Erc20s:", getErc20sInStorage("wantedErc20s"));
                 });
