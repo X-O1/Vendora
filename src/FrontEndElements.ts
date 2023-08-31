@@ -39,6 +39,16 @@ const optionTokenId = document.querySelector(
 const optionAmount = document.querySelector(
   ".option-amount"
 ) as HTMLInputElement;
+
+const termErc721s = document.querySelector(
+  ".term-asset-erc721s"
+) as HTMLDivElement;
+const termErc1155s = document.querySelector(
+  ".term-asset-erc1155s"
+) as HTMLDivElement;
+const termErc20s = document.querySelector(
+  ".term-asset-erc20s"
+) as HTMLDivElement;
 export {
   assetPopUpContainer,
   erc721MenuToggle,
@@ -56,4 +66,7 @@ export {
   optionSymbol,
   optionTokenId,
   optionAmount,
+  termErc721s,
+  termErc1155s,
+  termErc20s,
 };

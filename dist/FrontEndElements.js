@@ -14,4 +14,7 @@ const optionName = document.querySelector(".option-name");
 const optionSymbol = document.querySelector(".option-symbol");
 const optionTokenId = document.querySelector(".option-token-id input");
 const optionAmount = document.querySelector(".option-amount");
-export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, tokenOption, optionImage, optionName, optionSymbol, optionTokenId, optionAmount, };
+const termErc721s = document.querySelector(".term-asset-erc721s");
+const termErc1155s = document.querySelector(".term-asset-erc1155s");
+const termErc20s = document.querySelector(".term-asset-erc20s");
+export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, tokenOption, optionImage, optionName, optionSymbol, optionTokenId, optionAmount, termErc721s, termErc1155s, termErc20s, };
