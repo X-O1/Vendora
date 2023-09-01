@@ -5,36 +5,41 @@ document.addEventListener("DOMContentLoaded", () => {
     createWantedList(wantedErc1155s);
     createWantedList(wantedErc20s);
 });
-const createWantedList = async (wantedTokenType) => {
+const createWantedList = async (termTokens) => {
     try {
-        wantedTokenType === null || wantedTokenType === void 0 ? void 0 : wantedTokenType.forEach((token) => {
+        termTokens === null || termTokens === void 0 ? void 0 : termTokens.forEach((token) => {
             const selectedTermAssetDiv = document.createElement("div");
             const termAssetImageDiv = document.createElement("div");
             const termAssetImage = document.createElement("img");
             const termAssetSymbol = document.createElement("div");
             const termAssetTokenId = document.createElement("div");
             const termAssetAmount = document.createElement("div");
+            const deleteAssetButton = document.createElement("button");
             selectedTermAssetDiv.classList.add("selected-term-asset");
             termAssetImageDiv.classList.add("term-asset-image");
             termAssetSymbol.classList.add("term-asset-symbol");
             termAssetTokenId.classList.add("term-asset-tokenId");
             termAssetAmount.classList.add("term-asset-amount");
+            deleteAssetButton.classList.add("delete-asset");
             selectedTermAssetDiv.appendChild(termAssetImageDiv);
             termAssetImageDiv.appendChild(termAssetImage);
             selectedTermAssetDiv.appendChild(termAssetSymbol);
-            if (wantedTokenType === wantedErc721s) {
+            if (termTokens === wantedErc721s) {
                 termErc721s.appendChild(selectedTermAssetDiv);
                 selectedTermAssetDiv.appendChild(termAssetTokenId);
+                selectedTermAssetDiv.appendChild(deleteAssetButton);
             }
-            else if (wantedTokenType === wantedErc1155s) {
+            else if (termTokens === wantedErc1155s) {
                 termErc1155s.appendChild(selectedTermAssetDiv);
                 selectedTermAssetDiv.appendChild(termAssetSymbol);
                 selectedTermAssetDiv.appendChild(termAssetTokenId);
                 selectedTermAssetDiv.appendChild(termAssetAmount);
+                selectedTermAssetDiv.appendChild(deleteAssetButton);
             }
-            else if (wantedTokenType === wantedErc20s) {
+            else if (termTokens === wantedErc20s) {
                 termErc20s.appendChild(selectedTermAssetDiv);
                 selectedTermAssetDiv.appendChild(termAssetAmount);
+                selectedTermAssetDiv.appendChild(deleteAssetButton);
             }
             termAssetImage.src = token.imgSrc;
             termAssetSymbol.innerHTML = token.symbol;
@@ -44,6 +49,7 @@ const createWantedList = async (wantedTokenType) => {
             "tokenId" in token
                 ? (termAssetTokenId.innerHTML = `#${token.tokenId}`)
                 : null;
+            deleteAssetButton.innerHTML = "Delete";
         });
     }
     catch (error) {

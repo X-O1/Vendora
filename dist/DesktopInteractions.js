@@ -1,29 +1,28 @@
 import { erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, assetPopUpContainer, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, } from "./FrontEndElements.js";
-const menuConfigs = {
-    erc721: {
-        hide: [erc1155MenuPopUp, erc20MenuPopUp],
-        show: [erc721MenuPopUp, toggleFullscreen, closeMenu],
-    },
-    erc1155: {
-        hide: [erc721MenuPopUp, erc20MenuPopUp],
-        show: [erc1155MenuPopUp, toggleFullscreen, closeMenu],
-    },
-    erc20: {
-        hide: [erc721MenuPopUp, erc1155MenuPopUp],
-        show: [erc20MenuPopUp, toggleFullscreen, closeMenu],
-    },
-};
-function setupMenuToggle(toggleButton, configKey) {
-    toggleButton.addEventListener("click", () => {
-        const config = menuConfigs[configKey];
-        config.hide.forEach((elem) => (elem.style.display = "none"));
-        config.show.forEach((elem) => (elem.style.display = "block"));
-        assetPopUpContainer.style.height = "50%";
-    });
-}
-setupMenuToggle(erc721MenuToggle, "erc721");
-setupMenuToggle(erc1155MenuToggle, "erc1155");
-setupMenuToggle(erc20MenuToggle, "erc20");
+erc721MenuToggle.addEventListener("click", () => {
+    erc1155MenuPopUp.style.display = "none";
+    erc20MenuPopUp.style.display = "none";
+    assetPopUpContainer.style.height = "50%";
+    toggleFullscreen.style.display = "block";
+    closeMenu.style.display = "block";
+    erc721MenuPopUp.style.display = "block";
+});
+erc1155MenuToggle.addEventListener("click", () => {
+    erc20MenuPopUp.style.display = "none";
+    erc721MenuPopUp.style.display = "none";
+    assetPopUpContainer.style.height = "50%";
+    toggleFullscreen.style.display = "block";
+    closeMenu.style.display = "block";
+    erc1155MenuPopUp.style.display = "block";
+});
+erc20MenuToggle.addEventListener("click", () => {
+    erc721MenuPopUp.style.display = "none";
+    erc1155MenuPopUp.style.display = "none";
+    assetPopUpContainer.style.height = "50%";
+    toggleFullscreen.style.display = "block";
+    closeMenu.style.display = "block";
+    erc20MenuPopUp.style.display = "block";
+});
 toggleFullscreen.addEventListener("click", () => {
     if (assetPopUpContainer.style.height == "50%") {
         assetPopUpContainer.style.height = "100%";

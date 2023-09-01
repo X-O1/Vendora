@@ -50,6 +50,7 @@ const termErc20s = document.querySelector(
   ".term-asset-erc20s"
 ) as HTMLDivElement;
 const termAssets = document.querySelector(".term-assets") as HTMLDivElement;
+const termAssetsH2 = document.querySelector(".term-assets h2") as HTMLElement;
 const whatDoYouWantDiv = document.querySelector(
   ".what-do-you-want"
 ) as HTMLDivElement;
@@ -95,4 +96,5 @@ export {
   termsAssetSection721,
   whatDoYouWantH2,
   tokenStandardMenuOptionDiv,
+  termAssetsH2,
 };

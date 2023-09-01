@@ -1,35 +1,13 @@
-export {
-  defaultErc721s,
-  defaultErc1155s,
-  defaultErc20s,
-  Erc721Option,
-  Erc1155Option,
-  Erc20Option,
-};
+export { defaultErc721s, defaultErc1155s, defaultErc20s, ErcOption };
 
-type Erc721Option = {
+type ErcOption = {
   imgSrc: string;
   name: string;
   symbol: string;
   address: string;
 };
-
-type Erc1155Option = {
-  imgSrc: string;
-  name: string;
-  symbol: string;
-  address: string;
-};
-
-type Erc20Option = {
-  imgSrc: string;
-  name: string;
-  symbol: string;
-  address: string;
-};
-
 /** Default tokens listed on Vendora front-end */
-const defaultErc721s: Erc721Option[] = [
+const defaultErc721s: ErcOption[] = [
   {
     imgSrc: "./images/erc721-project-images/rareshipLogo.png",
     name: "Rareships",
@@ -43,7 +21,7 @@ const defaultErc721s: Erc721Option[] = [
     address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
   },
 ];
-const defaultErc1155s: Erc1155Option[] = [
+const defaultErc1155s: ErcOption[] = [
   {
     imgSrc: "./images/erc1155-project-images/bloodcrystal.png",
     name: "Blood Crytals",
@@ -51,7 +29,7 @@ const defaultErc1155s: Erc1155Option[] = [
     address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
   },
 ];
-const defaultErc20s: Erc20Option[] = [
+const defaultErc20s: ErcOption[] = [
   {
     imgSrc: "./images/erc20-project-images/linktokenimage.png",
     name: "Chainlink",

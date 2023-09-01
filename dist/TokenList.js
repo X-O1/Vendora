@@ -1,4 +1,4 @@
-export { defaultErc721s, defaultErc1155s, defaultErc20s, };
+export { defaultErc721s, defaultErc1155s, defaultErc20s };
 const defaultErc721s = [
     {
         imgSrc: "./images/erc721-project-images/rareshipLogo.png",

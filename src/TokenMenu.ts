@@ -2,9 +2,7 @@ import {
   defaultErc721s,
   defaultErc1155s,
   defaultErc20s,
-  Erc721Option,
-  Erc1155Option,
-  Erc20Option,
+  ErcOption,
 } from "./TokenList.js";
 import {
   erc721MenuPopUp,
@@ -16,21 +14,11 @@ import {
 } from "./FrontEndElements.js";
 import { createWantedList } from "./DisplayTerms.js";
 
-type Erc721Details = {
+type ErcDetails = {
   imgSrc: string;
   symbol: string;
-  tokenId: string;
-};
-type Erc1155Details = {
-  imgSrc: string;
-  symbol: string;
-  tokenId: string;
-  amount: string;
-};
-type Erc20Details = {
-  imgSrc: string;
-  symbol: string;
-  amount: string;
+  tokenId?: string;
+  amount?: string;
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -40,45 +28,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // LOCAL STORAGE
-const setItem = async (
-  key: string,
-  value: Erc721Details[] | Erc1155Details[] | Erc20Details[]
-) => {
-  const stringifiedValue = JSON.stringify(value);
-  localStorage.setItem(key, stringifiedValue);
+const setItem = async (key: string, value: ErcDetails[]) => {
+  localStorage.setItem(key, JSON.stringify(value));
 };
 
-const getErc721sInStorage = (key: string): Erc721Details[] | null => {
-  const stringifyValue = localStorage.getItem(key);
-  if (stringifyValue === null) return null;
-  return JSON.parse(stringifyValue) as Erc721Details[];
-};
-const getErc1155sInStorage = (key: string): Erc1155Details[] | null => {
-  const stringifyValue = localStorage.getItem(key);
-  if (stringifyValue === null) return null;
-  return JSON.parse(stringifyValue) as Erc1155Details[];
-};
-const getErc20sInStorage = (key: string): Erc20Details[] | null => {
-  const stringifyValue = localStorage.getItem(key);
-  if (stringifyValue === null) return null;
-  return JSON.parse(stringifyValue) as Erc20Details[];
+const getTokenListInStorage = (key: string): ErcDetails[] | null => {
+  const value = localStorage.getItem(key);
+  return value ? (JSON.parse(value) as ErcDetails[]) : null;
 };
 
 const deleteStorageItem = (key: string): void => {
   localStorage.removeItem(key);
 };
 
-const wantedErc721s: Erc721Details[] =
-  getErc721sInStorage("wantedErc721s") || [];
-const wantedErc1155s: Erc1155Details[] =
-  getErc1155sInStorage("wantedErc1155s") || [];
-const wantedErc20s: Erc20Details[] = getErc20sInStorage("wantedErc20s") || [];
+const wantedErc721s: ErcDetails[] =
+  getTokenListInStorage("wantedErc721s") || [];
+const wantedErc1155s: ErcDetails[] =
+  getTokenListInStorage("wantedErc1155s") || [];
+const wantedErc20s: ErcDetails[] = getTokenListInStorage("wantedErc20s") || [];
 
-const createTokenList = async (
-  tokenTypeList: Erc721Option[] | Erc1155Option[] | Erc20Option[]
-) => {
+const createTokenList = async (tokenList: ErcOption[]) => {
   try {
-    tokenTypeList.forEach((option) => {
+    tokenList.forEach((option) => {
       const tokenOptionDiv = document.createElement("div");
       const optionImageDiv = document.createElement("div");
       const optionImage = document.createElement("img");
@@ -119,13 +90,17 @@ const createTokenList = async (
 
       optionAmount.addEventListener("input", () => {
         optionAmount.value = optionAmount.value.replace(/[^\d]/g, "");
+        addAssetButton.innerHTML = "Add";
+        addAssetButton.style.color = "rgb(255, 255, 255)";
       });
 
       optionTokenId.addEventListener("input", () => {
         optionTokenId.value = optionTokenId.value.replace(/[^\d]/g, "");
+        addAssetButton.innerHTML = "Add";
+        addAssetButton.style.color = "rgb(255, 255, 255)";
       });
 
-      if (tokenTypeList === defaultErc721s) {
+      if (tokenList === defaultErc721s) {
         addAssetButton.classList.add("add-erc721");
         erc721MenuPopUp.appendChild(tokenOptionDiv);
         optionOrderDetailsDiv.appendChild(optionTokenId);
@@ -148,14 +123,15 @@ const createTokenList = async (
               tokenId: optionTokenId.value,
             });
             setItem("wantedErc721s", wantedErc721s);
+            addAssetButton.innerHTML = "Added";
+            addAssetButton.style.color = "green";
+            optionTokenId.value = "";
           }
           termErc721s.innerHTML = "";
           createWantedList(wantedErc721s);
-          console.log("Wanted Erc721s:", getErc721sInStorage("wantedErc721s"));
         });
-      } else if (tokenTypeList === defaultErc1155s) {
+      } else if (tokenList === defaultErc1155s) {
         addAssetButton.classList.add("add-erc1155");
-
         erc1155MenuPopUp.appendChild(tokenOptionDiv);
         optionOrderDetailsDiv.appendChild(optionTokenId);
         optionOrderDetailsDiv.appendChild(optionAmount);
@@ -183,15 +159,13 @@ const createTokenList = async (
               amount: optionAmount.value,
             });
             setItem("wantedErc1155s", wantedErc1155s);
+            addAssetButton.innerHTML = "Added";
+            addAssetButton.style.color = "green";
           }
           termErc1155s.innerHTML = "";
           createWantedList(wantedErc1155s);
-          console.log(
-            "Wanted Erc1155s:",
-            getErc1155sInStorage("wantedErc1155s")
-          );
         });
-      } else if (tokenTypeList === defaultErc20s) {
+      } else if (tokenList === defaultErc20s) {
         addAssetButton.classList.add("add-erc20");
         erc20MenuPopUp.appendChild(tokenOptionDiv);
         optionOrderDetailsDiv.appendChild(optionAmount);
@@ -212,27 +186,25 @@ const createTokenList = async (
               amount: optionAmount.value,
             });
             setItem("wantedErc20s", wantedErc20s);
+            addAssetButton.innerHTML = "Added";
+            addAssetButton.style.color = "green";
           }
           termErc20s.innerHTML = "";
           createWantedList(wantedErc20s);
-          console.log("Wanted Erc20s:", getErc20sInStorage("wantedErc20s"));
         });
       }
     });
   } catch (error) {
-    error: console.log(`${tokenTypeList} failed to load`);
+    error: console.log(`${tokenList} failed to load`);
   }
 };
 
 export {
-  getErc721sInStorage,
-  getErc1155sInStorage,
-  getErc20sInStorage,
-  Erc721Details,
-  Erc1155Details,
-  Erc20Details,
+  ErcDetails,
   wantedErc721s,
   wantedErc1155s,
   wantedErc20s,
   deleteStorageItem,
+  setItem,
+  getTokenListInStorage,
 };
