@@ -51,8 +51,12 @@ const createWantedList = async (
 
       termAssetImage.src = token.imgSrc;
       termAssetSymbol.innerHTML = token.symbol;
-      "amount" in token ? (termAssetAmount.innerHTML = token.amount) : null;
-      "tokenId" in token ? (termAssetTokenId.innerHTML = token.tokenId) : null;
+      "amount" in token
+        ? (termAssetAmount.innerHTML = `Amt: ${token.amount}`)
+        : null;
+      "tokenId" in token
+        ? (termAssetTokenId.innerHTML = `#${token.tokenId}`)
+        : null;
     });
   } catch (error) {
     error: console.log("Wanted asset list failed to load");

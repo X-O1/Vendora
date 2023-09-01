@@ -38,8 +38,12 @@ const createWantedList = async (wantedTokenType) => {
             }
             termAssetImage.src = token.imgSrc;
             termAssetSymbol.innerHTML = token.symbol;
-            "amount" in token ? (termAssetAmount.innerHTML = token.amount) : null;
-            "tokenId" in token ? (termAssetTokenId.innerHTML = token.tokenId) : null;
+            "amount" in token
+                ? (termAssetAmount.innerHTML = `Amt: ${token.amount}`)
+                : null;
+            "tokenId" in token
+                ? (termAssetTokenId.innerHTML = `#${token.tokenId}`)
+                : null;
         });
     }
     catch (error) {

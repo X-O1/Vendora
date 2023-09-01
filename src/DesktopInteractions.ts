@@ -17,9 +17,7 @@ erc721MenuToggle.addEventListener("click", () => {
   assetPopUpContainer.style.height = "50%";
   toggleFullscreen.style.display = "block";
   closeMenu.style.display = "block";
-  erc721MenuPopUp.style.display = "none"
-    ? (erc721MenuPopUp.style.display = "block")
-    : (erc721MenuPopUp.style.display = "none");
+  erc721MenuPopUp.style.display = "block";
 });
 
 erc1155MenuToggle.addEventListener("click", () => {
@@ -28,10 +26,7 @@ erc1155MenuToggle.addEventListener("click", () => {
   assetPopUpContainer.style.height = "50%";
   toggleFullscreen.style.display = "block";
   closeMenu.style.display = "block";
-
-  erc1155MenuPopUp.style.display = "none"
-    ? (erc1155MenuPopUp.style.display = "block")
-    : (erc1155MenuPopUp.style.display = "none");
+  erc1155MenuPopUp.style.display = "block";
 });
 
 erc20MenuToggle.addEventListener("click", () => {
@@ -40,10 +35,7 @@ erc20MenuToggle.addEventListener("click", () => {
   assetPopUpContainer.style.height = "50%";
   toggleFullscreen.style.display = "block";
   closeMenu.style.display = "block";
-
-  erc20MenuPopUp.style.display = "none"
-    ? (erc20MenuPopUp.style.display = "block")
-    : (erc20MenuPopUp.style.display = "none");
+  erc20MenuPopUp.style.display = "block";
 });
 
 toggleFullscreen.addEventListener("click", () => {

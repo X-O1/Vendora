@@ -122,6 +122,9 @@ header {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    transition-property: height;
+    transition-duration: 500ms;
+    overflow: hidden;
 }
 
 .token-standard-options {
@@ -236,12 +239,14 @@ header {
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
-.menu::-webkit-scrollbar {
+.menu::-webkit-scrollbar,
+.selected-assets::-webkit-scrollbar {
     display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
-.menu {
+.menu,
+.selected-assets{
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
@@ -333,6 +338,8 @@ header {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    transition-property: height;
+    transition-duration: 500ms;
 }
 
 .selected-assets {
@@ -359,5 +366,6 @@ header {
     gap: 30px;
     width: 99%;
     margin-bottom: 5px;
+    font-size: 18px;
 
 }

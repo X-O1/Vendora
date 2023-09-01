@@ -49,6 +49,25 @@ const termErc1155s = document.querySelector(
 const termErc20s = document.querySelector(
   ".term-asset-erc20s"
 ) as HTMLDivElement;
+const termAssets = document.querySelector(".term-assets") as HTMLDivElement;
+const whatDoYouWantDiv = document.querySelector(
+  ".what-do-you-want"
+) as HTMLDivElement;
+const termsAssetSection721 = document.querySelector(
+  ".term-asset-section-721"
+) as HTMLDivElement;
+const termsAssetSection1155 = document.querySelector(
+  ".term-asset-section-1155"
+) as HTMLDivElement;
+const termsAssetSection20 = document.querySelector(
+  ".term-asset-section-20"
+) as HTMLDivElement;
+const whatDoYouWantH2 = document.querySelector(
+  ".what-do-you-want h2"
+) as HTMLElement;
+const tokenStandardMenuOptionDiv = document.querySelector(
+  ".token-standard-options"
+) as HTMLDivElement;
 export {
   assetPopUpContainer,
   erc721MenuToggle,
@@ -69,4 +88,11 @@ export {
   termErc721s,
   termErc1155s,
   termErc20s,
+  termAssets,
+  whatDoYouWantDiv,
+  termsAssetSection1155,
+  termsAssetSection20,
+  termsAssetSection721,
+  whatDoYouWantH2,
+  tokenStandardMenuOptionDiv,
 };

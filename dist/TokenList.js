@@ -7,7 +7,7 @@ const defaultErc721s = [
         address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
     },
     {
-        imgSrc: "./images/erc721-project-images/rareshipLogo.png",
+        imgSrc: "./images/erc721-project-images/msamaLogo.png",
         name: "Moonsama",
         symbol: "MSAMA",
         address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
