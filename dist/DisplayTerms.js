@@ -1,5 +1,5 @@
 import { termErc1155s, termErc20s, termErc721s } from "./FrontEndElements.js";
-import { wantedErc1155s, wantedErc20s, wantedErc721s, } from "./TokenMenu.js";
+import { setItem, wantedErc1155s, wantedErc20s, wantedErc721s, } from "./TokenMenu.js";
 document.addEventListener("DOMContentLoaded", () => {
     createWantedList(wantedErc721s);
     createWantedList(wantedErc1155s);
@@ -41,15 +41,43 @@ const createWantedList = async (termTokens) => {
                 selectedTermAssetDiv.appendChild(termAssetAmount);
                 selectedTermAssetDiv.appendChild(deleteAssetButton);
             }
+            if (termTokens === wantedErc721s && termTokens.length !== 0) {
+                termErc721s.style.display = "block";
+            }
+            else if (termTokens === wantedErc1155s && termTokens.length !== 0) {
+                termErc1155s.style.display = "block";
+            }
+            else if (termTokens === wantedErc20s && termTokens.length !== 0) {
+                termErc20s.style.display = "block";
+            }
             termAssetImage.src = token.imgSrc;
             termAssetSymbol.innerHTML = token.symbol;
             "amount" in token
-                ? (termAssetAmount.innerHTML = `Amt: ${token.amount}`)
+                ? (termAssetAmount.innerHTML = `${token.amount}`)
                 : null;
             "tokenId" in token
-                ? (termAssetTokenId.innerHTML = `#${token.tokenId}`)
+                ? (termAssetTokenId.innerHTML = `${token.tokenId}`)
                 : null;
             deleteAssetButton.innerHTML = "Delete";
+            deleteAssetButton.addEventListener("click", () => {
+                if (token.symbol === termAssetSymbol.innerHTML) {
+                    const index = termTokens.indexOf(token);
+                    index !== -1 ? termTokens.splice(index, 1) : null;
+                    setItem("wantedErc20s", wantedErc20s);
+                    termErc20s.innerHTML = "";
+                    createWantedList(wantedErc20s);
+                    if (token.tokenId === termAssetTokenId.innerHTML) {
+                        const index = termTokens.indexOf(token);
+                        index !== -1 ? termTokens.splice(index, 1) : null;
+                        setItem("wantedErc721s", wantedErc721s);
+                        setItem("wantedErc1155s", wantedErc1155s);
+                        termErc721s.innerHTML = "";
+                        termErc1155s.innerHTML = "";
+                        createWantedList(wantedErc721s);
+                        createWantedList(wantedErc1155s);
+                    }
+                }
+            });
         });
     }
     catch (error) {

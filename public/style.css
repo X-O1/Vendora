@@ -222,6 +222,7 @@ header {
     transition-property: height;
     transition-duration: 500ms;
     overflow: hidden;
+    padding: 10px 20px;
 }
 
 .section-title {
@@ -229,15 +230,12 @@ header {
 }
 
 .menu {
-    margin: 20px;
-    width: 100%;
-    height: 100%;
-    background: rgb(13, 17, 28);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10px 20px;
-    display: none;
-    box-sizing: border-box;
+    margin-top: 5px;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -256,14 +254,17 @@ header {
 }
 
 .token-option {
+    border: .1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 10px;
+    padding: 10px 0px;
+    box-sizing: border-box;
     display: flex;
-    padding-top: 10px;
     align-items: center;
-    gap: 20px;
-    cursor: pointer;
-    height: 50px;
     width: 100%;
     margin-bottom: 5px;
+    font-size: 18px;
+    justify-content: space-evenly;
+
 }
 
 .token-option img {
@@ -380,4 +381,9 @@ header {
     border: .1px solid #7F87A2;
     box-shadow: 2px 2px 4px #101a2d; 
     border-radius: 10px;
+}
+.term-asset-erc721s,
+.term-asset-erc1155s,
+.term-asset-erc20s {
+    display: none;
 }

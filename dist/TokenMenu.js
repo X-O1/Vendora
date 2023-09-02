@@ -122,6 +122,8 @@ const createTokenList = async (tokenList) => {
                         setItem("wantedErc1155s", wantedErc1155s);
                         addAssetButton.innerHTML = "Added";
                         addAssetButton.style.color = "green";
+                        optionTokenId.value = "";
+                        optionAmount.value = "";
                     }
                     termErc1155s.innerHTML = "";
                     createWantedList(wantedErc1155s);
