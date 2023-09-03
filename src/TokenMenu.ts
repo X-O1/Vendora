@@ -3,6 +3,7 @@ import {
   defaultErc1155s,
   defaultErc20s,
   ErcOption,
+  defaultNativeTokens,
 } from "./TokenList.js";
 import {
   erc721MenuPopUp,
@@ -17,6 +18,8 @@ import {
   toggleFullscreen,
   closeFullscreen,
   closeMenu,
+  termEth,
+  ethMenuPopUp,
 } from "./FrontEndElements.js";
 import { createTermsList } from "./DisplayTerms.js";
 
@@ -31,6 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await createTokenList(defaultErc721s);
   await createTokenList(defaultErc1155s);
   await createTokenList(defaultErc20s);
+  await createTokenList(defaultNativeTokens);
 });
 
 // LOCAL STORAGE
@@ -52,6 +56,7 @@ const wantedErc721s: ErcDetails[] =
 const wantedErc1155s: ErcDetails[] =
   getTokenListInStorage("wantedErc1155s") || [];
 const wantedErc20s: ErcDetails[] = getTokenListInStorage("wantedErc20s") || [];
+const wantedEth: ErcDetails[] = getTokenListInStorage("wantedEth") || [];
 
 const offeredErc721s: ErcDetails[] =
   getTokenListInStorage("offeredErc721s") || [];
@@ -59,6 +64,7 @@ const offeredErc1155s: ErcDetails[] =
   getTokenListInStorage("offeredErc1155s") || [];
 const offeredErc20s: ErcDetails[] =
   getTokenListInStorage("offeredErc20s") || [];
+const offeredEth: ErcDetails[] = getTokenListInStorage("offeredEth") || [];
 
 const createTokenList = async (tokenList: ErcOption[]) => {
   try {
@@ -127,10 +133,12 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         termErc721s.innerHTML = "";
         termErc1155s.innerHTML = "";
         termErc20s.innerHTML = "";
+        termEth.innerHTML = "";
 
         createTermsList(wantedErc721s);
         createTermsList(wantedErc1155s);
         createTermsList(wantedErc20s);
+        createTermsList(wantedEth);
       });
 
       offerTab.addEventListener("click", () => {
@@ -139,10 +147,12 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         termErc721s.innerHTML = "";
         termErc1155s.innerHTML = "";
         termErc20s.innerHTML = "";
+        termEth.innerHTML = "";
 
         createTermsList(offeredErc721s);
         createTermsList(offeredErc1155s);
         createTermsList(offeredErc20s);
+        createTermsList(offeredEth);
       });
 
       if (tokenList === defaultErc721s) {
@@ -347,6 +357,65 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           assetPopUpContainer.style.border = "none";
           closeMenu.style.display = "none";
         });
+      } else if (tokenList === defaultNativeTokens) {
+        addWantedAssetButton.classList.add("add-wanted-eth");
+        addOfferedAssetButton.classList.add("add-offered-eth");
+        ethMenuPopUp.appendChild(tokenOptionDiv);
+        optionOrderDetailsDiv.appendChild(optionAmount);
+        optionOrderDetailsDiv.appendChild(addWantedAssetButton);
+        optionOrderDetailsDiv.appendChild(addOfferedAssetButton);
+
+        addWantedAssetButton.addEventListener("click", () => {
+          let tokenExist: boolean = false;
+          for (let i = 0; i < wantedEth.length; i++) {
+            if (wantedEth[i].symbol === optionSymbol.innerHTML) {
+              tokenExist = true;
+              break;
+            }
+          }
+          if (!tokenExist && optionAmount.value !== "") {
+            wantedEth.push({
+              imgSrc: optionImage.src,
+              symbol: optionSymbol.innerHTML,
+              amount: optionAmount.value,
+            });
+            setItem("wantedEth", wantedEth);
+          }
+          termEth.innerHTML = "";
+          createTermsList(wantedEth);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
+        });
+
+        addOfferedAssetButton.addEventListener("click", () => {
+          let tokenExist: boolean = false;
+          for (let i = 0; i < offeredEth.length; i++) {
+            if (offeredEth[i].symbol === optionSymbol.innerHTML) {
+              tokenExist = true;
+              break;
+            }
+          }
+          if (!tokenExist && optionAmount.value !== "") {
+            offeredEth.push({
+              imgSrc: optionImage.src,
+              symbol: optionSymbol.innerHTML,
+              amount: optionAmount.value,
+            });
+            setItem("offeredEth", offeredEth);
+          }
+          termEth.innerHTML = "";
+          createTermsList(offeredEth);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
+        });
       }
     });
   } catch (error) {
@@ -359,9 +428,11 @@ export {
   wantedErc721s,
   wantedErc1155s,
   wantedErc20s,
+  wantedEth,
   offeredErc721s,
   offeredErc1155s,
   offeredErc20s,
+  offeredEth,
   deleteStorageItem,
   setItem,
   getTokenListInStorage,

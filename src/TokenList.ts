@@ -1,4 +1,10 @@
-export { defaultErc721s, defaultErc1155s, defaultErc20s, ErcOption };
+export {
+  defaultErc721s,
+  defaultErc1155s,
+  defaultErc20s,
+  defaultNativeTokens,
+  ErcOption,
+};
 
 type ErcOption = {
   imgSrc: string;
@@ -34,6 +40,14 @@ const defaultErc20s: ErcOption[] = [
     imgSrc: "./images/erc20-project-images/linktokenimage.png",
     name: "Chainlink",
     symbol: "LINK",
+    address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
+  },
+];
+const defaultNativeTokens: ErcOption[] = [
+  {
+    imgSrc: "./images/native-tokens/ether.jpeg",
+    name: "Ethereum",
+    symbol: "ETH",
     address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
   },
 ];

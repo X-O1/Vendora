@@ -10,6 +10,7 @@ const erc1155MenuToggle = document.querySelector(
 const erc20MenuToggle = document.querySelector(
   ".choose-erc20"
 ) as HTMLDivElement;
+const ethMenuToggle = document.querySelector(".choose-eth") as HTMLDivElement;
 const erc721MenuPopUp = document.querySelector(
   ".erc721-menu-popup"
 ) as HTMLDivElement;
@@ -18,6 +19,9 @@ const erc1155MenuPopUp = document.querySelector(
 ) as HTMLDivElement;
 const erc20MenuPopUp = document.querySelector(
   ".erc20-menu-popup"
+) as HTMLDivElement;
+const ethMenuPopUp = document.querySelector(
+  ".eth-menu-popup"
 ) as HTMLDivElement;
 const toggleFullscreen = document.querySelector(
   ".toggle-fullscreen img"
@@ -48,6 +52,7 @@ const termErc1155s = document.querySelector(
 const termErc20s = document.querySelector(
   ".term-asset-erc20s"
 ) as HTMLDivElement;
+const termEth = document.querySelector(".term-asset-eth") as HTMLDivElement;
 const termAssets = document.querySelector(".term-assets") as HTMLDivElement;
 const termAssetsH2 = document.querySelector(".term-assets h2") as HTMLElement;
 const selectAssets = document.querySelector(".select-assets") as HTMLDivElement;
@@ -68,9 +73,11 @@ export {
   erc721MenuToggle,
   erc1155MenuToggle,
   erc20MenuToggle,
+  ethMenuToggle,
   erc721MenuPopUp,
   erc1155MenuPopUp,
   erc20MenuPopUp,
+  ethMenuPopUp,
   toggleFullscreen,
   closeFullscreen,
   closeMenu,
@@ -83,6 +90,7 @@ export {
   termErc721s,
   termErc1155s,
   termErc20s,
+  termEth,
   termAssets,
   selectAssets,
   selectAssetsH2,

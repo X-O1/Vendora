@@ -14,9 +14,12 @@ import {
   finalizeTermsTab,
   selectAssetsH2,
   termAssetsH2,
+  ethMenuToggle,
+  ethMenuPopUp,
 } from "./FrontEndElements.js";
 
 erc721MenuToggle.addEventListener("click", () => {
+  ethMenuPopUp.style.display = "none";
   erc1155MenuPopUp.style.display = "none";
   erc20MenuPopUp.style.display = "none";
   assetPopUpContainer.style.height = "50%";
@@ -26,6 +29,7 @@ erc721MenuToggle.addEventListener("click", () => {
 });
 
 erc1155MenuToggle.addEventListener("click", () => {
+  ethMenuPopUp.style.display = "none";
   erc20MenuPopUp.style.display = "none";
   erc721MenuPopUp.style.display = "none";
   assetPopUpContainer.style.height = "50%";
@@ -35,12 +39,23 @@ erc1155MenuToggle.addEventListener("click", () => {
 });
 
 erc20MenuToggle.addEventListener("click", () => {
+  ethMenuPopUp.style.display = "none";
   erc721MenuPopUp.style.display = "none";
   erc1155MenuPopUp.style.display = "none";
   assetPopUpContainer.style.height = "50%";
   toggleFullscreen.style.display = "block";
   closeMenu.style.display = "block";
   erc20MenuPopUp.style.display = "block";
+});
+ethMenuToggle.addEventListener("click", () => {
+  erc721MenuPopUp.style.display = "none";
+  erc1155MenuPopUp.style.display = "none";
+  erc20MenuPopUp.style.display = "none";
+
+  assetPopUpContainer.style.height = "50%";
+  toggleFullscreen.style.display = "block";
+  closeMenu.style.display = "block";
+  ethMenuPopUp.style.display = "block";
 });
 
 toggleFullscreen.addEventListener("click", () => {

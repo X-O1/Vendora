@@ -1,10 +1,11 @@
-import { defaultErc721s, defaultErc1155s, defaultErc20s, } from "./TokenList.js";
-import { erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, termErc721s, termErc1155s, termErc20s, requestTab, offerTab, assetPopUpContainer, toggleFullscreen, closeFullscreen, closeMenu, } from "./FrontEndElements.js";
+import { defaultErc721s, defaultErc1155s, defaultErc20s, defaultNativeTokens, } from "./TokenList.js";
+import { erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, termErc721s, termErc1155s, termErc20s, requestTab, offerTab, assetPopUpContainer, toggleFullscreen, closeFullscreen, closeMenu, termEth, ethMenuPopUp, } from "./FrontEndElements.js";
 import { createTermsList } from "./DisplayTerms.js";
 document.addEventListener("DOMContentLoaded", async () => {
     await createTokenList(defaultErc721s);
     await createTokenList(defaultErc1155s);
     await createTokenList(defaultErc20s);
+    await createTokenList(defaultNativeTokens);
 });
 const setItem = async (key, value) => {
     localStorage.setItem(key, JSON.stringify(value));
@@ -19,9 +20,11 @@ const deleteStorageItem = (key) => {
 const wantedErc721s = getTokenListInStorage("wantedErc721s") || [];
 const wantedErc1155s = getTokenListInStorage("wantedErc1155s") || [];
 const wantedErc20s = getTokenListInStorage("wantedErc20s") || [];
+const wantedEth = getTokenListInStorage("wantedEth") || [];
 const offeredErc721s = getTokenListInStorage("offeredErc721s") || [];
 const offeredErc1155s = getTokenListInStorage("offeredErc1155s") || [];
 const offeredErc20s = getTokenListInStorage("offeredErc20s") || [];
+const offeredEth = getTokenListInStorage("offeredEth") || [];
 const createTokenList = async (tokenList) => {
     try {
         tokenList.forEach((option) => {
@@ -80,9 +83,11 @@ const createTokenList = async (tokenList) => {
                 termErc721s.innerHTML = "";
                 termErc1155s.innerHTML = "";
                 termErc20s.innerHTML = "";
+                termEth.innerHTML = "";
                 createTermsList(wantedErc721s);
                 createTermsList(wantedErc1155s);
                 createTermsList(wantedErc20s);
+                createTermsList(wantedEth);
             });
             offerTab.addEventListener("click", () => {
                 addOfferedAssetButton.style.display = "block";
@@ -90,9 +95,11 @@ const createTokenList = async (tokenList) => {
                 termErc721s.innerHTML = "";
                 termErc1155s.innerHTML = "";
                 termErc20s.innerHTML = "";
+                termEth.innerHTML = "";
                 createTermsList(offeredErc721s);
                 createTermsList(offeredErc1155s);
                 createTermsList(offeredErc20s);
+                createTermsList(offeredEth);
             });
             if (tokenList === defaultErc721s) {
                 addWantedAssetButton.classList.add("add-wanted-erc721");
@@ -283,10 +290,66 @@ const createTokenList = async (tokenList) => {
                     closeMenu.style.display = "none";
                 });
             }
+            else if (tokenList === defaultNativeTokens) {
+                addWantedAssetButton.classList.add("add-wanted-eth");
+                addOfferedAssetButton.classList.add("add-offered-eth");
+                ethMenuPopUp.appendChild(tokenOptionDiv);
+                optionOrderDetailsDiv.appendChild(optionAmount);
+                optionOrderDetailsDiv.appendChild(addWantedAssetButton);
+                optionOrderDetailsDiv.appendChild(addOfferedAssetButton);
+                addWantedAssetButton.addEventListener("click", () => {
+                    let tokenExist = false;
+                    for (let i = 0; i < wantedEth.length; i++) {
+                        if (wantedEth[i].symbol === optionSymbol.innerHTML) {
+                            tokenExist = true;
+                            break;
+                        }
+                    }
+                    if (!tokenExist && optionAmount.value !== "") {
+                        wantedEth.push({
+                            imgSrc: optionImage.src,
+                            symbol: optionSymbol.innerHTML,
+                            amount: optionAmount.value,
+                        });
+                        setItem("wantedEth", wantedEth);
+                    }
+                    termEth.innerHTML = "";
+                    createTermsList(wantedEth);
+                    assetPopUpContainer.style.height = "0";
+                    toggleFullscreen.style.display = "none";
+                    closeFullscreen.style.display = "none";
+                    assetPopUpContainer.style.border = "none";
+                    closeMenu.style.display = "none";
+                });
+                addOfferedAssetButton.addEventListener("click", () => {
+                    let tokenExist = false;
+                    for (let i = 0; i < offeredEth.length; i++) {
+                        if (offeredEth[i].symbol === optionSymbol.innerHTML) {
+                            tokenExist = true;
+                            break;
+                        }
+                    }
+                    if (!tokenExist && optionAmount.value !== "") {
+                        offeredEth.push({
+                            imgSrc: optionImage.src,
+                            symbol: optionSymbol.innerHTML,
+                            amount: optionAmount.value,
+                        });
+                        setItem("offeredEth", offeredEth);
+                    }
+                    termEth.innerHTML = "";
+                    createTermsList(offeredEth);
+                    assetPopUpContainer.style.height = "0";
+                    toggleFullscreen.style.display = "none";
+                    closeFullscreen.style.display = "none";
+                    assetPopUpContainer.style.border = "none";
+                    closeMenu.style.display = "none";
+                });
+            }
         });
     }
     catch (error) {
         error: console.log(`${tokenList} failed to load`);
     }
 };
-export { wantedErc721s, wantedErc1155s, wantedErc20s, offeredErc721s, offeredErc1155s, offeredErc20s, deleteStorageItem, setItem, getTokenListInStorage, };
+export { wantedErc721s, wantedErc1155s, wantedErc20s, wantedEth, offeredErc721s, offeredErc1155s, offeredErc20s, offeredEth, deleteStorageItem, setItem, getTokenListInStorage, };

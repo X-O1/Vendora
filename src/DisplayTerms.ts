@@ -1,21 +1,27 @@
-import { termErc1155s, termErc20s, termErc721s } from "./FrontEndElements.js";
+import {
+  termErc1155s,
+  termErc20s,
+  termErc721s,
+  termEth,
+} from "./FrontEndElements.js";
 import {
   ErcDetails,
   offeredErc1155s,
   offeredErc20s,
   offeredErc721s,
+  offeredEth,
   setItem,
   wantedErc1155s,
   wantedErc20s,
   wantedErc721s,
-  // getTokenListInStorage,
-  // setItem,
+  wantedEth,
 } from "./TokenMenu.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   createTermsList(wantedErc721s);
   createTermsList(wantedErc1155s);
   createTermsList(wantedErc20s);
+  createTermsList(wantedEth);
 });
 const createTermsList = async (termTokens: ErcDetails[] | null) => {
   try {
@@ -58,6 +64,10 @@ const createTermsList = async (termTokens: ErcDetails[] | null) => {
         termErc20s.appendChild(selectedTermAssetDiv);
         selectedTermAssetDiv.appendChild(termAssetAmount);
         selectedTermAssetDiv.appendChild(deleteAssetButton);
+      } else if (termTokens === wantedEth || termTokens === offeredEth) {
+        termEth.appendChild(selectedTermAssetDiv);
+        selectedTermAssetDiv.appendChild(termAssetAmount);
+        selectedTermAssetDiv.appendChild(deleteAssetButton);
       }
 
       if (termTokens === wantedErc721s && termTokens.length !== 0) {
@@ -66,12 +76,16 @@ const createTermsList = async (termTokens: ErcDetails[] | null) => {
         termErc1155s.style.display = "block";
       } else if (termTokens === wantedErc20s && termTokens.length !== 0) {
         termErc20s.style.display = "block";
+      } else if (termTokens === wantedEth && termTokens.length !== 0) {
+        termEth.style.display = "block";
       } else if (termTokens === offeredErc721s && termTokens.length !== 0) {
         termErc721s.style.display = "block";
       } else if (termTokens === offeredErc1155s && termTokens.length !== 0) {
         termErc1155s.style.display = "block";
       } else if (termTokens === offeredErc20s && termTokens.length !== 0) {
         termErc20s.style.display = "block";
+      } else if (termTokens === offeredEth && termTokens.length !== 0) {
+        termEth.style.display = "block";
       }
 
       termAssetImage.src = token.imgSrc;
@@ -91,13 +105,22 @@ const createTermsList = async (termTokens: ErcDetails[] | null) => {
           index !== -1 ? termTokens.splice(index, 1) : null;
           setItem("wantedErc20s", wantedErc20s);
           setItem("offeredErc20s", offeredErc20s);
+          setItem("wantedEth", wantedEth);
+          setItem("offeredEth", offeredEth);
 
-          if (termTokens === wantedErc20s) {
+          if (termTokens === wantedErc20s || termTokens === wantedEth) {
             termErc20s.innerHTML = "";
             createTermsList(wantedErc20s);
-          } else if (termTokens === offeredErc20s) {
+            termEth.innerHTML = "";
+            createTermsList(wantedEth);
+          } else if (
+            termTokens === offeredErc20s ||
+            termTokens === offeredEth
+          ) {
             termErc20s.innerHTML = "";
             createTermsList(offeredErc20s);
+            termEth.innerHTML = "";
+            createTermsList(offeredEth);
           }
 
           if (token.tokenId === termAssetTokenId.innerHTML) {

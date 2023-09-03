@@ -11,8 +11,6 @@ body {
     background-repeat: no-repeat;
 }
 
-
-
 a {
     color: #7F87A2;
     text-decoration: none;
@@ -26,30 +24,29 @@ header {
 .header-container {
     padding-top: 10px;
     display: flex;
-    flex-direction: row;
     width: 100%;
-    justify-content: space-between;
-    text-transform: uppercase;
-
 }
 
 .logo {
     font-size: 25px;
-    margin-left: 10px;
-    color: rgb(255, 255, 255);
+    margin-left: 15px;
+    text-transform: uppercase;
 }
 
 .connect {
     background-color: #223666;
+    border-radius: 10px;
     color: #4575E4;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     color: inherit;
-    margin-right: 10px;
-    padding: 15px;
+    padding: 10px;
+    text-transform: uppercase;
+    position: absolute;
+    right: 20px;
 }
 
 .main-container {
@@ -67,7 +64,7 @@ header {
     border-radius: 20px;
     height: 90%;
     max-height: 750px;
-    width: 85%;
+    width: 90%;
     max-width: 450px;
     background: rgb(13, 17, 28);
     padding: 10px;
@@ -301,7 +298,8 @@ header {
 
 .add-offered-erc721,
 .add-offered-erc1155,
-.add-offered-erc20 {
+.add-offered-erc20,
+.add-offered-eth {
     display: none;
 }
 .option-token-id,
@@ -309,17 +307,19 @@ header {
 .add-wanted-erc721,
 .add-wanted-erc1155,
 .add-wanted-erc20,
+.add-wanted-eth,
 .add-offered-erc721,
 .add-offered-erc1155,
-.add-offered-erc20
+.add-offered-erc20,
+.add-offered-eth
  {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
     padding: 9px 10px;
     cursor: pointer;
     background: none;
-    width: 70px;
-    font-size: 10px;
+    width: 75px;
+    font-size: 13px;
     color: rgb(255, 255, 255);
 }
 .option-token-id,
