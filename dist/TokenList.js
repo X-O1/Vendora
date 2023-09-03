@@ -28,6 +28,12 @@ const defaultErc20s = [
         symbol: "LINK",
         address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
     },
+    {
+        imgSrc: "./images/erc20-project-images/samaToken.png",
+        name: "Moonsama",
+        symbol: "SAMA",
+        address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
+    },
 ];
 const defaultNativeTokens = [
     {

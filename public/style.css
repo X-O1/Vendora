@@ -42,11 +42,11 @@ header {
     justify-content: center;
     cursor: pointer;
     font-size: 14px;
-    color: inherit;
     padding: 10px;
     text-transform: uppercase;
     position: absolute;
     right: 20px;
+    
 }
 
 .main-container {
@@ -263,7 +263,6 @@ header {
     margin-bottom: 5px;
     font-size: 18px;
     justify-content: space-evenly;
-
 }
 
 .token-option img {
