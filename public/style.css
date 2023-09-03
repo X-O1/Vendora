@@ -58,6 +58,9 @@ header {
     height: 95%;
     flex-direction: column;
 }
+.request-link {
+    color: #FFF;
+}
 
 .trade-box {
     border: 1px solid rgba(152, 161, 192, 0.24);
@@ -111,7 +114,7 @@ header {
     color: rgb(255, 255, 255);
 }
 
-.what-do-you-want {
+.select-assets {
     height: 47%;
     width: 100%;
     padding: 10px 20px;
@@ -222,7 +225,6 @@ header {
     transition-property: height;
     transition-duration: 500ms;
     overflow: hidden;
-    padding: 10px 20px;
 }
 
 .section-title {
@@ -235,7 +237,7 @@ header {
     gap: 20px;
     overflow-y: auto;
     overflow-x: hidden;
-    margin-top: 5px;
+    margin: 15px 25px;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -296,20 +298,37 @@ header {
     gap: 0px;
 }
 
+
+.add-offered-erc721,
+.add-offered-erc1155,
+.add-offered-erc20 {
+    display: none;
+}
 .option-token-id,
 .option-amount,
-.add-erc721,
-.add-erc1155,
-.add-erc20 {
+.add-wanted-erc721,
+.add-wanted-erc1155,
+.add-wanted-erc20,
+.add-offered-erc721,
+.add-offered-erc1155,
+.add-offered-erc20
+ {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
     padding: 9px 10px;
     cursor: pointer;
     background: none;
-    width: 60px;
-    font-size: 13px;
+    width: 70px;
+    font-size: 10px;
     color: rgb(255, 255, 255);
 }
+.option-token-id,
+.option-amount
+ {
+    width: 45px;
+    font-size: 10px;
+}
+
 
 .eth-amount::placeholder,
 .option-token-id::placeholder,
@@ -325,9 +344,12 @@ header {
     border: .1px solid rgba(152, 161, 192, 0.24);
 }
 
-.add-erc721:hover,
-.add-erc1155:hover,
-.add-erc20:hover {
+.add-wanted-erc721:hover,
+.add-wanted-erc1155:hover,
+.add-wanted-erc20:hover,
+.add-offered-erc721:hover,
+.add-offered-erc1155:hover,
+.add-offered-erc20:hover{
     color: rgb(255, 255, 255);
 }
 

@@ -26,7 +26,6 @@ const closeFullscreen = document.querySelector(
   ".close-fullscreen img"
 ) as HTMLImageElement;
 const closeMenu = document.querySelector(".close-menu") as HTMLDivElement;
-
 const tokenOption = document.querySelector(".token-option") as HTMLDivElement;
 const optionImage = document.querySelector(
   "option-image img"
@@ -51,16 +50,22 @@ const termErc20s = document.querySelector(
 ) as HTMLDivElement;
 const termAssets = document.querySelector(".term-assets") as HTMLDivElement;
 const termAssetsH2 = document.querySelector(".term-assets h2") as HTMLElement;
-const whatDoYouWantDiv = document.querySelector(
-  ".what-do-you-want"
-) as HTMLDivElement;
-
-const whatDoYouWantH2 = document.querySelector(
-  ".what-do-you-want h2"
+const selectAssets = document.querySelector(".select-assets") as HTMLDivElement;
+const selectAssetsH2 = document.querySelector(
+  ".select-assets h2"
 ) as HTMLElement;
 const tokenStandardMenuOptionDiv = document.querySelector(
   ".token-standard-options"
 ) as HTMLDivElement;
+const requestTab = document.querySelector(".request-link") as HTMLDivElement;
+const offerTab = document.querySelector(".offer-link") as HTMLDivElement;
+const finalizeTermsTab = document.querySelector(
+  ".finalize-terms-link"
+) as HTMLDivElement;
+const addWantedErc721Button = document.querySelector(
+  ".add-wanted-erc721"
+) as HTMLDivElement;
+
 export {
   assetPopUpContainer,
   erc721MenuToggle,
@@ -82,8 +87,12 @@ export {
   termErc1155s,
   termErc20s,
   termAssets,
-  whatDoYouWantDiv,
-  whatDoYouWantH2,
+  selectAssets,
+  selectAssetsH2,
   tokenStandardMenuOptionDiv,
   termAssetsH2,
+  requestTab,
+  offerTab,
+  finalizeTermsTab,
+  addWantedErc721Button,
 };

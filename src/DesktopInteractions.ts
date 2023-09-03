@@ -9,6 +9,11 @@ import {
   toggleFullscreen,
   closeFullscreen,
   closeMenu,
+  offerTab,
+  requestTab,
+  finalizeTermsTab,
+  selectAssetsH2,
+  termAssetsH2,
 } from "./FrontEndElements.js";
 
 erc721MenuToggle.addEventListener("click", () => {
@@ -72,4 +77,26 @@ closeMenu.addEventListener("click", () => {
   closeFullscreen.style.display = "none";
   assetPopUpContainer.style.border = "none";
   closeMenu.style.display = "none";
+});
+
+requestTab.addEventListener("click", () => {
+  requestTab.style.color = "#FFF";
+  offerTab.style.color = "#7F87A2";
+  finalizeTermsTab.style.color = "#7F87A2";
+
+  selectAssetsH2.innerHTML = "Select Assets You Want";
+  termAssetsH2.innerHTML = "REQUESTED ASSETS";
+});
+offerTab.addEventListener("click", () => {
+  offerTab.style.color = "#FFF";
+  requestTab.style.color = "#7F87A2";
+  finalizeTermsTab.style.color = "#7F87A2";
+
+  selectAssetsH2.innerHTML = "Select Assets You'll Give";
+  termAssetsH2.innerHTML = "OFFERED ASSETS";
+});
+finalizeTermsTab.addEventListener("click", () => {
+  finalizeTermsTab.style.color = "#FFF";
+  offerTab.style.color = "#7F87A2";
+  requestTab.style.color = "#7F87A2";
 });
