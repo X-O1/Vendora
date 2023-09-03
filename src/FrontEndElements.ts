@@ -62,9 +62,6 @@ const offerTab = document.querySelector(".offer-link") as HTMLDivElement;
 const finalizeTermsTab = document.querySelector(
   ".finalize-terms-link"
 ) as HTMLDivElement;
-const addWantedErc721Button = document.querySelector(
-  ".add-wanted-erc721"
-) as HTMLDivElement;
 
 export {
   assetPopUpContainer,
@@ -94,5 +91,4 @@ export {
   requestTab,
   offerTab,
   finalizeTermsTab,
-  addWantedErc721Button,
 };

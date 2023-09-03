@@ -13,6 +13,10 @@ import {
   termErc20s,
   requestTab,
   offerTab,
+  assetPopUpContainer,
+  toggleFullscreen,
+  closeFullscreen,
+  closeMenu,
 } from "./FrontEndElements.js";
 import { createTermsList } from "./DisplayTerms.js";
 
@@ -166,12 +170,16 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               tokenId: optionTokenId.value,
             });
             setItem("wantedErc721s", wantedErc721s);
-            addWantedAssetButton.innerHTML = "Requested";
-            addWantedAssetButton.style.color = "green";
             optionTokenId.value = "";
           }
           termErc721s.innerHTML = "";
           createTermsList(wantedErc721s);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
         });
 
         addOfferedAssetButton.addEventListener("click", () => {
@@ -191,12 +199,16 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               tokenId: optionTokenId.value,
             });
             setItem("offeredErc721s", offeredErc721s);
-            addOfferedAssetButton.innerHTML = "Offered";
-            addOfferedAssetButton.style.color = "green";
             optionTokenId.value = "";
           }
           termErc721s.innerHTML = "";
           createTermsList(offeredErc721s);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
         });
       } else if (tokenList === defaultErc1155s) {
         addWantedAssetButton.classList.add("add-wanted-erc1155");
@@ -229,13 +241,17 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               amount: optionAmount.value,
             });
             setItem("wantedErc1155s", wantedErc1155s);
-            addWantedAssetButton.innerHTML = "Requested";
-            addWantedAssetButton.style.color = "green";
             optionTokenId.value = "";
             optionAmount.value = "";
           }
           termErc1155s.innerHTML = "";
           createTermsList(wantedErc1155s);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
         });
 
         addOfferedAssetButton.addEventListener("click", () => {
@@ -260,13 +276,17 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               amount: optionAmount.value,
             });
             setItem("offeredErc1155s", offeredErc1155s);
-            addOfferedAssetButton.innerHTML = "Offered";
-            addOfferedAssetButton.style.color = "green";
             optionTokenId.value = "";
             optionAmount.value = "";
           }
           termErc1155s.innerHTML = "";
           createTermsList(offeredErc1155s);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
         });
       } else if (tokenList === defaultErc20s) {
         addWantedAssetButton.classList.add("add-wanted-erc20");
@@ -291,11 +311,15 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               amount: optionAmount.value,
             });
             setItem("wantedErc20s", wantedErc20s);
-            addWantedAssetButton.innerHTML = "Requested";
-            addWantedAssetButton.style.color = "green";
           }
           termErc20s.innerHTML = "";
           createTermsList(wantedErc20s);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
         });
 
         addOfferedAssetButton.addEventListener("click", () => {
@@ -313,11 +337,15 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               amount: optionAmount.value,
             });
             setItem("offeredErc20s", offeredErc20s);
-            addOfferedAssetButton.innerHTML = "Offered";
-            addOfferedAssetButton.style.color = "green";
           }
           termErc20s.innerHTML = "";
           createTermsList(offeredErc20s);
+
+          assetPopUpContainer.style.height = "0";
+          toggleFullscreen.style.display = "none";
+          closeFullscreen.style.display = "none";
+          assetPopUpContainer.style.border = "none";
+          closeMenu.style.display = "none";
         });
       }
     });
