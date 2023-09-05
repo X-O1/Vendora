@@ -65,7 +65,7 @@ header {
     height: 90%;
     max-height: 750px;
     width: 90%;
-    max-width: 450px;
+    max-width: 400px;
     background: rgb(13, 17, 28);
     padding: 10px;
     position: relative;
@@ -96,7 +96,8 @@ header {
     margin-top: 40px;
 }
 
-.build-terms {
+.build-terms,
+.finalize-terms {
     border-radius: 20px;
     height: 90%;
     width: 100%;
@@ -239,13 +240,17 @@ header {
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .menu::-webkit-scrollbar,
-.selected-assets::-webkit-scrollbar {
+.selected-assets::-webkit-scrollbar,
+.requested-assets::-webkit-scrollbar,
+.offered-assets::-webkit-scrollbar {
     display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .menu,
-.selected-assets{
+.selected-assets,
+.requested-assets,
+.offered-assets{
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
@@ -284,6 +289,10 @@ header {
 .option-name {
     font-size: 21px;
     color: rgb(255, 255, 255);
+}
+.erc1155-menu-popup .option-name {
+    font-size: 15px;
+
 }
 
 .option-order-details {
@@ -352,7 +361,10 @@ header {
     color: rgb(255, 255, 255);
 }
 
-.term-assets {
+.term-assets,
+.requested-assets,
+.offered-assets
+ {
     height: 47%;
     width: 100%;
     padding: 10px 20px;
@@ -366,7 +378,9 @@ header {
     transition-duration: 500ms;
 }
 
-.selected-assets {
+.selected-assets,
+.requested-assets,
+.offered-assets {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
@@ -378,6 +392,7 @@ header {
 .selected-assets h4 {
     margin: 5px auto;
     padding-left: 5px;
+    
 }
 
 .selected-term-asset {
@@ -407,4 +422,20 @@ header {
 .term-asset-erc1155s,
 .term-asset-erc20s {
     display: none;
+}
+
+.finalize-terms {
+    background: rgb(13, 17, 28);
+    height: 100%;
+    display: none;
+
+}
+
+.requested-assets,
+.offered-assets {
+    background-color: rgb(19, 26, 42);
+    border-radius: 20px;
+    height: 47%;
+    margin-top: 0px;
+    
 }

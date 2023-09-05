@@ -54,6 +54,7 @@ const termErc20s = document.querySelector(
 ) as HTMLDivElement;
 const termEth = document.querySelector(".term-asset-eth") as HTMLDivElement;
 const termAssets = document.querySelector(".term-assets") as HTMLDivElement;
+
 const termAssetsH2 = document.querySelector(".term-assets h2") as HTMLElement;
 const selectAssets = document.querySelector(".select-assets") as HTMLDivElement;
 const selectAssetsH2 = document.querySelector(
@@ -67,7 +68,41 @@ const offerTab = document.querySelector(".offer-link") as HTMLDivElement;
 const finalizeTermsTab = document.querySelector(
   ".finalize-terms-link"
 ) as HTMLDivElement;
+const finalizeTermsDiv = document.querySelector(
+  ".finalize-terms"
+) as HTMLDivElement;
+const requestedAssets = document.querySelector(
+  ".requested-assets"
+) as HTMLDivElement;
+const offeredAssets = document.querySelector(
+  ".requested-assets"
+) as HTMLDivElement;
 
+const requestedTermsErc721s = document.querySelector(
+  ".requested-erc721s"
+) as HTMLDivElement;
+const requestedTermsErc1155s = document.querySelector(
+  ".requested-erc1155s"
+) as HTMLDivElement;
+const requestedTermsErc20s = document.querySelector(
+  ".requested-erc20s"
+) as HTMLDivElement;
+const requestedTermsEth = document.querySelector(
+  ".requested-eth"
+) as HTMLDivElement;
+
+const offeredTermsErc721s = document.querySelector(
+  ".offered-erc721s"
+) as HTMLDivElement;
+const offeredTermsErc1155s = document.querySelector(
+  ".offered-erc1155s"
+) as HTMLDivElement;
+const offeredTermsErc20s = document.querySelector(
+  ".offered-erc20s"
+) as HTMLDivElement;
+const offeredTermsEth = document.querySelector(
+  ".offered-eth"
+) as HTMLDivElement;
 export {
   assetPopUpContainer,
   erc721MenuToggle,
@@ -99,4 +134,15 @@ export {
   requestTab,
   offerTab,
   finalizeTermsTab,
+  finalizeTermsDiv,
+  requestedAssets,
+  offeredAssets,
+  requestedTermsErc721s,
+  requestedTermsErc1155s,
+  requestedTermsErc20s,
+  requestedTermsEth,
+  offeredTermsErc721s,
+  offeredTermsErc1155s,
+  offeredTermsErc20s,
+  offeredTermsEth,
 };

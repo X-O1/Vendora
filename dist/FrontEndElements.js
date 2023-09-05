@@ -28,4 +28,15 @@ const tokenStandardMenuOptionDiv = document.querySelector(".token-standard-optio
 const requestTab = document.querySelector(".request-link");
 const offerTab = document.querySelector(".offer-link");
 const finalizeTermsTab = document.querySelector(".finalize-terms-link");
-export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, ethMenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, ethMenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, tokenOption, optionImage, optionName, optionSymbol, optionTokenId, optionAmount, termErc721s, termErc1155s, termErc20s, termEth, termAssets, selectAssets, selectAssetsH2, tokenStandardMenuOptionDiv, termAssetsH2, requestTab, offerTab, finalizeTermsTab, };
+const finalizeTermsDiv = document.querySelector(".finalize-terms");
+const requestedAssets = document.querySelector(".requested-assets");
+const offeredAssets = document.querySelector(".requested-assets");
+const requestedTermsErc721s = document.querySelector(".requested-erc721s");
+const requestedTermsErc1155s = document.querySelector(".requested-erc1155s");
+const requestedTermsErc20s = document.querySelector(".requested-erc20s");
+const requestedTermsEth = document.querySelector(".requested-eth");
+const offeredTermsErc721s = document.querySelector(".offered-erc721s");
+const offeredTermsErc1155s = document.querySelector(".offered-erc1155s");
+const offeredTermsErc20s = document.querySelector(".offered-erc20s");
+const offeredTermsEth = document.querySelector(".offered-eth");
+export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, ethMenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, ethMenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, tokenOption, optionImage, optionName, optionSymbol, optionTokenId, optionAmount, termErc721s, termErc1155s, termErc20s, termEth, termAssets, selectAssets, selectAssetsH2, tokenStandardMenuOptionDiv, termAssetsH2, requestTab, offerTab, finalizeTermsTab, finalizeTermsDiv, requestedAssets, offeredAssets, requestedTermsErc721s, requestedTermsErc1155s, requestedTermsErc20s, requestedTermsEth, offeredTermsErc721s, offeredTermsErc1155s, offeredTermsErc20s, offeredTermsEth, };
