@@ -74,10 +74,15 @@ const finalizeTermsDiv = document.querySelector(
 const requestedAssets = document.querySelector(
   ".requested-assets"
 ) as HTMLDivElement;
+const requestedAssetsH2 = document.querySelector(
+  ".requested-assets-title"
+) as HTMLElement;
 const offeredAssets = document.querySelector(
-  ".requested-assets"
+  ".offered-assets"
 ) as HTMLDivElement;
-
+const offeredAssetsH2 = document.querySelector(
+  ".requested-assets-title"
+) as HTMLElement;
 const requestedTermsErc721s = document.querySelector(
   ".requested-erc721s"
 ) as HTMLDivElement;
@@ -145,4 +150,6 @@ export {
   offeredTermsErc1155s,
   offeredTermsErc20s,
   offeredTermsEth,
+  offeredAssetsH2,
+  requestedAssetsH2,
 };

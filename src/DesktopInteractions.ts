@@ -1,4 +1,7 @@
-import { createTermsList } from "./DisplayTerms.js";
+import {
+  createOfferedAssetList,
+  createWantedAssetList,
+} from "./DisplayTerms.js";
 import {
   erc721MenuToggle,
   erc1155MenuToggle,
@@ -14,11 +17,9 @@ import {
   requestTab,
   finalizeTermsTab,
   selectAssetsH2,
-  termAssetsH2,
   ethMenuToggle,
   ethMenuPopUp,
   selectAssets,
-  termAssets,
   finalizeTermsDiv,
   requestedTermsErc721s,
   requestedTermsErc1155s,
@@ -28,6 +29,8 @@ import {
   offeredTermsErc1155s,
   offeredTermsErc20s,
   offeredTermsEth,
+  requestedAssets,
+  offeredAssets,
 } from "./FrontEndElements.js";
 import {
   offeredErc1155s,
@@ -125,50 +128,55 @@ requestTab.addEventListener("click", () => {
   offerTab.style.color = "#7F87A2";
   finalizeTermsTab.style.color = "#7F87A2";
   selectAssets.style.display = "flex";
-  termAssets.style.display = "flex";
-  finalizeTermsDiv.style.display = "none";
+  requestedAssets.style.display = "flex";
+  offeredAssets.style.display = "none";
+  finalizeTermsDiv.style.height = "50%";
+  requestedAssets.style.height = "100%";
 
-  selectAssetsH2.innerHTML = "Select Assets You Want";
-  termAssetsH2.innerHTML = "REQUESTED ASSETS";
+  selectAssetsH2.innerText = "Select Assets You Want";
 });
 offerTab.addEventListener("click", () => {
   offerTab.style.color = "#FFF";
   requestTab.style.color = "#7F87A2";
   finalizeTermsTab.style.color = "#7F87A2";
   selectAssets.style.display = "flex";
-  termAssets.style.display = "flex";
-  finalizeTermsDiv.style.display = "none";
+  requestedAssets.style.display = "none";
+  offeredAssets.style.display = "flex";
+  finalizeTermsDiv.style.height = "50%";
+  offeredAssets.style.height = "100%";
 
-  selectAssetsH2.innerHTML = "Select Assets You'll Give";
-  termAssetsH2.innerHTML = "OFFERED ASSETS";
+  selectAssetsH2.innerText = "Select Assets You'll Give";
 });
 finalizeTermsTab.addEventListener("click", () => {
   finalizeTermsTab.style.color = "#FFF";
-  finalizeTermsDiv.style.display = "flex";
   offerTab.style.color = "#7F87A2";
   requestTab.style.color = "#7F87A2";
   selectAssets.style.display = "none";
-  termAssets.style.display = "none";
+  requestedAssets.style.display = "flex";
+  offeredAssets.style.display = "flex";
+  finalizeTermsDiv.style.height = "100%";
+  requestedAssets.style.height = "47%";
+  offeredAssets.style.height = "47%";
 
-  requestedTermsErc721s.innerHTML = "";
-  requestedTermsErc1155s.innerHTML = "";
-  requestedTermsErc20s.innerHTML = "";
-  requestedTermsEth.innerHTML = "";
-
-  offeredTermsErc721s.innerHTML = "";
-  offeredTermsErc1155s.innerHTML = "";
-  offeredTermsErc20s.innerHTML = "";
-  offeredTermsEth.innerHTML = "";
+  requestedTermsErc721s.innerText = "";
+  requestedTermsErc1155s.innerText = "";
+  requestedTermsErc20s.innerText = "";
+  requestedTermsEth.innerText = "";
 
   closeMenuPopUp();
 
-  createTermsList(wantedErc721s);
-  createTermsList(wantedErc1155s);
-  createTermsList(wantedErc20s);
-  createTermsList(wantedEth);
+  createWantedAssetList(wantedErc721s);
+  createWantedAssetList(wantedErc1155s);
+  createWantedAssetList(wantedErc20s);
+  createWantedAssetList(wantedEth);
 
-  createTermsList(offeredErc721s);
-  createTermsList(offeredErc1155s);
-  createTermsList(offeredErc20s);
-  createTermsList(offeredEth);
+  offeredTermsErc721s.innerText = "";
+  offeredTermsErc1155s.innerText = "";
+  offeredTermsErc20s.innerText = "";
+  offeredTermsEth.innerText = "";
+
+  createOfferedAssetList(offeredErc721s);
+  createOfferedAssetList(offeredErc1155s);
+  createOfferedAssetList(offeredErc20s);
+  createOfferedAssetList(offeredEth);
 });

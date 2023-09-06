@@ -1,6 +1,6 @@
 import { defaultErc721s, defaultErc1155s, defaultErc20s, defaultNativeTokens, } from "./TokenList.js";
-import { erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, termErc721s, termErc1155s, termErc20s, requestTab, offerTab, assetPopUpContainer, toggleFullscreen, closeFullscreen, closeMenu, termEth, ethMenuPopUp, } from "./FrontEndElements.js";
-import { createTermsList } from "./DisplayTerms.js";
+import { erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, requestTab, offerTab, assetPopUpContainer, toggleFullscreen, closeFullscreen, closeMenu, ethMenuPopUp, requestedTermsErc721s, offeredTermsErc721s, requestedTermsErc1155s, offeredTermsErc1155s, requestedTermsErc20s, offeredTermsErc20s, requestedTermsEth, offeredTermsEth, } from "./FrontEndElements.js";
+import { createOfferedAssetList, createWantedAssetList, } from "./DisplayTerms.js";
 document.addEventListener("DOMContentLoaded", async () => {
     await createTokenList(defaultErc721s);
     await createTokenList(defaultErc1155s);
@@ -55,51 +55,51 @@ const createTokenList = async (tokenList) => {
             optionDetailsDiv.appendChild(optionSymbol);
             tokenOptionDiv.appendChild(optionOrderDetailsDiv);
             optionImage.src = option.imgSrc;
-            optionName.innerHTML = option.name;
-            optionSymbol.innerHTML = option.symbol;
+            optionName.innerText = option.name;
+            optionSymbol.innerText = option.symbol;
             optionTokenId.type = "text";
             optionTokenId.placeholder = "Token ID";
             optionAmount.placeholder = "Amount";
             optionAmount.type = "text";
-            addWantedAssetButton.innerHTML = "Request";
-            addOfferedAssetButton.innerHTML = "Offer";
+            addWantedAssetButton.innerText = "Request";
+            addOfferedAssetButton.innerText = "Offer";
             optionAmount.addEventListener("input", () => {
                 optionAmount.value = optionAmount.value.replace(/[^\d]/g, "");
-                addWantedAssetButton.innerHTML = "Request";
-                addOfferedAssetButton.innerHTML = "Offer";
+                addWantedAssetButton.innerText = "Request";
+                addOfferedAssetButton.innerText = "Offer";
                 addWantedAssetButton.style.color = "rgb(255, 255, 255)";
                 addOfferedAssetButton.style.color = "rgb(255, 255, 255)";
             });
             optionTokenId.addEventListener("input", () => {
                 optionTokenId.value = optionTokenId.value.replace(/[^\d]/g, "");
-                addWantedAssetButton.innerHTML = "Request";
-                addOfferedAssetButton.innerHTML = "Offer";
+                addWantedAssetButton.innerText = "Request";
+                addOfferedAssetButton.innerText = "Offer";
                 addWantedAssetButton.style.color = "rgb(255, 255, 255)";
                 addOfferedAssetButton.style.color = "rgb(255, 255, 255)";
             });
             requestTab.addEventListener("click", () => {
                 addWantedAssetButton.style.display = "block";
                 addOfferedAssetButton.style.display = "none";
-                termErc721s.innerHTML = "";
-                termErc1155s.innerHTML = "";
-                termErc20s.innerHTML = "";
-                termEth.innerHTML = "";
-                createTermsList(wantedErc721s);
-                createTermsList(wantedErc1155s);
-                createTermsList(wantedErc20s);
-                createTermsList(wantedEth);
+                requestedTermsErc721s.innerText = "";
+                requestedTermsErc1155s.innerText = "";
+                requestedTermsErc20s.innerText = "";
+                requestedTermsEth.innerText = "";
+                createWantedAssetList(wantedErc721s);
+                createWantedAssetList(wantedErc1155s);
+                createWantedAssetList(wantedErc20s);
+                createWantedAssetList(wantedEth);
             });
             offerTab.addEventListener("click", () => {
                 addOfferedAssetButton.style.display = "block";
                 addWantedAssetButton.style.display = "none";
-                termErc721s.innerHTML = "";
-                termErc1155s.innerHTML = "";
-                termErc20s.innerHTML = "";
-                termEth.innerHTML = "";
-                createTermsList(offeredErc721s);
-                createTermsList(offeredErc1155s);
-                createTermsList(offeredErc20s);
-                createTermsList(offeredEth);
+                offeredTermsErc721s.innerText = "";
+                offeredTermsErc1155s.innerText = "";
+                offeredTermsErc20s.innerText = "";
+                offeredTermsEth.innerText = "";
+                createOfferedAssetList(offeredErc721s);
+                createOfferedAssetList(offeredErc1155s);
+                createOfferedAssetList(offeredErc20s);
+                createOfferedAssetList(offeredEth);
             });
             if (tokenList === defaultErc721s) {
                 addWantedAssetButton.classList.add("add-wanted-erc721");
@@ -111,7 +111,7 @@ const createTokenList = async (tokenList) => {
                 addWantedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < wantedErc721s.length; i++) {
-                        if (wantedErc721s[i].symbol === optionSymbol.innerHTML) {
+                        if (wantedErc721s[i].symbol === optionSymbol.innerText) {
                             if (wantedErc721s[i].tokenId === optionTokenId.value) {
                                 tokenExist = true;
                                 break;
@@ -121,14 +121,14 @@ const createTokenList = async (tokenList) => {
                     if (!tokenExist && optionTokenId.value !== "") {
                         wantedErc721s.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             tokenId: optionTokenId.value,
                         });
                         setItem("wantedErc721s", wantedErc721s);
                         optionTokenId.value = "";
                     }
-                    termErc721s.innerHTML = "";
-                    createTermsList(wantedErc721s);
+                    requestedTermsErc721s.innerText = "";
+                    createWantedAssetList(wantedErc721s);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";
@@ -138,7 +138,7 @@ const createTokenList = async (tokenList) => {
                 addOfferedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < offeredErc721s.length; i++) {
-                        if (offeredErc721s[i].symbol === optionSymbol.innerHTML) {
+                        if (offeredErc721s[i].symbol === optionSymbol.innerText) {
                             if (offeredErc721s[i].tokenId === optionTokenId.value) {
                                 tokenExist = true;
                                 break;
@@ -148,14 +148,14 @@ const createTokenList = async (tokenList) => {
                     if (!tokenExist && optionTokenId.value !== "") {
                         offeredErc721s.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             tokenId: optionTokenId.value,
                         });
                         setItem("offeredErc721s", offeredErc721s);
                         optionTokenId.value = "";
                     }
-                    termErc721s.innerHTML = "";
-                    createTermsList(offeredErc721s);
+                    offeredTermsErc721s.innerText = "";
+                    createOfferedAssetList(offeredErc721s);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";
@@ -174,7 +174,7 @@ const createTokenList = async (tokenList) => {
                 addWantedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < wantedErc1155s.length; i++) {
-                        if (wantedErc1155s[i].symbol === optionSymbol.innerHTML) {
+                        if (wantedErc1155s[i].symbol === optionSymbol.innerText) {
                             if (wantedErc1155s[i].tokenId === optionTokenId.value) {
                                 tokenExist = true;
                                 break;
@@ -186,7 +186,7 @@ const createTokenList = async (tokenList) => {
                         optionAmount.value !== "") {
                         wantedErc1155s.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             tokenId: optionTokenId.value,
                             amount: optionAmount.value,
                         });
@@ -194,8 +194,8 @@ const createTokenList = async (tokenList) => {
                         optionTokenId.value = "";
                         optionAmount.value = "";
                     }
-                    termErc1155s.innerHTML = "";
-                    createTermsList(wantedErc1155s);
+                    requestedTermsErc1155s.innerText = "";
+                    createWantedAssetList(wantedErc1155s);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";
@@ -205,7 +205,7 @@ const createTokenList = async (tokenList) => {
                 addOfferedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < offeredErc1155s.length; i++) {
-                        if (offeredErc1155s[i].symbol === optionSymbol.innerHTML) {
+                        if (offeredErc1155s[i].symbol === optionSymbol.innerText) {
                             if (offeredErc1155s[i].tokenId === optionTokenId.value) {
                                 tokenExist = true;
                                 break;
@@ -217,7 +217,7 @@ const createTokenList = async (tokenList) => {
                         optionAmount.value !== "") {
                         offeredErc1155s.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             tokenId: optionTokenId.value,
                             amount: optionAmount.value,
                         });
@@ -225,8 +225,8 @@ const createTokenList = async (tokenList) => {
                         optionTokenId.value = "";
                         optionAmount.value = "";
                     }
-                    termErc1155s.innerHTML = "";
-                    createTermsList(offeredErc1155s);
+                    offeredTermsErc1155s.innerText = "";
+                    createOfferedAssetList(offeredErc1155s);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";
@@ -244,7 +244,7 @@ const createTokenList = async (tokenList) => {
                 addWantedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < wantedErc20s.length; i++) {
-                        if (wantedErc20s[i].symbol === optionSymbol.innerHTML) {
+                        if (wantedErc20s[i].symbol === optionSymbol.innerText) {
                             tokenExist = true;
                             break;
                         }
@@ -252,13 +252,13 @@ const createTokenList = async (tokenList) => {
                     if (!tokenExist && optionAmount.value !== "") {
                         wantedErc20s.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             amount: optionAmount.value,
                         });
                         setItem("wantedErc20s", wantedErc20s);
                     }
-                    termErc20s.innerHTML = "";
-                    createTermsList(wantedErc20s);
+                    requestedTermsErc20s.innerText = "";
+                    createWantedAssetList(wantedErc20s);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";
@@ -268,7 +268,7 @@ const createTokenList = async (tokenList) => {
                 addOfferedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < offeredErc20s.length; i++) {
-                        if (offeredErc20s[i].symbol === optionSymbol.innerHTML) {
+                        if (offeredErc20s[i].symbol === optionSymbol.innerText) {
                             tokenExist = true;
                             break;
                         }
@@ -276,13 +276,13 @@ const createTokenList = async (tokenList) => {
                     if (!tokenExist && optionAmount.value !== "") {
                         offeredErc20s.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             amount: optionAmount.value,
                         });
                         setItem("offeredErc20s", offeredErc20s);
                     }
-                    termErc20s.innerHTML = "";
-                    createTermsList(offeredErc20s);
+                    offeredTermsErc20s.innerText = "";
+                    createOfferedAssetList(offeredErc20s);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";
@@ -300,7 +300,7 @@ const createTokenList = async (tokenList) => {
                 addWantedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < wantedEth.length; i++) {
-                        if (wantedEth[i].symbol === optionSymbol.innerHTML) {
+                        if (wantedEth[i].symbol === optionSymbol.innerText) {
                             tokenExist = true;
                             break;
                         }
@@ -308,13 +308,13 @@ const createTokenList = async (tokenList) => {
                     if (!tokenExist && optionAmount.value !== "") {
                         wantedEth.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             amount: optionAmount.value,
                         });
                         setItem("wantedEth", wantedEth);
                     }
-                    termEth.innerHTML = "";
-                    createTermsList(wantedEth);
+                    requestedTermsEth.innerText = "";
+                    createWantedAssetList(wantedEth);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";
@@ -324,7 +324,7 @@ const createTokenList = async (tokenList) => {
                 addOfferedAssetButton.addEventListener("click", () => {
                     let tokenExist = false;
                     for (let i = 0; i < offeredEth.length; i++) {
-                        if (offeredEth[i].symbol === optionSymbol.innerHTML) {
+                        if (offeredEth[i].symbol === optionSymbol.innerText) {
                             tokenExist = true;
                             break;
                         }
@@ -332,13 +332,13 @@ const createTokenList = async (tokenList) => {
                     if (!tokenExist && optionAmount.value !== "") {
                         offeredEth.push({
                             imgSrc: optionImage.src,
-                            symbol: optionSymbol.innerHTML,
+                            symbol: optionSymbol.innerText,
                             amount: optionAmount.value,
                         });
                         setItem("offeredEth", offeredEth);
                     }
-                    termEth.innerHTML = "";
-                    createTermsList(offeredEth);
+                    offeredTermsEth.innerText = "";
+                    createOfferedAssetList(offeredEth);
                     assetPopUpContainer.style.height = "0";
                     toggleFullscreen.style.display = "none";
                     closeFullscreen.style.display = "none";

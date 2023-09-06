@@ -46,7 +46,7 @@ header {
     text-transform: uppercase;
     position: absolute;
     right: 20px;
-    
+
 }
 
 .main-container {
@@ -55,6 +55,7 @@ header {
     height: 95%;
     flex-direction: column;
 }
+
 .request-link {
     color: #FFF;
 }
@@ -144,11 +145,11 @@ header {
     color: rgb(255, 255, 255);
     background: none;
     border: .1px inset #7F87A2;
-    box-shadow: 2px 2px 4px #101a2d; 
+    box-shadow: 2px 2px 4px #101a2d;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s linear;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2); 
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,12 +161,12 @@ header {
     background: linear-gradient(145deg, #12243c, #0a1629);
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(255, 255, 255, 0.2) inset;
     color: rgb(255, 255, 255);
-    
+
 
 }
 
 .toggleMenu:active,
-.delete-asset:active{
+.delete-asset:active {
     background: linear-gradient(145deg, #0a1629, #00080f);
     transform: translateY(1px);
     box-shadow: inset 1px 1px 2px #0a121f;
@@ -177,8 +178,8 @@ header {
 
 .toggleMenu:focus {
     background: linear-gradient(145deg, #12243c, #0a1629);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 120, 255, 0.6) inset, 0 0 15px rgba(0, 120, 255, 0.7) inset; 
-    transform: translateY(2px); 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 120, 255, 0.6) inset, 0 0 15px rgba(0, 120, 255, 0.7) inset;
+    transform: translateY(2px);
     outline: none;
     color: rgb(255, 255, 255);
 
@@ -250,7 +251,7 @@ header {
 .menu,
 .selected-assets,
 .requested-assets,
-.offered-assets{
+.offered-assets {
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
@@ -290,6 +291,7 @@ header {
     font-size: 21px;
     color: rgb(255, 255, 255);
 }
+
 .erc1155-menu-popup .option-name {
     font-size: 15px;
 
@@ -299,6 +301,7 @@ header {
     display: flex;
     gap: 10px;
 }
+
 .erc1155-menu-popup .option-order-details {
     gap: 0px;
 }
@@ -310,6 +313,7 @@ header {
 .add-offered-eth {
     display: none;
 }
+
 .option-token-id,
 .option-amount,
 .add-wanted-erc721,
@@ -319,8 +323,7 @@ header {
 .add-offered-erc721,
 .add-offered-erc1155,
 .add-offered-erc20,
-.add-offered-eth
- {
+.add-offered-eth {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
     padding: 9px 10px;
@@ -330,9 +333,9 @@ header {
     font-size: 13px;
     color: rgb(255, 255, 255);
 }
+
 .option-token-id,
-.option-amount
- {
+.option-amount {
     width: 45px;
     font-size: 10px;
 }
@@ -357,14 +360,12 @@ header {
 .add-wanted-erc20:hover,
 .add-offered-erc721:hover,
 .add-offered-erc1155:hover,
-.add-offered-erc20:hover{
+.add-offered-erc20:hover {
     color: rgb(255, 255, 255);
 }
 
-.term-assets,
 .requested-assets,
-.offered-assets
- {
+.offered-assets {
     height: 47%;
     width: 100%;
     padding: 10px 20px;
@@ -374,16 +375,11 @@ header {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    transition-property: height;
-    transition-duration: 500ms;
 }
 
-.selected-assets,
 .requested-assets,
 .offered-assets {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
+    display: flex;
     overflow-y: auto;
     overflow-x: hidden;
     margin-top: 5px;
@@ -392,21 +388,22 @@ header {
 .selected-assets h4 {
     margin: 5px auto;
     padding-left: 5px;
-    
+
 }
 
 .selected-term-asset {
     border: .1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
-    padding: 10px 0px;
+    padding: 10px 20px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
     width: 100%;
     margin-bottom: 5px;
-    font-size: 18px;
-    justify-content: space-evenly;
+    font-size: 19px;
+    justify-content: left;
+    position: relative;
 }
 
 .delete-asset {
@@ -415,27 +412,43 @@ header {
     background-color: rgb(19, 26, 42);
     cursor: pointer;
     border: .1px solid #7F87A2;
-    box-shadow: 2px 2px 4px #101a2d; 
+    box-shadow: 2px 2px 4px #101a2d;
     border-radius: 10px;
+    position: absolute;
+  right: 5%;
 }
-.term-asset-erc721s,
-.term-asset-erc1155s,
-.term-asset-erc20s {
+
+.requested-erc721s,
+.requested-erc1155s,
+.requested-erc20s,
+.offered-erc721s,
+.offered-erc1155s,
+.offered-erc20s {
     display: none;
 }
 
 .finalize-terms {
     background: rgb(13, 17, 28);
-    height: 100%;
-    display: none;
-
+    height: 50%;
 }
 
 .requested-assets,
 .offered-assets {
     background-color: rgb(19, 26, 42);
     border-radius: 20px;
-    height: 47%;
+    height: 100%;
     margin-top: 0px;
-    
+}
+
+.offered-assets {
+    display: none;
+}
+.requested-assets-title,
+.offered-assets-title
+ {
+    margin-bottom: 10px !important;
+}
+.term-asset-tokenId-title,
+.term-asset-amount-title {
+    margin-right: -12px;
 }
