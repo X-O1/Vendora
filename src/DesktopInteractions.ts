@@ -31,6 +31,9 @@ import {
   offeredTermsEth,
   requestedAssets,
   offeredAssets,
+  offeredAssetsTitle,
+  requestedAssetsTitle,
+  setTermsButton,
 } from "./FrontEndElements.js";
 import {
   offeredErc1155s,
@@ -132,6 +135,7 @@ requestTab.addEventListener("click", () => {
   offeredAssets.style.display = "none";
   finalizeTermsDiv.style.height = "50%";
   requestedAssets.style.height = "100%";
+  setTermsButton.style.display = "none";
 
   selectAssetsH2.innerText = "Select Assets You Want";
 });
@@ -144,6 +148,7 @@ offerTab.addEventListener("click", () => {
   offeredAssets.style.display = "flex";
   finalizeTermsDiv.style.height = "50%";
   offeredAssets.style.height = "100%";
+  setTermsButton.style.display = "none";
 
   selectAssetsH2.innerText = "Select Assets You'll Give";
 });
@@ -155,13 +160,16 @@ finalizeTermsTab.addEventListener("click", () => {
   requestedAssets.style.display = "flex";
   offeredAssets.style.display = "flex";
   finalizeTermsDiv.style.height = "100%";
-  requestedAssets.style.height = "47%";
-  offeredAssets.style.height = "47%";
+  requestedAssets.style.height = "45%";
+  offeredAssets.style.height = "45%";
 
   requestedTermsErc721s.innerText = "";
   requestedTermsErc1155s.innerText = "";
   requestedTermsErc20s.innerText = "";
   requestedTermsEth.innerText = "";
+  offeredAssetsTitle.innerText = "GIVE";
+  requestedAssetsTitle.innerText = "RECIEVE";
+  setTermsButton.style.display = "flex";
 
   closeMenuPopUp();
 

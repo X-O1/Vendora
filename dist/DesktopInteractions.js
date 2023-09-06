@@ -1,5 +1,5 @@
 import { createOfferedAssetList, createWantedAssetList, } from "./DisplayTerms.js";
-import { erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, assetPopUpContainer, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, offerTab, requestTab, finalizeTermsTab, selectAssetsH2, ethMenuToggle, ethMenuPopUp, selectAssets, finalizeTermsDiv, requestedTermsErc721s, requestedTermsErc1155s, requestedTermsErc20s, requestedTermsEth, offeredTermsErc721s, offeredTermsErc1155s, offeredTermsErc20s, offeredTermsEth, requestedAssets, offeredAssets, } from "./FrontEndElements.js";
+import { erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, assetPopUpContainer, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, offerTab, requestTab, finalizeTermsTab, selectAssetsH2, ethMenuToggle, ethMenuPopUp, selectAssets, finalizeTermsDiv, requestedTermsErc721s, requestedTermsErc1155s, requestedTermsErc20s, requestedTermsEth, offeredTermsErc721s, offeredTermsErc1155s, offeredTermsErc20s, offeredTermsEth, requestedAssets, offeredAssets, offeredAssetsTitle, requestedAssetsTitle, setTermsButton, } from "./FrontEndElements.js";
 import { offeredErc1155s, offeredErc20s, offeredErc721s, offeredEth, wantedErc1155s, wantedErc20s, wantedErc721s, wantedEth, } from "./TokenMenu.js";
 erc721MenuToggle.addEventListener("click", () => {
     ethMenuPopUp.style.display = "none";
@@ -84,6 +84,7 @@ requestTab.addEventListener("click", () => {
     offeredAssets.style.display = "none";
     finalizeTermsDiv.style.height = "50%";
     requestedAssets.style.height = "100%";
+    setTermsButton.style.display = "none";
     selectAssetsH2.innerText = "Select Assets You Want";
 });
 offerTab.addEventListener("click", () => {
@@ -95,6 +96,7 @@ offerTab.addEventListener("click", () => {
     offeredAssets.style.display = "flex";
     finalizeTermsDiv.style.height = "50%";
     offeredAssets.style.height = "100%";
+    setTermsButton.style.display = "none";
     selectAssetsH2.innerText = "Select Assets You'll Give";
 });
 finalizeTermsTab.addEventListener("click", () => {
@@ -105,12 +107,15 @@ finalizeTermsTab.addEventListener("click", () => {
     requestedAssets.style.display = "flex";
     offeredAssets.style.display = "flex";
     finalizeTermsDiv.style.height = "100%";
-    requestedAssets.style.height = "47%";
-    offeredAssets.style.height = "47%";
+    requestedAssets.style.height = "45%";
+    offeredAssets.style.height = "45%";
     requestedTermsErc721s.innerText = "";
     requestedTermsErc1155s.innerText = "";
     requestedTermsErc20s.innerText = "";
     requestedTermsEth.innerText = "";
+    offeredAssetsTitle.innerText = "GIVE";
+    requestedAssetsTitle.innerText = "RECIEVE";
+    setTermsButton.style.display = "flex";
     closeMenuPopUp();
     createWantedAssetList(wantedErc721s);
     createWantedAssetList(wantedErc1155s);

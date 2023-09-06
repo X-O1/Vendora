@@ -108,6 +108,15 @@ const offeredTermsErc20s = document.querySelector(
 const offeredTermsEth = document.querySelector(
   ".offered-eth"
 ) as HTMLDivElement;
+const offeredAssetsTitle = document.querySelector(
+  ".offered-assets-title"
+) as HTMLElement;
+const requestedAssetsTitle = document.querySelector(
+  ".requested-assets-title"
+) as HTMLElement;
+const setTermsButton = document.querySelector(
+  ".set-terms"
+) as HTMLButtonElement;
 export {
   assetPopUpContainer,
   erc721MenuToggle,
@@ -152,4 +161,7 @@ export {
   offeredTermsEth,
   offeredAssetsH2,
   requestedAssetsH2,
+  requestedAssetsTitle,
+  offeredAssetsTitle,
+  setTermsButton,
 };

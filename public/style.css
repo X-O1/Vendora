@@ -6,9 +6,8 @@ body {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    background-image: url(./images/bg1.png);
-    background-size: cover;
-    background-repeat: no-repeat;
+    background: rgb(13, 17, 28);
+
 }
 
 a {
@@ -61,15 +60,16 @@ header {
 }
 
 .trade-box {
-    border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 20px;
     height: 90%;
     max-height: 750px;
     width: 90%;
-    max-width: 400px;
+    max-width: 450px;
     background: rgb(13, 17, 28);
-    padding: 10px;
+    padding: 10px 20px;
     position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: rgba(100, 149, 237, 0.08) 0px 0px 10px 0px, rgba(100, 149, 237, 0.18) 0px 40px 120px 0px;
 }
 
 .trade-links {
@@ -89,7 +89,8 @@ header {
     margin-bottom: 10px;
 }
 
-.connect:hover {
+.connect:hover,
+.set-terms:hover {
     color: rgb(255, 255, 255);
 }
 
@@ -119,13 +120,14 @@ header {
     padding: 10px 20px;
     background-color: rgb(19, 26, 42);
     border-radius: 20px;
-    border: .1px solid #0D111C;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     transition-property: height;
     transition-duration: 500ms;
     overflow: hidden;
+    border: .1px inset rgba(152, 161, 192, 0.24);
+
 }
 
 .token-standard-options {
@@ -143,8 +145,8 @@ header {
     font-size: 17px;
     font-weight: 600;
     color: rgb(255, 255, 255);
-    background: none;
-    border: .1px inset #7F87A2;
+    background: rgb(13, 17, 28);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 2px 2px 4px #101a2d;
     border-radius: 10px;
     cursor: pointer;
@@ -154,6 +156,7 @@ header {
     align-items: center;
     justify-content: center;
     position: relative;
+    
 }
 
 .toggleMenu:hover,
@@ -259,16 +262,18 @@ header {
 }
 
 .token-option {
-    border: .1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
-    padding: 10px 0px;
+    padding: 15px 0px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
+    gap: 16px;
     width: 100%;
     margin-bottom: 5px;
-    font-size: 18px;
-    justify-content: space-evenly;
+    font-size: 19px;
+    justify-content: left;
+    position: relative;
+    background: rgb(13, 17, 28);
 }
 
 .token-option img {
@@ -350,8 +355,9 @@ header {
     color: #7F87A2;
 }
 
-.what-do-you-want:hover,
-.term-assets:hover {
+.select-assets:hover,
+.requested-assets:hover,
+.offered-assets:hover {
     border: .1px solid rgba(152, 161, 192, 0.24);
 }
 
@@ -372,6 +378,7 @@ header {
     background-color: rgb(19, 26, 42);
     border-radius: 20px;
     border: .1px solid #0D111C;
+
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -392,9 +399,8 @@ header {
 }
 
 .selected-term-asset {
-    border: .1px solid rgba(152, 161, 192, 0.24);
     border-radius: 10px;
-    padding: 10px 20px;
+    padding: 15px 20px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -404,6 +410,9 @@ header {
     font-size: 19px;
     justify-content: left;
     position: relative;
+    background: rgb(13, 17, 28);
+    color: rgb(255, 255, 255);
+
 }
 
 .delete-asset {
@@ -415,7 +424,7 @@ header {
     box-shadow: 2px 2px 4px #101a2d;
     border-radius: 10px;
     position: absolute;
-  right: 5%;
+    right: 5%;
 }
 
 .requested-erc721s,
@@ -438,17 +447,40 @@ header {
     border-radius: 20px;
     height: 100%;
     margin-top: 0px;
+    border: .1px inset rgba(152, 161, 192, 0.24);
+
 }
 
 .offered-assets {
     display: none;
 }
+
 .requested-assets-title,
-.offered-assets-title
- {
+.offered-assets-title {
     margin-bottom: 10px !important;
 }
+
 .term-asset-tokenId-title,
 .term-asset-amount-title {
     margin-right: -12px;
+}
+
+.set-terms {
+    padding: 20px 24px;
+    width: 100%;
+    font-size: 19px;
+    font-weight: 700;
+    color: rgb(255, 255, 255);
+    border: none;
+    box-shadow: 2px 2px 4px #101a2d;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s linear;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: #223666;
+    border-radius: 10px;
+    color: #4575E4;
 }
