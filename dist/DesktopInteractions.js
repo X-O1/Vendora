@@ -5,7 +5,7 @@ erc721MenuToggle.addEventListener("click", () => {
     ethMenuPopUp.style.display = "none";
     erc1155MenuPopUp.style.display = "none";
     erc20MenuPopUp.style.display = "none";
-    assetPopUpContainer.style.height = "50%";
+    assetPopUpContainer.style.height = "44%";
     toggleFullscreen.style.display = "block";
     closeMenu.style.display = "block";
     erc721MenuPopUp.style.display = "block";
@@ -14,7 +14,7 @@ erc1155MenuToggle.addEventListener("click", () => {
     ethMenuPopUp.style.display = "none";
     erc20MenuPopUp.style.display = "none";
     erc721MenuPopUp.style.display = "none";
-    assetPopUpContainer.style.height = "50%";
+    assetPopUpContainer.style.height = "44%";
     toggleFullscreen.style.display = "block";
     closeMenu.style.display = "block";
     erc1155MenuPopUp.style.display = "block";
@@ -23,7 +23,7 @@ erc20MenuToggle.addEventListener("click", () => {
     ethMenuPopUp.style.display = "none";
     erc721MenuPopUp.style.display = "none";
     erc1155MenuPopUp.style.display = "none";
-    assetPopUpContainer.style.height = "50%";
+    assetPopUpContainer.style.height = "44%";
     toggleFullscreen.style.display = "block";
     closeMenu.style.display = "block";
     erc20MenuPopUp.style.display = "block";
@@ -32,26 +32,26 @@ ethMenuToggle.addEventListener("click", () => {
     erc721MenuPopUp.style.display = "none";
     erc1155MenuPopUp.style.display = "none";
     erc20MenuPopUp.style.display = "none";
-    assetPopUpContainer.style.height = "50%";
+    assetPopUpContainer.style.height = "44%";
     toggleFullscreen.style.display = "block";
     closeMenu.style.display = "block";
     ethMenuPopUp.style.display = "block";
 });
 toggleFullscreen.addEventListener("click", () => {
-    if (assetPopUpContainer.style.height == "50%") {
-        assetPopUpContainer.style.height = "100%";
+    if (assetPopUpContainer.style.height == "44%") {
+        assetPopUpContainer.style.height = "88%";
         toggleFullscreen.style.display = "none";
         closeFullscreen.style.display = "block";
         closeMenu.style.display = "none";
     }
     else {
-        assetPopUpContainer.style.height = "50%";
+        assetPopUpContainer.style.height = "44%";
         toggleFullscreen.style.display = "block";
         closeFullscreen.style.display = "none";
     }
 });
 closeFullscreen.addEventListener("click", () => {
-    if (assetPopUpContainer.style.height == "100%") {
+    if (assetPopUpContainer.style.height == "88%") {
         assetPopUpContainer.style.height = "0";
         toggleFullscreen.style.display = "none";
         closeFullscreen.style.display = "none";
@@ -59,7 +59,7 @@ closeFullscreen.addEventListener("click", () => {
         closeMenu.style.display = "none";
     }
     else {
-        assetPopUpContainer.style.height = "100%";
+        assetPopUpContainer.style.height = "88%";
         toggleFullscreen.style.display = "none";
         closeFullscreen.style.display = "block";
         assetPopUpContainer.style.border = "1px solid rgba(152, 161, 192, 0.24)";
@@ -86,6 +86,7 @@ requestTab.addEventListener("click", () => {
     requestedAssets.style.height = "100%";
     setTermsButton.style.display = "none";
     selectAssetsH2.innerText = "Select Assets You Want";
+    closeMenuPopUp();
 });
 offerTab.addEventListener("click", () => {
     offerTab.style.color = "#FFF";
@@ -98,6 +99,7 @@ offerTab.addEventListener("click", () => {
     offeredAssets.style.height = "100%";
     setTermsButton.style.display = "none";
     selectAssetsH2.innerText = "Select Assets You'll Give";
+    closeMenuPopUp();
 });
 finalizeTermsTab.addEventListener("click", () => {
     finalizeTermsTab.style.color = "#FFF";
