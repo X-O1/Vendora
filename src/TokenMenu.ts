@@ -328,6 +328,7 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               amount: optionAmount.value,
             });
             setItem("wantedErc20s", wantedErc20s);
+            optionAmount.value = "";
           }
           requestedTermsErc20s.innerText = "";
           createWantedAssetList(wantedErc20s);
@@ -354,6 +355,7 @@ const createTokenList = async (tokenList: ErcOption[]) => {
               amount: optionAmount.value,
             });
             setItem("offeredErc20s", offeredErc20s);
+            optionAmount.value = "";
           }
           offeredTermsErc20s.innerText = "";
           createOfferedAssetList(offeredErc20s);

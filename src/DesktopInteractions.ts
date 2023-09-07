@@ -165,15 +165,16 @@ finalizeTermsTab.addEventListener("click", () => {
   requestedAssets.style.height = "45%";
   offeredAssets.style.height = "45%";
 
-  requestedTermsErc721s.innerText = "";
-  requestedTermsErc1155s.innerText = "";
-  requestedTermsErc20s.innerText = "";
-  requestedTermsEth.innerText = "";
   offeredAssetsTitle.innerText = "GIVE";
   requestedAssetsTitle.innerText = "RECIEVE";
   setTermsButton.style.display = "flex";
 
   closeMenuPopUp();
+
+  requestedTermsErc721s.innerText = "";
+  requestedTermsErc1155s.innerText = "";
+  requestedTermsErc20s.innerText = "";
+  requestedTermsEth.innerText = "";
 
   createWantedAssetList(wantedErc721s);
   createWantedAssetList(wantedErc1155s);

@@ -61,10 +61,10 @@ header {
 
 .trade-box {
     border-radius: 20px;
-    height: 90%;
+    height: 80%;
     max-height: 750px;
     width: 90%;
-    max-width: 450px;
+    max-width: 375px;
     background: rgb(13, 17, 28);
     padding: 10px 20px;
     position: relative;
