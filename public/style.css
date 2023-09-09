@@ -55,9 +55,7 @@ header {
     flex-direction: column;
 }
 
-.request-link {
-    color: #FFF;
-}
+
 
 .trade-box {
     border-radius: 20px;
@@ -80,7 +78,6 @@ header {
     align-items: center;
     width: 100%;
     height: 6%;
-    cursor: pointer;
     font-weight: 500;
     font-size: 16px;
     padding: 0px 12px;
@@ -88,6 +85,16 @@ header {
     box-sizing: border-box;
     margin-bottom: 10px;
 }
+.request-link {
+    color: #FFF;
+}
+.request-link,
+.offer-link,
+.finalize-terms-link {
+    cursor: pointer;
+
+}
+
 
 .connect:hover,
 .set-terms:hover {
@@ -237,7 +244,7 @@ header {
     display: flex;
     overflow-y: auto;
     overflow-x: hidden;
-    margin: 15px 25px;
+    margin: 15px 10px;
     justify-content: center;
 }
 
@@ -292,15 +299,13 @@ header {
 }
 
 .option-name {
-    font-size: 21px;
+    font-size: 20px;
     color: rgb(255, 255, 255);
-    width: 85px;
+    width: 105px;
 }
 
 .erc1155-menu-popup .option-name {
-    width: 60px;
-
-
+    width: 40px;
 }
 
 .option-order-details {
@@ -313,38 +318,38 @@ header {
 }
 
 
-.add-offered-erc721,
-.add-offered-erc1155,
-.add-offered-erc20,
-.add-offered-eth {
+.offer-erc721-button,
+.offer-erc1155-button,
+.offer-erc20-button,
+.offer-eth-button {
     display: none;
 }
 
 .option-token-id,
 .option-amount,
-.add-wanted-erc721,
-.add-wanted-erc1155,
-.add-wanted-erc20,
-.add-wanted-eth,
-.add-offered-erc721,
-.add-offered-erc1155,
-.add-offered-erc20,
-.add-offered-eth {
+.request-erc721-button,
+.request-erc1155-button,
+.request-erc20-button,
+.request-eth-button,
+.offer-erc721-button,
+.offer-erc1155-button,
+.offer-erc20-button,
+.offer-eth-button {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 7px;
     padding: 9px 10px;
     cursor: pointer;
     background: none;
-    width: 75px;
-    font-size: 13px;
+    width: 65px;
+    font-size: 11px;
     color: rgb(255, 255, 255);
 }
 
-.add-wanted-erc721,
+.request-erc721-button,
 .add-wanted-erc1155,
 .add-wanted-erc20,
 .add-wanted-eth,
-.add-offered-erc721,
+.offer-erc721-button,
 .add-offered-erc1155,
 .add-offered-erc20,
 .add-offered-eth {
@@ -355,8 +360,8 @@ header {
 .option-token-id,
 .option-amount {
     width: 45px;
-    font-size: 10px;
-    padding: 10px 10px;
+    font-size: 11px;
+    padding: 8.5px;
 
 }
 
@@ -376,10 +381,10 @@ header {
     border: .1px solid rgba(152, 161, 192, 0.24);
 }
 
-.add-wanted-erc721:hover,
+.request-erc721-button:hover,
 .add-wanted-erc1155:hover,
 .add-wanted-erc20:hover,
-.add-offered-erc721:hover,
+.offer-erc721-button:hover,
 .add-offered-erc1155:hover,
 .add-offered-erc20:hover {
     color: rgb(255, 255, 255);

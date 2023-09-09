@@ -24,7 +24,9 @@ const termAssets = document.querySelector(".term-assets");
 const termAssetsH2 = document.querySelector(".term-assets h2");
 const selectAssets = document.querySelector(".select-assets");
 const selectAssetsH2 = document.querySelector(".select-assets h2");
-const tokenStandardMenuOptionDiv = document.querySelector(".token-standard-options");
+const tokenStandardMenuOptionDiv = document.querySelector(
+  ".token-standard-options"
+);
 const requestTab = document.querySelector(".request-link");
 const offerTab = document.querySelector(".offer-link");
 const finalizeTermsTab = document.querySelector(".finalize-terms-link");
@@ -44,4 +46,51 @@ const offeredTermsEth = document.querySelector(".offered-eth");
 const offeredAssetsTitle = document.querySelector(".offered-assets-title");
 const requestedAssetsTitle = document.querySelector(".requested-assets-title");
 const setTermsButton = document.querySelector(".set-terms");
-export { assetPopUpContainer, erc721MenuToggle, erc1155MenuToggle, erc20MenuToggle, ethMenuToggle, erc721MenuPopUp, erc1155MenuPopUp, erc20MenuPopUp, ethMenuPopUp, toggleFullscreen, closeFullscreen, closeMenu, tokenOption, optionImage, optionName, optionSymbol, optionTokenId, optionAmount, termErc721s, termErc1155s, termErc20s, termEth, termAssets, selectAssets, selectAssetsH2, tokenStandardMenuOptionDiv, termAssetsH2, requestTab, offerTab, finalizeTermsTab, finalizeTermsDiv, requestedAssets, offeredAssets, requestedTermsErc721s, requestedTermsErc1155s, requestedTermsErc20s, requestedTermsEth, offeredTermsErc721s, offeredTermsErc1155s, offeredTermsErc20s, offeredTermsEth, offeredAssetsH2, requestedAssetsH2, requestedAssetsTitle, offeredAssetsTitle, setTermsButton, };
+export {
+  assetPopUpContainer,
+  erc721MenuToggle,
+  erc1155MenuToggle,
+  erc20MenuToggle,
+  ethMenuToggle,
+  erc721MenuPopUp,
+  erc1155MenuPopUp,
+  erc20MenuPopUp,
+  ethMenuPopUp,
+  toggleFullscreen,
+  closeFullscreen,
+  closeMenu,
+  tokenOption,
+  optionImage,
+  optionName,
+  optionSymbol,
+  optionTokenId,
+  optionAmount,
+  termErc721s,
+  termErc1155s,
+  termErc20s,
+  termEth,
+  termAssets,
+  selectAssets,
+  selectAssetsH2,
+  tokenStandardMenuOptionDiv,
+  termAssetsH2,
+  requestTab,
+  offerTab,
+  finalizeTermsTab,
+  finalizeTermsDiv,
+  requestedAssets,
+  offeredAssets,
+  requestedTermsErc721s,
+  requestedTermsErc1155s,
+  requestedTermsErc20s,
+  requestedTermsEth,
+  offeredTermsErc721s,
+  offeredTermsErc1155s,
+  offeredTermsErc20s,
+  offeredTermsEth,
+  offeredAssetsH2,
+  requestedAssetsH2,
+  requestedAssetsTitle,
+  offeredAssetsTitle,
+  setTermsButton,
+};

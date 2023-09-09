@@ -58,7 +58,22 @@ const createTermELements = () => {
     termAssetAmountTitle,
     termAssetAmount,
     deleteAssetButton,
+    displayRequestedAssets,
+    displayOfferedAssets,
   };
+};
+
+const displayRequestedAssets = async () => {
+  await createWantedAssetList(wantedErc721s);
+  await createWantedAssetList(wantedErc1155s);
+  await createWantedAssetList(wantedErc20s);
+  await createWantedAssetList(wantedEth);
+};
+const displayOfferedAssets = async () => {
+  createOfferedAssetList(offeredErc721s);
+  createOfferedAssetList(offeredErc1155s);
+  createOfferedAssetList(offeredErc20s);
+  createOfferedAssetList(offeredEth);
 };
 const createWantedAssetList = async (wantedAssets) => {
   try {

@@ -2,7 +2,6 @@ import {
   defaultErc721s,
   defaultErc1155s,
   defaultErc20s,
-  ErcOption,
   defaultNativeTokens,
 } from "./TokenList.js";
 import {
@@ -29,51 +28,32 @@ import {
   createOfferedAssetList,
   createWantedAssetList,
 } from "./DisplayTerms.js";
-
-type ErcDetails = {
-  imgSrc: string;
-  symbol: string;
-  tokenId?: string;
-  amount?: string;
-};
-
 document.addEventListener("DOMContentLoaded", async () => {
   await createTokenList(defaultErc721s);
   await createTokenList(defaultErc1155s);
   await createTokenList(defaultErc20s);
   await createTokenList(defaultNativeTokens);
 });
-
-// LOCAL STORAGE
-const setItem = async (key: string, value: ErcDetails[]) => {
+const setItem = async (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
-
-const getTokenListInStorage = (key: string): ErcDetails[] | null => {
+const getTokenListInStorage = (key) => {
   const value = localStorage.getItem(key);
-  return value ? (JSON.parse(value) as ErcDetails[]) : null;
+  return value ? JSON.parse(value) : null;
 };
-
-const deleteStorageItem = (key: string): void => {
+const deleteStorageItem = (key) => {
   localStorage.removeItem(key);
 };
+const wantedErc721s = getTokenListInStorage("wantedErc721s") || [];
+const wantedErc1155s = getTokenListInStorage("wantedErc1155s") || [];
+const wantedErc20s = getTokenListInStorage("wantedErc20s") || [];
+const wantedEth = getTokenListInStorage("wantedEth") || [];
+const offeredErc721s = getTokenListInStorage("offeredErc721s") || [];
+const offeredErc1155s = getTokenListInStorage("offeredErc1155s") || [];
+const offeredErc20s = getTokenListInStorage("offeredErc20s") || [];
+const offeredEth = getTokenListInStorage("offeredEth") || [];
 
-const wantedErc721s: ErcDetails[] =
-  getTokenListInStorage("wantedErc721s") || [];
-const wantedErc1155s: ErcDetails[] =
-  getTokenListInStorage("wantedErc1155s") || [];
-const wantedErc20s: ErcDetails[] = getTokenListInStorage("wantedErc20s") || [];
-const wantedEth: ErcDetails[] = getTokenListInStorage("wantedEth") || [];
-
-const offeredErc721s: ErcDetails[] =
-  getTokenListInStorage("offeredErc721s") || [];
-const offeredErc1155s: ErcDetails[] =
-  getTokenListInStorage("offeredErc1155s") || [];
-const offeredErc20s: ErcDetails[] =
-  getTokenListInStorage("offeredErc20s") || [];
-const offeredEth: ErcDetails[] = getTokenListInStorage("offeredEth") || [];
-
-const createTokenList = async (tokenList: ErcOption[]) => {
+const createTokenList = async (tokenList) => {
   try {
     tokenList.forEach((option) => {
       const tokenOptionDiv = document.createElement("div");
@@ -82,14 +62,11 @@ const createTokenList = async (tokenList: ErcOption[]) => {
       const optionDetailsDiv = document.createElement("div");
       const optionName = document.createElement("div");
       const optionSymbol = document.createElement("div");
-      const optionOrderDetailsDiv = document.createElement(
-        "div"
-      ) as HTMLDivElement;
-      const optionTokenId = document.createElement("input") as HTMLInputElement;
-      const optionAmount = document.createElement("input") as HTMLInputElement;
+      const optionOrderDetailsDiv = document.createElement("div");
+      const optionTokenId = document.createElement("input");
+      const optionAmount = document.createElement("input");
       const addWantedAssetButton = document.createElement("button");
       const addOfferedAssetButton = document.createElement("button");
-
       optionTokenId.classList.add("option-token-id");
       tokenOptionDiv.classList.add("token-option");
       optionImageDiv.classList.add("option-image");
@@ -99,7 +76,6 @@ const createTokenList = async (tokenList: ErcOption[]) => {
       optionDetailsDiv.classList.add("token-details");
       optionAmount.classList.add("option-amount");
       addWantedAssetButton.classList.add("add-wanted-asset-button");
-
       tokenOptionDiv.appendChild(optionImageDiv);
       optionImageDiv.appendChild(optionImage);
       tokenOptionDiv.appendChild(optionDetailsDiv);
@@ -116,24 +92,21 @@ const createTokenList = async (tokenList: ErcOption[]) => {
       optionAmount.type = "text";
       addWantedAssetButton.innerText = "Request";
       addOfferedAssetButton.innerText = "Offer";
-
       optionAmount.addEventListener("input", () => {
         optionAmount.value = optionAmount.value.replace(/[^\d]/g, "");
         addWantedAssetButton.innerText = "Request";
         addOfferedAssetButton.innerText = "Offer";
-
         addWantedAssetButton.style.color = "rgb(255, 255, 255)";
         addOfferedAssetButton.style.color = "rgb(255, 255, 255)";
       });
-
       optionTokenId.addEventListener("input", () => {
         optionTokenId.value = optionTokenId.value.replace(/[^\d]/g, "");
         addWantedAssetButton.innerText = "Request";
         addOfferedAssetButton.innerText = "Offer";
-
         addWantedAssetButton.style.color = "rgb(255, 255, 255)";
         addOfferedAssetButton.style.color = "rgb(255, 255, 255)";
       });
+
       requestTab.addEventListener("click", () => {
         addWantedAssetButton.style.display = "block";
         addOfferedAssetButton.style.display = "none";
@@ -141,13 +114,11 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         requestedTermsErc1155s.innerText = "";
         requestedTermsErc20s.innerText = "";
         requestedTermsEth.innerText = "";
-
         createWantedAssetList(wantedErc721s);
         createWantedAssetList(wantedErc1155s);
         createWantedAssetList(wantedErc20s);
         createWantedAssetList(wantedEth);
       });
-
       offerTab.addEventListener("click", () => {
         addOfferedAssetButton.style.display = "block";
         addWantedAssetButton.style.display = "none";
@@ -155,13 +126,11 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         offeredTermsErc1155s.innerText = "";
         offeredTermsErc20s.innerText = "";
         offeredTermsEth.innerText = "";
-
         createOfferedAssetList(offeredErc721s);
         createOfferedAssetList(offeredErc1155s);
         createOfferedAssetList(offeredErc20s);
         createOfferedAssetList(offeredEth);
       });
-
       if (tokenList === defaultErc721s) {
         addWantedAssetButton.classList.add("add-wanted-erc721");
         addOfferedAssetButton.classList.add("add-offered-erc721");
@@ -169,9 +138,8 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         optionOrderDetailsDiv.appendChild(optionTokenId);
         optionOrderDetailsDiv.appendChild(addWantedAssetButton);
         optionOrderDetailsDiv.appendChild(addOfferedAssetButton);
-
         addWantedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < wantedErc721s.length; i++) {
             if (wantedErc721s[i].symbol === optionSymbol.innerText) {
               if (wantedErc721s[i].tokenId === optionTokenId.value) {
@@ -191,16 +159,14 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           requestedTermsErc721s.innerText = "";
           createWantedAssetList(wantedErc721s);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
           assetPopUpContainer.style.border = "none";
           closeMenu.style.display = "none";
         });
-
         addOfferedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < offeredErc721s.length; i++) {
             if (offeredErc721s[i].symbol === optionSymbol.innerText) {
               if (offeredErc721s[i].tokenId === optionTokenId.value) {
@@ -220,7 +186,6 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           offeredTermsErc721s.innerText = "";
           createOfferedAssetList(offeredErc721s);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
@@ -235,9 +200,8 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         optionOrderDetailsDiv.appendChild(optionAmount);
         optionOrderDetailsDiv.appendChild(addWantedAssetButton);
         optionOrderDetailsDiv.appendChild(addOfferedAssetButton);
-
         addWantedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < wantedErc1155s.length; i++) {
             if (wantedErc1155s[i].symbol === optionSymbol.innerText) {
               if (wantedErc1155s[i].tokenId === optionTokenId.value) {
@@ -263,16 +227,14 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           requestedTermsErc1155s.innerText = "";
           createWantedAssetList(wantedErc1155s);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
           assetPopUpContainer.style.border = "none";
           closeMenu.style.display = "none";
         });
-
         addOfferedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < offeredErc1155s.length; i++) {
             if (offeredErc1155s[i].symbol === optionSymbol.innerText) {
               if (offeredErc1155s[i].tokenId === optionTokenId.value) {
@@ -298,7 +260,6 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           offeredTermsErc1155s.innerText = "";
           createOfferedAssetList(offeredErc1155s);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
@@ -312,9 +273,8 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         optionOrderDetailsDiv.appendChild(optionAmount);
         optionOrderDetailsDiv.appendChild(addWantedAssetButton);
         optionOrderDetailsDiv.appendChild(addOfferedAssetButton);
-
         addWantedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < wantedErc20s.length; i++) {
             if (wantedErc20s[i].symbol === optionSymbol.innerText) {
               tokenExist = true;
@@ -332,16 +292,14 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           requestedTermsErc20s.innerText = "";
           createWantedAssetList(wantedErc20s);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
           assetPopUpContainer.style.border = "none";
           closeMenu.style.display = "none";
         });
-
         addOfferedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < offeredErc20s.length; i++) {
             if (offeredErc20s[i].symbol === optionSymbol.innerText) {
               tokenExist = true;
@@ -359,7 +317,6 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           offeredTermsErc20s.innerText = "";
           createOfferedAssetList(offeredErc20s);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
@@ -373,9 +330,8 @@ const createTokenList = async (tokenList: ErcOption[]) => {
         optionOrderDetailsDiv.appendChild(optionAmount);
         optionOrderDetailsDiv.appendChild(addWantedAssetButton);
         optionOrderDetailsDiv.appendChild(addOfferedAssetButton);
-
         addWantedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < wantedEth.length; i++) {
             if (wantedEth[i].symbol === optionSymbol.innerText) {
               tokenExist = true;
@@ -392,16 +348,14 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           requestedTermsEth.innerText = "";
           createWantedAssetList(wantedEth);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
           assetPopUpContainer.style.border = "none";
           closeMenu.style.display = "none";
         });
-
         addOfferedAssetButton.addEventListener("click", () => {
-          let tokenExist: boolean = false;
+          let tokenExist = false;
           for (let i = 0; i < offeredEth.length; i++) {
             if (offeredEth[i].symbol === optionSymbol.innerText) {
               tokenExist = true;
@@ -418,7 +372,6 @@ const createTokenList = async (tokenList: ErcOption[]) => {
           }
           offeredTermsEth.innerText = "";
           createOfferedAssetList(offeredEth);
-
           assetPopUpContainer.style.height = "0";
           toggleFullscreen.style.display = "none";
           closeFullscreen.style.display = "none";
@@ -431,9 +384,7 @@ const createTokenList = async (tokenList: ErcOption[]) => {
     error: console.log(`${tokenList} failed to load`);
   }
 };
-
 export {
-  ErcDetails,
   wantedErc721s,
   wantedErc1155s,
   wantedErc20s,

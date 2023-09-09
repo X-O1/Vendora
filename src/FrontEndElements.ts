@@ -54,7 +54,6 @@ const termErc20s = document.querySelector(
 ) as HTMLDivElement;
 const termEth = document.querySelector(".term-asset-eth") as HTMLDivElement;
 const termAssets = document.querySelector(".term-assets") as HTMLDivElement;
-
 const termAssetsH2 = document.querySelector(".term-assets h2") as HTMLElement;
 const selectAssets = document.querySelector(".select-assets") as HTMLDivElement;
 const selectAssetsH2 = document.querySelector(
@@ -117,6 +116,7 @@ const requestedAssetsTitle = document.querySelector(
 const setTermsButton = document.querySelector(
   ".set-terms"
 ) as HTMLButtonElement;
+
 export {
   assetPopUpContainer,
   erc721MenuToggle,
