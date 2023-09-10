@@ -1,11 +1,3 @@
-export {
-  defaultErc721s,
-  defaultErc1155s,
-  defaultErc20s,
-  defaultNativeTokens,
-  TokenOption,
-};
-
 type TokenOption = {
   logoURI?: string;
   name: string;
@@ -59,3 +51,10 @@ const defaultNativeTokens: TokenOption[] = [
     address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
   },
 ];
+export {
+  defaultErc721s,
+  defaultErc1155s,
+  defaultErc20s,
+  defaultNativeTokens,
+  TokenOption,
+};

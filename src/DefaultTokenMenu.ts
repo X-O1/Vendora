@@ -22,90 +22,81 @@ import {
 
 type TokenMenuElements = {
   tokenOptionDiv: HTMLDivElement;
-  optionImageDiv: HTMLDivElement;
-  optionImage: HTMLImageElement;
-  optionDetailsDiv: HTMLDivElement;
-  optionName: HTMLDivElement;
-  optionSymbol: HTMLDivElement;
-  optionOrderDetailsDiv: HTMLDivElement;
-  optionTokenId: HTMLInputElement;
-  optionAmount: HTMLInputElement;
-  requestAsset: HTMLButtonElement;
-  offerAsset: HTMLButtonElement;
+  tokenImageDiv: HTMLDivElement;
+  tokenLogo: HTMLImageElement;
+  tokenDetailsDiv: HTMLDivElement;
+  tokenName: HTMLDivElement;
+  tokenSymbol: HTMLDivElement;
+  tokenOrderDetailsDiv: HTMLDivElement;
+  tokenId: HTMLInputElement;
+  tokenAmount: HTMLInputElement;
+  requestToken: HTMLButtonElement;
+  offerToken: HTMLButtonElement;
 };
-
-window.addEventListener("load", async () => {
-  Promise.all([
-    createTokenMenu(defaultErc721s),
-    createTokenMenu(defaultErc1155s),
-    createTokenMenu(defaultErc20s),
-    createTokenMenu(defaultNativeTokens),
-  ]);
-});
 
 const createCommonTokenMenuElements = (
   option: TokenOption
 ): TokenMenuElements => {
   const tokenOptionDiv: HTMLDivElement = document.createElement("div");
-  const optionImageDiv: HTMLDivElement = document.createElement("div");
-  const optionImage: HTMLImageElement = document.createElement("img");
-  const optionDetailsDiv: HTMLDivElement = document.createElement("div");
-  const optionName: HTMLDivElement = document.createElement("div");
-  const optionSymbol: HTMLDivElement = document.createElement("div");
-  const optionOrderDetailsDiv: HTMLDivElement = document.createElement("div");
-  const optionTokenId: HTMLInputElement = document.createElement("input");
-  const optionAmount: HTMLInputElement = document.createElement("input");
-  const requestAsset: HTMLButtonElement = document.createElement("button");
-  const offerAsset: HTMLButtonElement = document.createElement("button");
+  const tokenImageDiv: HTMLDivElement = document.createElement("div");
+  const tokenLogo: HTMLImageElement = document.createElement("img");
+  const tokenDetailsDiv: HTMLDivElement = document.createElement("div");
+  const tokenName: HTMLDivElement = document.createElement("div");
+  const tokenSymbol: HTMLDivElement = document.createElement("div");
+  const tokenOrderDetailsDiv: HTMLDivElement = document.createElement("div");
+  const tokenId: HTMLInputElement = document.createElement("input");
+  const tokenAmount: HTMLInputElement = document.createElement("input");
+  const requestToken: HTMLButtonElement = document.createElement("button");
+  const offerToken: HTMLButtonElement = document.createElement("button");
   tokenOptionDiv.classList.add("token-option");
-  optionImageDiv.classList.add("option-image");
-  optionDetailsDiv.classList.add("token-details");
-  optionName.classList.add("option-name");
-  optionSymbol.classList.add("option-symbol");
-  optionOrderDetailsDiv.classList.add("option-order-details");
-  optionTokenId.classList.add("option-token-id");
-  optionAmount.classList.add("option-amount");
-  offerAsset.classList.add("offer-asset-button");
-  requestAsset.classList.add("request-asset-button");
+  tokenImageDiv.classList.add("option-image");
+  tokenDetailsDiv.classList.add("token-details");
+  tokenName.classList.add("token-name");
+  tokenSymbol.classList.add("token-symbol");
+  tokenOrderDetailsDiv.classList.add("option-order-details");
+  tokenId.classList.add("token-id");
+  tokenAmount.classList.add("token-amount");
+  offerToken.classList.add("offer-token-button");
+  requestToken.classList.add("request-token-button");
 
-  optionImageDiv.appendChild(optionImage);
-  optionDetailsDiv.appendChild(optionName);
-  optionDetailsDiv.appendChild(optionSymbol);
-  tokenOptionDiv.appendChild(optionImageDiv);
-  tokenOptionDiv.appendChild(optionDetailsDiv);
-  tokenOptionDiv.appendChild(optionOrderDetailsDiv);
+  tokenImageDiv.appendChild(tokenLogo);
+  tokenDetailsDiv.appendChild(tokenName);
+  tokenDetailsDiv.appendChild(tokenSymbol);
+  tokenOptionDiv.appendChild(tokenImageDiv);
+  tokenOptionDiv.appendChild(tokenDetailsDiv);
+  tokenOptionDiv.appendChild(tokenOrderDetailsDiv);
 
   option.logoURI
-    ? (optionImage.src = option.logoURI)
+    ? (tokenLogo.src = option.logoURI)
     : console.log("logoURI does not exist");
-  optionName.innerText = option.name;
-  optionSymbol.innerText = option.symbol;
-  optionTokenId.type = "text";
-  optionTokenId.placeholder = "Token ID";
-  optionAmount.placeholder = "Amount";
-  optionAmount.type = "text";
-  requestAsset.innerText = "Request";
-  offerAsset.innerText = "Offer";
+  tokenName.innerText = option.name;
+  tokenSymbol.innerText = option.symbol;
+  tokenId.type = "text";
+  tokenId.placeholder = "Token ID";
+  tokenAmount.placeholder = "Amount";
+  tokenAmount.type = "text";
+  requestToken.innerText = "Request";
+  offerToken.innerText = "Offer";
 
-  optionAmount.addEventListener("input", () => {
-    optionAmount.value = removeNonDigitInputs(optionAmount.value);
+  tokenAmount.addEventListener("input", () => {
+    tokenAmount.value = removeNonDigitInputs(tokenAmount.value);
   });
-  optionTokenId.addEventListener("input", () => {
-    optionTokenId.value = removeNonDigitInputs(optionTokenId.value);
+  tokenId.addEventListener("input", () => {
+    tokenId.value = removeNonDigitInputs(tokenId.value);
   });
 
   return {
     tokenOptionDiv,
-    optionImageDiv,
-    optionImage,
-    optionDetailsDiv,
-    optionName,
-    optionSymbol,
-    optionOrderDetailsDiv,
-    optionTokenId,
-    optionAmount,
-    requestAsset,
-    offerAsset,
+    tokenImageDiv,
+    tokenLogo,
+    tokenDetailsDiv,
+    tokenName,
+    tokenSymbol,
+    tokenOrderDetailsDiv,
+    tokenId,
+    tokenAmount,
+    requestToken,
+    offerToken,
   };
 };
 
@@ -117,11 +108,11 @@ const createErc721MenuElements = async (token: TokenOption) => {
   try {
     const tokenOption = createCommonTokenMenuElements(token);
     erc721MenuPopUp.appendChild(tokenOption.tokenOptionDiv);
-    tokenOption.offerAsset.classList.add("offer-erc721-button");
-    tokenOption.requestAsset.classList.add("request-erc721-button");
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.optionTokenId);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.offerAsset);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.requestAsset);
+    tokenOption.offerToken.classList.add("offer-erc721-button");
+    tokenOption.requestToken.classList.add("request-erc721-button");
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenId);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
     error = "Failed to create Erc721 menu elements";
     console.log(error);
@@ -131,12 +122,12 @@ const createErc1155MenuElements = async (token: TokenOption) => {
   try {
     const tokenOption = createCommonTokenMenuElements(token);
     erc1155MenuPopUp.appendChild(tokenOption.tokenOptionDiv);
-    tokenOption.offerAsset.classList.add("offer-erc1155-button");
-    tokenOption.requestAsset.classList.add("request-erc1155-button");
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.optionTokenId);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.optionAmount);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.offerAsset);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.requestAsset);
+    tokenOption.offerToken.classList.add("offer-erc1155-button");
+    tokenOption.requestToken.classList.add("request-erc1155-button");
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenId);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
     error = "Failed to create Erc1155 menu elements";
     console.log(error);
@@ -146,11 +137,11 @@ const createErc20MenuElements = async (token: TokenOption) => {
   try {
     const tokenOption = createCommonTokenMenuElements(token);
     erc20MenuPopUp.appendChild(tokenOption.tokenOptionDiv);
-    tokenOption.offerAsset.classList.add("offer-erc20-button");
-    tokenOption.requestAsset.classList.add("request-erc20-button");
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.optionAmount);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.offerAsset);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.requestAsset);
+    tokenOption.offerToken.classList.add("offer-erc20-button");
+    tokenOption.requestToken.classList.add("request-erc20-button");
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
     error = "Failed to create Erc20 menu elements";
     console.log(error);
@@ -160,11 +151,11 @@ const createNativeTokenMenuElements = async (token: TokenOption) => {
   try {
     const tokenOption = createCommonTokenMenuElements(token);
     ethMenuPopUp.appendChild(tokenOption.tokenOptionDiv);
-    tokenOption.offerAsset.classList.add("offer-eth-button");
-    tokenOption.requestAsset.classList.add("request-eth-button");
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.optionAmount);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.offerAsset);
-    tokenOption.optionOrderDetailsDiv.appendChild(tokenOption.requestAsset);
+    tokenOption.offerToken.classList.add("offer-eth-button");
+    tokenOption.requestToken.classList.add("request-eth-button");
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
+    tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
     error = "Failed to create native token menu elements";
     console.log(error);
@@ -192,6 +183,7 @@ const createTokenMenu = async (defaultTokens: TokenOption[]) => {
     console.log(error);
   }
 };
+
 const displayErc721Menu = (): void => {
   ethMenuPopUp.style.display = "none";
   erc1155MenuPopUp.style.display = "none";
@@ -243,6 +235,15 @@ const closeTokenMenu = (): void => {
   assetPopUpContainer.style.border = "none";
   closeMenu.style.display = "none";
 };
+
+window.addEventListener("load", async () => {
+  Promise.all([
+    createTokenMenu(defaultErc721s),
+    createTokenMenu(defaultErc1155s),
+    createTokenMenu(defaultErc20s),
+    createTokenMenu(defaultNativeTokens),
+  ]);
+});
 
 erc721MenuToggle.addEventListener("click", () => {
   displayErc721Menu();

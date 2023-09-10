@@ -76,3 +76,4 @@ finalizeTermsTab.addEventListener("click", () => {
     displayFinalizeTermsLinkContent();
     closeTokenMenu();
 });
+export { grabAddAssetButtonElements };

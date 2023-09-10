@@ -1,9 +1,4 @@
 import { closeTokenMenu } from "./DefaultTokenMenu.js";
-import // defaultErc1155s,
-// defaultErc20s,
-// defaultErc721s,
-// defaultNativeTokens,
-"./DefaultTokens.js";
 import {
   offerTab,
   requestTab,
@@ -57,7 +52,7 @@ const displayFinalizeTermsLinkContent = (): void => {
   requestedAssetsTitle.innerText = "RECIEVE";
   setTermsButton.style.display = "flex";
 };
-const grabAddAssetButtonElements = (): [
+const getAddTokenButtonElements = (): [
   NodeListOf<HTMLButtonElement>,
   NodeListOf<HTMLButtonElement>
 ] => {
@@ -70,7 +65,7 @@ const grabAddAssetButtonElements = (): [
   return [offerAsset, requestAsset];
 };
 const displayRequestAssetButton = (): void => {
-  const [offerButtons, requestButtons] = grabAddAssetButtonElements();
+  const [offerButtons, requestButtons] = getAddTokenButtonElements();
 
   offerButtons.forEach((button) => {
     button.style.display = "none";
@@ -80,7 +75,7 @@ const displayRequestAssetButton = (): void => {
   });
 };
 const displayOfferAssetButton = (): void => {
-  const [offerButtons, requestButtons] = grabAddAssetButtonElements();
+  const [offerButtons, requestButtons] = getAddTokenButtonElements();
 
   offerButtons.forEach((button) => {
     button.style.display = "block";
@@ -105,3 +100,5 @@ finalizeTermsTab.addEventListener("click", () => {
   displayFinalizeTermsLinkContent();
   closeTokenMenu();
 });
+
+export { getAddTokenButtonElements };
