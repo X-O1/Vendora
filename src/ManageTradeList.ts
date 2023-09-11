@@ -114,3 +114,54 @@ const addNativeTokenToTradeList = (tradeList: TokenOption[], key: string) => {
     console.log("Failed to add Native Token to trade list", error);
   }
 };
+
+const deleteNftFromTradeList = (key: string, tradeList: TokenOption[]) => {
+  try {
+    tradeList.forEach((token) => {
+      if (
+        token.symbol === getTokenSymbolValue() &&
+        token.tokenId === getTokenIdInputValue()
+      ) {
+        const index = tradeList.indexOf(token);
+        index !== -1
+          ? tradeList.splice(index, 1)
+          : console.log("This NFT does not exist in trade list");
+      }
+    });
+    setTokenDetailsInLocalStorage(key, tradeList);
+  } catch (error) {
+    console.log("Failed to delete NFT from trade list", error);
+  }
+};
+const deleteNativeTokenOrErc20FromTradeList = (
+  key: string,
+  tradeList: TokenOption[]
+) => {
+  try {
+    tradeList.forEach((token) => {
+      if (token.symbol === getTokenSymbolValue()) {
+        const index = tradeList.indexOf(token);
+        index !== -1
+          ? tradeList.splice(index, 1)
+          : console.log(
+              "This Erc-20 or Native Token does not exist in trade list"
+            );
+      }
+    });
+    setTokenDetailsInLocalStorage(key, tradeList);
+  } catch (error) {
+    console.log(
+      "Failed to delete Erc-20 or Native Token from trade list",
+      error
+    );
+  }
+};
+
+export {
+  addErc721ToTradeList,
+  addErc1155ToTradeList,
+  addErc20ToTradeList,
+  addNativeTokenToTradeList,
+  deleteNftFromTradeList,
+  deleteNativeTokenOrErc20FromTradeList,
+};
