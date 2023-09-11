@@ -78,3 +78,39 @@ const addErc1155ToTradeList = (tradeList: TokenOption[], key: string) => {
     console.log("Failed to add Erc-1155 to trade list", error);
   }
 };
+
+const addErc20ToTradeList = (tradeList: TokenOption[], key: string) => {
+  try {
+    if (
+      !isTokenSymbolInTradeList(tradeList) &&
+      !isTokenAmountInputValueEmpty()
+    ) {
+      tradeList.push({
+        logoURI: getTokenLogoUriValue(),
+        symbol: getTokenSymbolValue(),
+        amount: getTokenAmountInputValue(),
+      });
+      setTokenDetailsInLocalStorage(key, tradeList);
+    }
+  } catch (error) {
+    console.log("Failed to add Erc-20 to trade list", error);
+  }
+};
+
+const addNativeTokenToTradeList = (tradeList: TokenOption[], key: string) => {
+  try {
+    if (
+      !isTokenSymbolInTradeList(tradeList) &&
+      !isTokenAmountInputValueEmpty()
+    ) {
+      tradeList.push({
+        logoURI: getTokenLogoUriValue(),
+        symbol: getTokenSymbolValue(),
+        amount: getTokenAmountInputValue(),
+      });
+      setTokenDetailsInLocalStorage(key, tradeList);
+    }
+  } catch (error) {
+    console.log("Failed to add Native Token to trade list", error);
+  }
+};
