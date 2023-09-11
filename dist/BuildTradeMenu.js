@@ -1,5 +1,4 @@
 import { closeTokenMenu } from "./DefaultTokenMenu.js";
-import "./DefaultTokens.js";
 import { offerTab, requestTab, finalizeTermsTab, selectAssetsH2, selectAssets, finalizeTermsDiv, requestedAssets, offeredAssets, offeredAssetsTitle, requestedAssetsTitle, setTermsButton, } from "./FrontEndElements.js";
 const displayRequestLinkContent = () => {
     requestTab.style.color = "#FFF";
@@ -39,13 +38,13 @@ const displayFinalizeTermsLinkContent = () => {
     requestedAssetsTitle.innerText = "RECIEVE";
     setTermsButton.style.display = "flex";
 };
-const grabAddAssetButtonElements = () => {
+const getAddTokenButtonElements = () => {
     const offerAsset = document.querySelectorAll(".offer-asset-button");
     const requestAsset = document.querySelectorAll(".request-asset-button");
     return [offerAsset, requestAsset];
 };
 const displayRequestAssetButton = () => {
-    const [offerButtons, requestButtons] = grabAddAssetButtonElements();
+    const [offerButtons, requestButtons] = getAddTokenButtonElements();
     offerButtons.forEach((button) => {
         button.style.display = "none";
     });
@@ -54,7 +53,7 @@ const displayRequestAssetButton = () => {
     });
 };
 const displayOfferAssetButton = () => {
-    const [offerButtons, requestButtons] = grabAddAssetButtonElements();
+    const [offerButtons, requestButtons] = getAddTokenButtonElements();
     offerButtons.forEach((button) => {
         button.style.display = "block";
     });
@@ -76,4 +75,4 @@ finalizeTermsTab.addEventListener("click", () => {
     displayFinalizeTermsLinkContent();
     closeTokenMenu();
 });
-export { grabAddAssetButtonElements };
+export { getAddTokenButtonElements };

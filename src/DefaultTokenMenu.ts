@@ -38,7 +38,7 @@ const createCommonTokenMenuElements = (
   option: TokenOption
 ): TokenMenuElements => {
   const tokenOptionDiv: HTMLDivElement = document.createElement("div");
-  const tokenImageDiv: HTMLDivElement = document.createElement("div");
+  const tokenLogoDiv: HTMLDivElement = document.createElement("div");
   const tokenLogo: HTMLImageElement = document.createElement("img");
   const tokenDetailsDiv: HTMLDivElement = document.createElement("div");
   const tokenName: HTMLDivElement = document.createElement("div");
@@ -49,7 +49,8 @@ const createCommonTokenMenuElements = (
   const requestToken: HTMLButtonElement = document.createElement("button");
   const offerToken: HTMLButtonElement = document.createElement("button");
   tokenOptionDiv.classList.add("token-option");
-  tokenImageDiv.classList.add("option-image");
+  tokenLogoDiv.classList.add("token-logo-div");
+  tokenLogo.classList.add("token-logo");
   tokenDetailsDiv.classList.add("token-details");
   tokenName.classList.add("token-name");
   tokenSymbol.classList.add("token-symbol");
@@ -59,17 +60,19 @@ const createCommonTokenMenuElements = (
   offerToken.classList.add("offer-token-button");
   requestToken.classList.add("request-token-button");
 
-  tokenImageDiv.appendChild(tokenLogo);
+  tokenLogoDiv.appendChild(tokenLogo);
   tokenDetailsDiv.appendChild(tokenName);
   tokenDetailsDiv.appendChild(tokenSymbol);
-  tokenOptionDiv.appendChild(tokenImageDiv);
+  tokenOptionDiv.appendChild(tokenLogoDiv);
   tokenOptionDiv.appendChild(tokenDetailsDiv);
   tokenOptionDiv.appendChild(tokenOrderDetailsDiv);
 
   option.logoURI
     ? (tokenLogo.src = option.logoURI)
     : console.log("logoURI does not exist");
-  tokenName.innerText = option.name;
+  option.name
+    ? (tokenName.innerText = option.name)
+    : console.log("Token name does not exist");
   tokenSymbol.innerText = option.symbol;
   tokenId.type = "text";
   tokenId.placeholder = "Token ID";
@@ -87,7 +90,7 @@ const createCommonTokenMenuElements = (
 
   return {
     tokenOptionDiv,
-    tokenImageDiv,
+    tokenImageDiv: tokenLogoDiv,
     tokenLogo,
     tokenDetailsDiv,
     tokenName,
@@ -114,8 +117,7 @@ const createErc721MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
-    error = "Failed to create Erc721 menu elements";
-    console.log(error);
+    console.log("Failed to create Erc721 menu elements", error);
   }
 };
 const createErc1155MenuElements = async (token: TokenOption) => {
@@ -129,8 +131,7 @@ const createErc1155MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
-    error = "Failed to create Erc1155 menu elements";
-    console.log(error);
+    console.log("Failed to create Erc1155 menu elements", error);
   }
 };
 const createErc20MenuElements = async (token: TokenOption) => {
@@ -143,8 +144,7 @@ const createErc20MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
-    error = "Failed to create Erc20 menu elements";
-    console.log(error);
+    console.log("Failed to create Erc20 menu elements", error);
   }
 };
 const createNativeTokenMenuElements = async (token: TokenOption) => {
@@ -157,8 +157,7 @@ const createNativeTokenMenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
   } catch (error) {
-    error = "Failed to create native token menu elements";
-    console.log(error);
+    console.log("Failed to create native token menu elements", error);
   }
 };
 
