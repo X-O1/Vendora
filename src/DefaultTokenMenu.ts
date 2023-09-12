@@ -131,12 +131,16 @@ const createErc721MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
 
-    addNftToTradeEventListener(
+    addNftToTradeListEventListener(
       "requestedErc721s",
       requestedErc721s,
       tokenOption
     );
-    addNftToTradeEventListener("offeredErc721s", offeredErc721s, tokenOption);
+    addNftToTradeListEventListener(
+      "offeredErc721s",
+      offeredErc721s,
+      tokenOption
+    );
   } catch (error) {
     console.log("Failed to create Erc721 menu elements", error);
   }
@@ -152,12 +156,16 @@ const createErc1155MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
 
-    addNftToTradeEventListener(
+    addNftToTradeListEventListener(
       "requestedErc1155s",
       requestedErc1155s,
       tokenOption
     );
-    addNftToTradeEventListener("offeredErc1155s", offeredErc1155s, tokenOption);
+    addNftToTradeListEventListener(
+      "offeredErc1155s",
+      offeredErc1155s,
+      tokenOption
+    );
   } catch (error) {
     console.log("Failed to create Erc1155 menu elements", error);
   }
@@ -172,12 +180,12 @@ const createErc20MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
 
-    addEthOrErc20ToTradeEventListener(
+    addEthOrErc20ToTradeListEventListener(
       "requestedErc20s",
       requestedErc20s,
       tokenOption
     );
-    addEthOrErc20ToTradeEventListener(
+    addEthOrErc20ToTradeListEventListener(
       "offeredErc20s",
       offeredErc20s,
       tokenOption
@@ -196,12 +204,16 @@ const createNativeTokenMenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
 
-    addEthOrErc20ToTradeEventListener(
+    addEthOrErc20ToTradeListEventListener(
       "requestedEth",
       requestedEth,
       tokenOption
     );
-    addEthOrErc20ToTradeEventListener("offeredEth", offeredEth, tokenOption);
+    addEthOrErc20ToTradeListEventListener(
+      "offeredEth",
+      offeredEth,
+      tokenOption
+    );
   } catch (error) {
     console.log("Failed to create native token menu elements", error);
   }
@@ -332,7 +344,7 @@ const getOfferAssetButton = (): NodeListOf<HTMLButtonElement> => {
   return offerAssetButton;
 };
 
-const addNftToTradeEventListener = (
+const addNftToTradeListEventListener = (
   key: string,
   tradeList: TokenOption[],
   menuElements: TokenMenuElements
@@ -349,7 +361,7 @@ const addNftToTradeEventListener = (
   }
 };
 
-const addEthOrErc20ToTradeEventListener = (
+const addEthOrErc20ToTradeListEventListener = (
   key: string,
   tradeList: TokenOption[],
   menuElements: TokenMenuElements

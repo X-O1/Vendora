@@ -22,6 +22,7 @@ const addNftToTradeList = (
       menuElements.tokenId.value = "";
       menuElements.tokenAmount.value = "";
       closeTokenMenu();
+      // createSelectedAssetMenu()
     }
   } catch (error) {
     console.log("Failed to add NFT to trade list", error);
@@ -47,6 +48,7 @@ const addEthOrErc20ToTradeList = (
     setTokenDetailsInLocalStorage(key, tradeList);
     menuElements.tokenAmount.value = "";
     closeTokenMenu();
+    // createSelectedAssetMenu()
   } catch (error) {
     console.log("Failed to add Erc-20 token or ETH to trade list", error);
   }
