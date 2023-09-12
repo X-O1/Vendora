@@ -1,12 +1,5 @@
+import { closeTokenMenu } from "./DefaultTokenMenu.js";
 import { setTokenDetailsInLocalStorage } from "./LocalStorage.js";
-const isTokenSymbolInTradeList = (tradeList, menuElements) => {
-    const tokenSymbolExist = tradeList.some((token) => token.symbol === menuElements.tokenSymbol.innerText);
-    return tokenSymbolExist;
-};
-const isNftInTradeList = (tradeList, menuElements) => {
-    return tradeList.some((item) => item.symbol === menuElements.tokenSymbol.innerText &&
-        item.tokenId === menuElements.tokenId.value);
-};
 const addNftToTradeList = (key, tradeList, menuElements) => {
     try {
         if (!isNftInTradeList(tradeList, menuElements) &&
@@ -18,6 +11,9 @@ const addNftToTradeList = (key, tradeList, menuElements) => {
                 amount: menuElements.tokenAmount.value,
             });
             setTokenDetailsInLocalStorage(key, tradeList);
+            menuElements.tokenId.value = "";
+            menuElements.tokenAmount.value = "";
+            closeTokenMenu();
         }
     }
     catch (error) {
@@ -26,7 +22,7 @@ const addNftToTradeList = (key, tradeList, menuElements) => {
 };
 const addEthOrErc20ToTradeList = (key, tradeList, menuElements) => {
     try {
-        if (!isTokenSymbolInTradeList(tradeList, menuElements) &&
+        if (!isEthOrErc20InTradeList(tradeList, menuElements) &&
             menuElements.tokenSymbol.innerText !== "") {
         }
         tradeList.push({
@@ -35,9 +31,19 @@ const addEthOrErc20ToTradeList = (key, tradeList, menuElements) => {
             amount: menuElements.tokenAmount.value,
         });
         setTokenDetailsInLocalStorage(key, tradeList);
+        menuElements.tokenAmount.value = "";
+        closeTokenMenu();
     }
     catch (error) {
         console.log("Failed to add Erc-20 token or ETH to trade list", error);
     }
 };
-export { addNftToTradeList, isNftInTradeList, isTokenSymbolInTradeList, addEthOrErc20ToTradeList, };
+const isNftInTradeList = (tradeList, menuElements) => {
+    return tradeList.some((token) => token.symbol === menuElements.tokenSymbol.innerText &&
+        token.tokenId === menuElements.tokenId.value);
+};
+const isEthOrErc20InTradeList = (tradeList, menuElements) => {
+    const tokenSymbolExist = tradeList.some((token) => token.symbol === menuElements.tokenSymbol.innerText);
+    return tokenSymbolExist;
+};
+export { addNftToTradeList, isNftInTradeList, isEthOrErc20InTradeList, addEthOrErc20ToTradeList, };

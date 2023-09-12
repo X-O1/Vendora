@@ -1,4 +1,4 @@
-import { TokenMenuElements } from "./DefaultTokenMenu.js";
+import { TokenMenuElements, closeTokenMenu } from "./DefaultTokenMenu.js";
 import { TokenOption } from "./DefaultTokens.js";
 import { setTokenDetailsInLocalStorage } from "./LocalStorage.js";
 
@@ -19,6 +19,9 @@ const addNftToTradeList = (
         amount: menuElements.tokenAmount.value,
       });
       setTokenDetailsInLocalStorage(key, tradeList);
+      menuElements.tokenId.value = "";
+      menuElements.tokenAmount.value = "";
+      closeTokenMenu();
     }
   } catch (error) {
     console.log("Failed to add NFT to trade list", error);
@@ -42,6 +45,8 @@ const addEthOrErc20ToTradeList = (
       amount: menuElements.tokenAmount.value,
     });
     setTokenDetailsInLocalStorage(key, tradeList);
+    menuElements.tokenAmount.value = "";
+    closeTokenMenu();
   } catch (error) {
     console.log("Failed to add Erc-20 token or ETH to trade list", error);
   }
