@@ -1,8 +1,10 @@
 import { defaultErc1155s, defaultErc20s, defaultErc721s, defaultNativeTokens, } from "./DefaultTokens.js";
 import { assetPopUpContainer, closeFullscreen, closeMenu, erc1155MenuPopUp, erc1155MenuToggle, erc20MenuPopUp, erc20MenuToggle, erc721MenuPopUp, erc721MenuToggle, ethMenuPopUp, ethMenuToggle, toggleFullscreen, } from "./FrontEndElements.js";
+import { offeredErc1155s, offeredErc20s, offeredErc721s, offeredEth, requestedErc1155s, requestedErc20s, requestedErc721s, requestedEth, } from "./LocalStorage.js";
+import { addEthOrErc20ToTradeList, addNftToTradeList, } from "./ManageTradeList.js";
 const createCommonTokenMenuElements = (option) => {
     const tokenOptionDiv = document.createElement("div");
-    const tokenImageDiv = document.createElement("div");
+    const tokenLogoDiv = document.createElement("div");
     const tokenLogo = document.createElement("img");
     const tokenDetailsDiv = document.createElement("div");
     const tokenName = document.createElement("div");
@@ -13,7 +15,8 @@ const createCommonTokenMenuElements = (option) => {
     const requestToken = document.createElement("button");
     const offerToken = document.createElement("button");
     tokenOptionDiv.classList.add("token-option");
-    tokenImageDiv.classList.add("option-image");
+    tokenLogoDiv.classList.add("token-logo-div");
+    tokenLogo.classList.add("token-logo");
     tokenDetailsDiv.classList.add("token-details");
     tokenName.classList.add("token-name");
     tokenSymbol.classList.add("token-symbol");
@@ -22,16 +25,18 @@ const createCommonTokenMenuElements = (option) => {
     tokenAmount.classList.add("token-amount");
     offerToken.classList.add("offer-token-button");
     requestToken.classList.add("request-token-button");
-    tokenImageDiv.appendChild(tokenLogo);
+    tokenLogoDiv.appendChild(tokenLogo);
     tokenDetailsDiv.appendChild(tokenName);
     tokenDetailsDiv.appendChild(tokenSymbol);
-    tokenOptionDiv.appendChild(tokenImageDiv);
+    tokenOptionDiv.appendChild(tokenLogoDiv);
     tokenOptionDiv.appendChild(tokenDetailsDiv);
     tokenOptionDiv.appendChild(tokenOrderDetailsDiv);
     option.logoURI
         ? (tokenLogo.src = option.logoURI)
         : console.log("logoURI does not exist");
-    tokenName.innerText = option.name;
+    option.name
+        ? (tokenName.innerText = option.name)
+        : console.log("Token name does not exist");
     tokenSymbol.innerText = option.symbol;
     tokenId.type = "text";
     tokenId.placeholder = "Token ID";
@@ -47,7 +52,7 @@ const createCommonTokenMenuElements = (option) => {
     });
     return {
         tokenOptionDiv,
-        tokenImageDiv,
+        tokenLogoDiv,
         tokenLogo,
         tokenDetailsDiv,
         tokenName,
@@ -71,10 +76,11 @@ const createErc721MenuElements = async (token) => {
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenId);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+        addNftToTradeEventListener("requestedErc721s", requestedErc721s, tokenOption);
+        addNftToTradeEventListener("offeredErc721s", offeredErc721s, tokenOption);
     }
     catch (error) {
-        error = "Failed to create Erc721 menu elements";
-        console.log(error);
+        console.log("Failed to create Erc721 menu elements", error);
     }
 };
 const createErc1155MenuElements = async (token) => {
@@ -87,10 +93,11 @@ const createErc1155MenuElements = async (token) => {
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+        addNftToTradeEventListener("requestedErc1155s", requestedErc1155s, tokenOption);
+        addNftToTradeEventListener("offeredErc1155s", offeredErc1155s, tokenOption);
     }
     catch (error) {
-        error = "Failed to create Erc1155 menu elements";
-        console.log(error);
+        console.log("Failed to create Erc1155 menu elements", error);
     }
 };
 const createErc20MenuElements = async (token) => {
@@ -102,10 +109,11 @@ const createErc20MenuElements = async (token) => {
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+        addEthOrErc20ToTradeEventListener("requestedErc20s", requestedErc20s, tokenOption);
+        addEthOrErc20ToTradeEventListener("offeredErc20s", offeredErc20s, tokenOption);
     }
     catch (error) {
-        error = "Failed to create Erc20 menu elements";
-        console.log(error);
+        console.log("Failed to create Erc20 menu elements", error);
     }
 };
 const createNativeTokenMenuElements = async (token) => {
@@ -117,10 +125,11 @@ const createNativeTokenMenuElements = async (token) => {
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
         tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+        addEthOrErc20ToTradeEventListener("requestedEth", requestedEth, tokenOption);
+        addEthOrErc20ToTradeEventListener("offeredEth", offeredEth, tokenOption);
     }
     catch (error) {
-        error = "Failed to create native token menu elements";
-        console.log(error);
+        console.log("Failed to create native token menu elements", error);
     }
 };
 const createTokenMenu = async (defaultTokens) => {
@@ -227,4 +236,36 @@ closeFullscreen.addEventListener("click", () => {
 closeMenu.addEventListener("click", () => {
     closeTokenMenu();
 });
-export { createTokenMenu, closeTokenMenu };
+const getRequestAssetButton = () => {
+    const requestAssetButton = document.querySelectorAll(".request-token-button");
+    return requestAssetButton;
+};
+const getOfferAssetButton = () => {
+    const offerAssetButton = document.querySelectorAll(".offer-token-button");
+    return offerAssetButton;
+};
+const addNftToTradeEventListener = (key, tradeList, menuElements) => {
+    if (tradeList === requestedErc721s || tradeList === requestedErc1155s) {
+        menuElements.requestToken.addEventListener("click", () => {
+            addNftToTradeList(key, tradeList, menuElements);
+        });
+    }
+    if (tradeList === offeredErc721s || tradeList === offeredErc1155s) {
+        menuElements.offerToken.addEventListener("click", () => {
+            addNftToTradeList(key, tradeList, menuElements);
+        });
+    }
+};
+const addEthOrErc20ToTradeEventListener = (key, tradeList, menuElements) => {
+    if (tradeList === requestedErc20s || tradeList === requestedEth) {
+        menuElements.requestToken.addEventListener("click", () => {
+            addEthOrErc20ToTradeList(key, tradeList, menuElements);
+        });
+    }
+    if (tradeList === offeredErc20s || tradeList === offeredEth) {
+        menuElements.offerToken.addEventListener("click", () => {
+            addEthOrErc20ToTradeList(key, tradeList, menuElements);
+        });
+    }
+};
+export { createTokenMenu, closeTokenMenu, getRequestAssetButton, getOfferAssetButton, };

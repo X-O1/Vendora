@@ -19,10 +19,24 @@ import {
   ethMenuToggle,
   toggleFullscreen,
 } from "./FrontEndElements.js";
+import {
+  offeredErc1155s,
+  offeredErc20s,
+  offeredErc721s,
+  offeredEth,
+  requestedErc1155s,
+  requestedErc20s,
+  requestedErc721s,
+  requestedEth,
+} from "./LocalStorage.js";
+import {
+  addEthOrErc20ToTradeList,
+  addNftToTradeList,
+} from "./ManageTradeList.js";
 
 type TokenMenuElements = {
   tokenOptionDiv: HTMLDivElement;
-  tokenImageDiv: HTMLDivElement;
+  tokenLogoDiv: HTMLDivElement;
   tokenLogo: HTMLImageElement;
   tokenDetailsDiv: HTMLDivElement;
   tokenName: HTMLDivElement;
@@ -90,7 +104,7 @@ const createCommonTokenMenuElements = (
 
   return {
     tokenOptionDiv,
-    tokenImageDiv: tokenLogoDiv,
+    tokenLogoDiv,
     tokenLogo,
     tokenDetailsDiv,
     tokenName,
@@ -116,6 +130,13 @@ const createErc721MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenId);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+
+    addNftToTradeEventListener(
+      "requestedErc721s",
+      requestedErc721s,
+      tokenOption
+    );
+    addNftToTradeEventListener("offeredErc721s", offeredErc721s, tokenOption);
   } catch (error) {
     console.log("Failed to create Erc721 menu elements", error);
   }
@@ -130,6 +151,13 @@ const createErc1155MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+
+    addNftToTradeEventListener(
+      "requestedErc1155s",
+      requestedErc1155s,
+      tokenOption
+    );
+    addNftToTradeEventListener("offeredErc1155s", offeredErc1155s, tokenOption);
   } catch (error) {
     console.log("Failed to create Erc1155 menu elements", error);
   }
@@ -143,6 +171,17 @@ const createErc20MenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+
+    addEthOrErc20ToTradeEventListener(
+      "requestedErc20s",
+      requestedErc20s,
+      tokenOption
+    );
+    addEthOrErc20ToTradeEventListener(
+      "offeredErc20s",
+      offeredErc20s,
+      tokenOption
+    );
   } catch (error) {
     console.log("Failed to create Erc20 menu elements", error);
   }
@@ -156,6 +195,13 @@ const createNativeTokenMenuElements = async (token: TokenOption) => {
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.tokenAmount);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.offerToken);
     tokenOption.tokenOrderDetailsDiv.appendChild(tokenOption.requestToken);
+
+    addEthOrErc20ToTradeEventListener(
+      "requestedEth",
+      requestedEth,
+      tokenOption
+    );
+    addEthOrErc20ToTradeEventListener("offeredEth", offeredEth, tokenOption);
   } catch (error) {
     console.log("Failed to create native token menu elements", error);
   }
@@ -244,27 +290,27 @@ window.addEventListener("load", async () => {
   ]);
 });
 
-erc721MenuToggle.addEventListener("click", () => {
+erc721MenuToggle.addEventListener("click", (): void => {
   displayErc721Menu();
 });
 
-erc1155MenuToggle.addEventListener("click", () => {
+erc1155MenuToggle.addEventListener("click", (): void => {
   displayErc1155Menu();
 });
-erc20MenuToggle.addEventListener("click", () => {
+erc20MenuToggle.addEventListener("click", (): void => {
   displayErc20Menu();
 });
 
-ethMenuToggle.addEventListener("click", () => {
+ethMenuToggle.addEventListener("click", (): void => {
   displayEthMenu();
 });
 
-toggleFullscreen.addEventListener("click", () => {
+toggleFullscreen.addEventListener("click", (): void => {
   if (assetPopUpContainer.style.height == "44%") {
     expandTokenMenu();
   }
 });
-closeFullscreen.addEventListener("click", () => {
+closeFullscreen.addEventListener("click", (): void => {
   if (assetPopUpContainer.style.height == "88%") {
     closeTokenMenu();
   }
@@ -273,4 +319,57 @@ closeMenu.addEventListener("click", () => {
   closeTokenMenu();
 });
 
-export { createTokenMenu, closeTokenMenu };
+const getRequestAssetButton = (): NodeListOf<HTMLButtonElement> => {
+  const requestAssetButton: NodeListOf<HTMLButtonElement> =
+    document.querySelectorAll(".request-token-button");
+
+  return requestAssetButton;
+};
+const getOfferAssetButton = (): NodeListOf<HTMLButtonElement> => {
+  const offerAssetButton: NodeListOf<HTMLButtonElement> =
+    document.querySelectorAll(".offer-token-button");
+
+  return offerAssetButton;
+};
+
+const addNftToTradeEventListener = (
+  key: string,
+  tradeList: TokenOption[],
+  menuElements: TokenMenuElements
+): void => {
+  if (tradeList === requestedErc721s || tradeList === requestedErc1155s) {
+    menuElements.requestToken.addEventListener("click", (): void => {
+      addNftToTradeList(key, tradeList, menuElements);
+    });
+  }
+  if (tradeList === offeredErc721s || tradeList === offeredErc1155s) {
+    menuElements.offerToken.addEventListener("click", (): void => {
+      addNftToTradeList(key, tradeList, menuElements);
+    });
+  }
+};
+
+const addEthOrErc20ToTradeEventListener = (
+  key: string,
+  tradeList: TokenOption[],
+  menuElements: TokenMenuElements
+): void => {
+  if (tradeList === requestedErc20s || tradeList === requestedEth) {
+    menuElements.requestToken.addEventListener("click", (): void => {
+      addEthOrErc20ToTradeList(key, tradeList, menuElements);
+    });
+  }
+  if (tradeList === offeredErc20s || tradeList === offeredEth) {
+    menuElements.offerToken.addEventListener("click", (): void => {
+      addEthOrErc20ToTradeList(key, tradeList, menuElements);
+    });
+  }
+};
+
+export {
+  createTokenMenu,
+  closeTokenMenu,
+  getRequestAssetButton,
+  getOfferAssetButton,
+  TokenMenuElements,
+};

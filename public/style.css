@@ -286,7 +286,7 @@ header {
     width: 100%;
 }
 
-.option-image,
+.token-logo,
 .term-asset-image {
     width: 50px;
     height: 50px;
@@ -298,13 +298,13 @@ header {
     justify-content: center;
 }
 
-.option-name {
+.token-name {
     font-size: 20px;
     color: rgb(255, 255, 255);
     width: 105px;
 }
 
-.erc1155-menu-popup .option-name {
+.erc1155-menu-popup .token-name {
     width: 40px;
 }
 
@@ -325,8 +325,8 @@ header {
     display: none;
 }
 
-.option-token-id,
-.option-amount,
+.token-id,
+.token-amount,
 .request-erc721-button,
 .request-erc1155-button,
 .request-erc20-button,
@@ -357,8 +357,8 @@ header {
     right: 5%;
 }
 
-.option-token-id,
-.option-amount {
+.token-id,
+.token-amount {
     width: 45px;
     font-size: 11px;
     padding: 8.5px;
@@ -367,8 +367,8 @@ header {
 
 
 .eth-amount::placeholder,
-.option-token-id::placeholder,
-.option-amount::placeholder,
+.token-id::placeholder,
+.token-amount::placeholder,
 .erc1155-token-id::placeholder,
 .erc1155-amount::placeholder,
 .add-asset {

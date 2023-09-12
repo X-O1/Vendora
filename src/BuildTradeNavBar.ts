@@ -1,4 +1,8 @@
-import { closeTokenMenu } from "./DefaultTokenMenu.js";
+import {
+  closeTokenMenu,
+  getOfferAssetButton,
+  getRequestAssetButton,
+} from "./DefaultTokenMenu.js";
 import {
   offerTab,
   requestTab,
@@ -52,35 +56,20 @@ const displayFinalizeTermsLinkContent = (): void => {
   requestedAssetsTitle.innerText = "RECIEVE";
   setTermsButton.style.display = "flex";
 };
-const getAddTokenButtonElements = (): [
-  NodeListOf<HTMLButtonElement>,
-  NodeListOf<HTMLButtonElement>
-] => {
-  const offerAsset: NodeListOf<HTMLButtonElement> = document.querySelectorAll(
-    ".offer-asset-button"
-  );
-  const requestAsset: NodeListOf<HTMLButtonElement> = document.querySelectorAll(
-    ".request-asset-button"
-  );
-  return [offerAsset, requestAsset];
-};
-const displayRequestAssetButton = (): void => {
-  const [offerButtons, requestButtons] = getAddTokenButtonElements();
 
-  offerButtons.forEach((button) => {
+const displayRequestAssetButton = (): void => {
+  getOfferAssetButton().forEach((button) => {
     button.style.display = "none";
   });
-  requestButtons.forEach((button) => {
+  getRequestAssetButton().forEach((button) => {
     button.style.display = "block";
   });
 };
 const displayOfferAssetButton = (): void => {
-  const [offerButtons, requestButtons] = getAddTokenButtonElements();
-
-  offerButtons.forEach((button) => {
+  getOfferAssetButton().forEach((button) => {
     button.style.display = "block";
   });
-  requestButtons.forEach((button) => {
+  getRequestAssetButton().forEach((button) => {
     button.style.display = "none";
   });
 };
@@ -100,5 +89,3 @@ finalizeTermsTab.addEventListener("click", () => {
   displayFinalizeTermsLinkContent();
   closeTokenMenu();
 });
-
-export { getAddTokenButtonElements };
