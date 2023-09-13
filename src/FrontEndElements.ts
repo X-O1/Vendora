@@ -82,31 +82,29 @@ const offeredAssets = document.querySelector(
 const offeredAssetsH2 = document.querySelector(
   ".requested-assets-title"
 ) as HTMLElement;
-const requestedTermsErc721s = document.querySelector(
+const requestedErc721sDiv = document.querySelector(
   ".requested-erc721s"
 ) as HTMLDivElement;
-const requestedTermsErc1155s = document.querySelector(
+const requestedErc1155sDiv = document.querySelector(
   ".requested-erc1155s"
 ) as HTMLDivElement;
-const requestedTermsErc20s = document.querySelector(
+const requestedErc20sDiv = document.querySelector(
   ".requested-erc20s"
 ) as HTMLDivElement;
-const requestedTermsEth = document.querySelector(
+const requestedEthDiv = document.querySelector(
   ".requested-eth"
 ) as HTMLDivElement;
 
-const offeredTermsErc721s = document.querySelector(
+const offeredErc721sDiv = document.querySelector(
   ".offered-erc721s"
 ) as HTMLDivElement;
-const offeredTermsErc1155s = document.querySelector(
+const offeredErc1155sDiv = document.querySelector(
   ".offered-erc1155s"
 ) as HTMLDivElement;
-const offeredTermsErc20s = document.querySelector(
+const offeredErc20sDiv = document.querySelector(
   ".offered-erc20s"
 ) as HTMLDivElement;
-const offeredTermsEth = document.querySelector(
-  ".offered-eth"
-) as HTMLDivElement;
+const offeredEthDiv = document.querySelector(".offered-eth") as HTMLDivElement;
 const offeredAssetsTitle = document.querySelector(
   ".offered-assets-title"
 ) as HTMLElement;
@@ -151,14 +149,14 @@ export {
   finalizeTermsDiv,
   requestedAssets,
   offeredAssets,
-  requestedTermsErc721s,
-  requestedTermsErc1155s,
-  requestedTermsErc20s,
-  requestedTermsEth,
-  offeredTermsErc721s,
-  offeredTermsErc1155s,
-  offeredTermsErc20s,
-  offeredTermsEth,
+  requestedErc721sDiv,
+  requestedErc1155sDiv,
+  requestedErc20sDiv,
+  requestedEthDiv,
+  offeredErc721sDiv,
+  offeredErc1155sDiv,
+  offeredErc20sDiv,
+  offeredEthDiv,
   offeredAssetsH2,
   requestedAssetsH2,
   requestedAssetsTitle,

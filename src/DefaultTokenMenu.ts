@@ -33,6 +33,11 @@ import {
   addEthOrErc20ToTradeList,
   addNftToTradeList,
 } from "./ManageTradeList.js";
+import {
+  displayOfferedTradeList,
+  displayRequestedTradeList,
+  resetTradeListElementsInnerText,
+} from "./TradeListMenu.js";
 
 type TokenMenuElements = {
   tokenOptionDiv: HTMLDivElement;
@@ -41,6 +46,7 @@ type TokenMenuElements = {
   tokenDetailsDiv: HTMLDivElement;
   tokenName: HTMLDivElement;
   tokenSymbol: HTMLDivElement;
+  tokenAddress: HTMLDivElement;
   tokenOrderDetailsDiv: HTMLDivElement;
   tokenId: HTMLInputElement;
   tokenAmount: HTMLInputElement;
@@ -57,17 +63,20 @@ const createCommonTokenMenuElements = (
   const tokenDetailsDiv: HTMLDivElement = document.createElement("div");
   const tokenName: HTMLDivElement = document.createElement("div");
   const tokenSymbol: HTMLDivElement = document.createElement("div");
+  const tokenAddress: HTMLDivElement = document.createElement("div");
   const tokenOrderDetailsDiv: HTMLDivElement = document.createElement("div");
   const tokenId: HTMLInputElement = document.createElement("input");
   const tokenAmount: HTMLInputElement = document.createElement("input");
   const requestToken: HTMLButtonElement = document.createElement("button");
   const offerToken: HTMLButtonElement = document.createElement("button");
+
   tokenOptionDiv.classList.add("token-option");
   tokenLogoDiv.classList.add("token-logo-div");
   tokenLogo.classList.add("token-logo");
   tokenDetailsDiv.classList.add("token-details");
   tokenName.classList.add("token-name");
   tokenSymbol.classList.add("token-symbol");
+  tokenAddress.classList.add("token-address");
   tokenOrderDetailsDiv.classList.add("option-order-details");
   tokenId.classList.add("token-id");
   tokenAmount.classList.add("token-amount");
@@ -77,16 +86,14 @@ const createCommonTokenMenuElements = (
   tokenLogoDiv.appendChild(tokenLogo);
   tokenDetailsDiv.appendChild(tokenName);
   tokenDetailsDiv.appendChild(tokenSymbol);
+  tokenDetailsDiv.appendChild(tokenAddress);
   tokenOptionDiv.appendChild(tokenLogoDiv);
   tokenOptionDiv.appendChild(tokenDetailsDiv);
   tokenOptionDiv.appendChild(tokenOrderDetailsDiv);
 
-  option.logoURI
-    ? (tokenLogo.src = option.logoURI)
-    : console.log("logoURI does not exist");
-  option.name
-    ? (tokenName.innerText = option.name)
-    : console.log("Token name does not exist");
+  if (option.logoURI) tokenLogo.src = option.logoURI;
+  if (option.name) tokenName.innerText = option.name;
+  if (option.address) tokenAddress.innerText = option.address;
   tokenSymbol.innerText = option.symbol;
   tokenId.type = "text";
   tokenId.placeholder = "Token ID";
@@ -109,6 +116,7 @@ const createCommonTokenMenuElements = (
     tokenDetailsDiv,
     tokenName,
     tokenSymbol,
+    tokenAddress,
     tokenOrderDetailsDiv,
     tokenId,
     tokenAmount,
@@ -352,11 +360,15 @@ const addNftToTradeListEventListener = (
   if (tradeList === requestedErc721s || tradeList === requestedErc1155s) {
     menuElements.requestToken.addEventListener("click", (): void => {
       addNftToTradeList(key, tradeList, menuElements);
+      resetTradeListElementsInnerText();
+      displayRequestedTradeList();
     });
   }
   if (tradeList === offeredErc721s || tradeList === offeredErc1155s) {
     menuElements.offerToken.addEventListener("click", (): void => {
       addNftToTradeList(key, tradeList, menuElements);
+      resetTradeListElementsInnerText();
+      displayOfferedTradeList();
     });
   }
 };
@@ -369,11 +381,15 @@ const addEthOrErc20ToTradeListEventListener = (
   if (tradeList === requestedErc20s || tradeList === requestedEth) {
     menuElements.requestToken.addEventListener("click", (): void => {
       addEthOrErc20ToTradeList(key, tradeList, menuElements);
+      resetTradeListElementsInnerText();
+      displayRequestedTradeList();
     });
   }
   if (tradeList === offeredErc20s || tradeList === offeredEth) {
     menuElements.offerToken.addEventListener("click", (): void => {
       addEthOrErc20ToTradeList(key, tradeList, menuElements);
+      resetTradeListElementsInnerText();
+      displayOfferedTradeList();
     });
   }
 };

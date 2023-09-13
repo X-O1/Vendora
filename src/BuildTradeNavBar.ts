@@ -16,6 +16,12 @@ import {
   requestedAssetsTitle,
   setTermsButton,
 } from "./FrontEndElements.js";
+import {
+  displayOfferedTradeList,
+  displayRequestedTradeList,
+  displayTradeList,
+  resetTradeListElementsInnerText,
+} from "./TradeListMenu.js";
 
 const displayRequestLinkContent = (): void => {
   requestTab.style.color = "#FFF";
@@ -28,6 +34,8 @@ const displayRequestLinkContent = (): void => {
   requestedAssets.style.height = "100%";
   setTermsButton.style.display = "none";
   selectAssetsH2.innerText = "Select Assets You Want";
+  resetTradeListElementsInnerText();
+  displayRequestedTradeList();
 };
 const displayOfferLinkContent = () => {
   offerTab.style.color = "#FFF";
@@ -40,6 +48,8 @@ const displayOfferLinkContent = () => {
   offeredAssets.style.height = "100%";
   setTermsButton.style.display = "none";
   selectAssetsH2.innerText = "Select Assets You'll Give";
+  resetTradeListElementsInnerText();
+  displayOfferedTradeList();
 };
 
 const displayFinalizeTermsLinkContent = (): void => {
@@ -55,6 +65,8 @@ const displayFinalizeTermsLinkContent = (): void => {
   offeredAssetsTitle.innerText = "GIVE";
   requestedAssetsTitle.innerText = "RECIEVE";
   setTermsButton.style.display = "flex";
+  resetTradeListElementsInnerText();
+  displayTradeList();
 };
 
 const displayRequestAssetButton = (): void => {

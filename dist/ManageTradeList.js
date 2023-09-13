@@ -45,4 +45,36 @@ const addEthOrErc20ToTradeList = (key, tradeList, menuElements) => {
         console.log("Failed to add Erc-20 token or ETH to trade list", error);
     }
 };
-export { addNftToTradeList, isNftInTradeList, isEthOrErc20InTradeList, addEthOrErc20ToTradeList, };
+const deleteNftFromTradeList = (key, tradeList, menuElements) => {
+    try {
+        tradeList.forEach((token) => {
+            if (isNftInTradeList(tradeList, menuElements)) {
+                const index = tradeList.indexOf(token);
+                index !== -1
+                    ? tradeList.splice(index, 1)
+                    : console.log("This NFT does not exist in trade list");
+            }
+        });
+        setTokenDetailsInLocalStorage(key, tradeList);
+    }
+    catch (error) {
+        console.log("Failed to delete NFT from trade list", error);
+    }
+};
+const deleteEthOrErc20FromTradeList = (key, tradeList, menuElements) => {
+    try {
+        tradeList.forEach((token) => {
+            if (isEthOrErc20InTradeList(tradeList, menuElements)) {
+                const index = tradeList.indexOf(token);
+                index !== -1
+                    ? tradeList.splice(index, 1)
+                    : console.log("This Erc-20 or Eth does not exist in trade list");
+            }
+        });
+        setTokenDetailsInLocalStorage(key, tradeList);
+    }
+    catch (error) {
+        console.log("Failed to delete Erc-20 or Eth from trade list", error);
+    }
+};
+export { addNftToTradeList, isNftInTradeList, isEthOrErc20InTradeList, addEthOrErc20ToTradeList, deleteEthOrErc20FromTradeList, deleteNftFromTradeList, };

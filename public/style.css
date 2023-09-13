@@ -464,7 +464,6 @@ header {
     height: 100%;
     margin-top: 0px;
     border: .1px inset rgba(152, 161, 192, 0.24);
-
 }
 
 .offered-assets {
@@ -499,4 +498,7 @@ header {
     background-color: #223666;
     border-radius: 10px;
     color: #4575E4;
+}
+.token-address {
+    display: none;
 }

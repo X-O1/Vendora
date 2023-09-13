@@ -2,6 +2,7 @@ import { defaultErc1155s, defaultErc20s, defaultErc721s, defaultNativeTokens, } 
 import { assetPopUpContainer, closeFullscreen, closeMenu, erc1155MenuPopUp, erc1155MenuToggle, erc20MenuPopUp, erc20MenuToggle, erc721MenuPopUp, erc721MenuToggle, ethMenuPopUp, ethMenuToggle, toggleFullscreen, } from "./FrontEndElements.js";
 import { offeredErc1155s, offeredErc20s, offeredErc721s, offeredEth, requestedErc1155s, requestedErc20s, requestedErc721s, requestedEth, } from "./LocalStorage.js";
 import { addEthOrErc20ToTradeList, addNftToTradeList, } from "./ManageTradeList.js";
+import { displayOfferedTradeList, displayRequestedTradeList, resetTradeListElementsInnerText, } from "./TradeListMenu.js";
 const createCommonTokenMenuElements = (option) => {
     const tokenOptionDiv = document.createElement("div");
     const tokenLogoDiv = document.createElement("div");
@@ -9,6 +10,7 @@ const createCommonTokenMenuElements = (option) => {
     const tokenDetailsDiv = document.createElement("div");
     const tokenName = document.createElement("div");
     const tokenSymbol = document.createElement("div");
+    const tokenAddress = document.createElement("div");
     const tokenOrderDetailsDiv = document.createElement("div");
     const tokenId = document.createElement("input");
     const tokenAmount = document.createElement("input");
@@ -20,6 +22,7 @@ const createCommonTokenMenuElements = (option) => {
     tokenDetailsDiv.classList.add("token-details");
     tokenName.classList.add("token-name");
     tokenSymbol.classList.add("token-symbol");
+    tokenAddress.classList.add("token-address");
     tokenOrderDetailsDiv.classList.add("option-order-details");
     tokenId.classList.add("token-id");
     tokenAmount.classList.add("token-amount");
@@ -28,15 +31,16 @@ const createCommonTokenMenuElements = (option) => {
     tokenLogoDiv.appendChild(tokenLogo);
     tokenDetailsDiv.appendChild(tokenName);
     tokenDetailsDiv.appendChild(tokenSymbol);
+    tokenDetailsDiv.appendChild(tokenAddress);
     tokenOptionDiv.appendChild(tokenLogoDiv);
     tokenOptionDiv.appendChild(tokenDetailsDiv);
     tokenOptionDiv.appendChild(tokenOrderDetailsDiv);
-    option.logoURI
-        ? (tokenLogo.src = option.logoURI)
-        : console.log("logoURI does not exist");
-    option.name
-        ? (tokenName.innerText = option.name)
-        : console.log("Token name does not exist");
+    if (option.logoURI)
+        tokenLogo.src = option.logoURI;
+    if (option.name)
+        tokenName.innerText = option.name;
+    if (option.address)
+        tokenAddress.innerText = option.address;
     tokenSymbol.innerText = option.symbol;
     tokenId.type = "text";
     tokenId.placeholder = "Token ID";
@@ -57,6 +61,7 @@ const createCommonTokenMenuElements = (option) => {
         tokenDetailsDiv,
         tokenName,
         tokenSymbol,
+        tokenAddress,
         tokenOrderDetailsDiv,
         tokenId,
         tokenAmount,
@@ -248,11 +253,15 @@ const addNftToTradeListEventListener = (key, tradeList, menuElements) => {
     if (tradeList === requestedErc721s || tradeList === requestedErc1155s) {
         menuElements.requestToken.addEventListener("click", () => {
             addNftToTradeList(key, tradeList, menuElements);
+            resetTradeListElementsInnerText();
+            displayRequestedTradeList();
         });
     }
     if (tradeList === offeredErc721s || tradeList === offeredErc1155s) {
         menuElements.offerToken.addEventListener("click", () => {
             addNftToTradeList(key, tradeList, menuElements);
+            resetTradeListElementsInnerText();
+            displayOfferedTradeList();
         });
     }
 };
@@ -260,11 +269,15 @@ const addEthOrErc20ToTradeListEventListener = (key, tradeList, menuElements) => 
     if (tradeList === requestedErc20s || tradeList === requestedEth) {
         menuElements.requestToken.addEventListener("click", () => {
             addEthOrErc20ToTradeList(key, tradeList, menuElements);
+            resetTradeListElementsInnerText();
+            displayRequestedTradeList();
         });
     }
     if (tradeList === offeredErc20s || tradeList === offeredEth) {
         menuElements.offerToken.addEventListener("click", () => {
             addEthOrErc20ToTradeList(key, tradeList, menuElements);
+            resetTradeListElementsInnerText();
+            displayOfferedTradeList();
         });
     }
 };
