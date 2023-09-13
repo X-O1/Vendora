@@ -1,5 +1,6 @@
 import { closeTokenMenu } from "./DefaultTokenMenu.js";
 import { setTokenDetailsInLocalStorage } from "./LocalStorage.js";
+import { isEthOrErc20InTradeListToDelete, isNftInTradeListToDelete, } from "./TradeListMenu.js";
 const isNftInTradeList = (tradeList, menuElements) => {
     return tradeList.some((token) => token.symbol === menuElements.tokenSymbol.innerText &&
         token.tokenId === menuElements.tokenId.value);
@@ -48,7 +49,7 @@ const addEthOrErc20ToTradeList = (key, tradeList, menuElements) => {
 const deleteNftFromTradeList = (key, tradeList, menuElements) => {
     try {
         tradeList.forEach((token) => {
-            if (isNftInTradeList(tradeList, menuElements)) {
+            if (isNftInTradeListToDelete(tradeList, menuElements)) {
                 const index = tradeList.indexOf(token);
                 index !== -1
                     ? tradeList.splice(index, 1)
@@ -64,7 +65,7 @@ const deleteNftFromTradeList = (key, tradeList, menuElements) => {
 const deleteEthOrErc20FromTradeList = (key, tradeList, menuElements) => {
     try {
         tradeList.forEach((token) => {
-            if (isEthOrErc20InTradeList(tradeList, menuElements)) {
+            if (isEthOrErc20InTradeListToDelete(tradeList, menuElements)) {
                 const index = tradeList.indexOf(token);
                 index !== -1
                     ? tradeList.splice(index, 1)

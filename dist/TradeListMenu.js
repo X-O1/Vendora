@@ -1,5 +1,6 @@
 import { offeredErc1155sDiv, offeredErc20sDiv, offeredErc721sDiv, offeredEthDiv, requestedErc1155sDiv, requestedErc20sDiv, requestedErc721sDiv, requestedEthDiv, } from "./FrontEndElements.js";
 import { offeredErc1155s, offeredErc20s, offeredErc721s, offeredEth, requestedErc1155s, requestedErc20s, requestedErc721s, requestedEth, } from "./LocalStorage.js";
+import { deleteEthOrErc20FromTradeList, deleteNftFromTradeList, } from "./ManageTradeList.js";
 const createCommonTradeListELements = (token) => {
     const selectedTermAssetDiv = document.createElement("div");
     const termAssetImageDiv = document.createElement("div");
@@ -49,6 +50,8 @@ const createErc721TradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetTokenIdTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetTokenId);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
+    addDeleteNftEventListener("requestedErc721s", requestedErc721s, tradeListElements);
+    addDeleteNftEventListener("offeredErc721s", offeredErc721s, tradeListElements);
 };
 const createErc1155TradeListElements = (token, tradeListDiv) => {
     const tradeListElements = createCommonTradeListELements(token);
@@ -59,6 +62,8 @@ const createErc1155TradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmountTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmount);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
+    addDeleteNftEventListener("requestedErc1155s", requestedErc1155s, tradeListElements);
+    addDeleteNftEventListener("offeredErc1155s", offeredErc1155s, tradeListElements);
 };
 const createErc20TradeListElements = (token, tradeListDiv) => {
     const tradeListElements = createCommonTradeListELements(token);
@@ -66,6 +71,8 @@ const createErc20TradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmountTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmount);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
+    addDeleteEthOrErc20EventListener("requestedErc20s", requestedErc20s, tradeListElements);
+    addDeleteEthOrErc20EventListener("offeredErc20s", offeredErc20s, tradeListElements);
 };
 const createNativeTokenTradeListElements = (token, tradeListDiv) => {
     const tradeListElements = createCommonTradeListELements(token);
@@ -73,6 +80,8 @@ const createNativeTokenTradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmountTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmount);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
+    addDeleteEthOrErc20EventListener("requestedEth", requestedEth, tradeListElements);
+    addDeleteEthOrErc20EventListener("offeredEth", offeredEth, tradeListElements);
 };
 const createRequestedTradeListMenu = (tradeList) => {
     try {
@@ -143,17 +152,62 @@ const displayOfferedTradeList = async () => {
 const displayTradeList = async () => {
     Promise.all([displayOfferedTradeList(), displayRequestedTradeList()]);
 };
-const resetTradeListElementsInnerText = () => {
+const resetRequestedTradeListElementsInnerText = () => {
     requestedErc721sDiv.innerText = "";
     requestedErc1155sDiv.innerText = "";
     requestedErc20sDiv.innerText = "";
     requestedEthDiv.innerText = "";
+};
+const resetOfferedTradeListElementsInnerText = () => {
     offeredErc721sDiv.innerText = "";
     offeredErc1155sDiv.innerText = "";
     offeredErc20sDiv.innerText = "";
     offeredEthDiv.innerText = "";
 };
+const resetTradeListElementsInnerText = () => {
+    resetOfferedTradeListElementsInnerText();
+    resetRequestedTradeListElementsInnerText();
+};
+const isNftInTradeListToDelete = (tradeList, menuElements) => {
+    return tradeList.some((token) => token.symbol === menuElements.termAssetSymbol.innerText &&
+        token.tokenId === menuElements.termAssetTokenId.innerText);
+};
+const isEthOrErc20InTradeListToDelete = (tradeList, menuElements) => {
+    return tradeList.some((token) => token.symbol === menuElements.termAssetSymbol.innerText);
+};
+const addDeleteNftEventListener = (key, tradeList, menuElements) => {
+    if (tradeList === requestedErc721s || tradeList === requestedErc1155s) {
+        menuElements.deleteAssetButton.addEventListener("click", () => {
+            deleteNftFromTradeList(key, tradeList, menuElements);
+            resetRequestedTradeListElementsInnerText();
+            displayRequestedTradeList();
+        });
+    }
+    if (tradeList === offeredErc721s || tradeList === offeredErc1155s) {
+        menuElements.deleteAssetButton.addEventListener("click", () => {
+            deleteNftFromTradeList(key, tradeList, menuElements);
+            resetOfferedTradeListElementsInnerText();
+            displayOfferedTradeList();
+        });
+    }
+};
+const addDeleteEthOrErc20EventListener = (key, tradeList, menuElements) => {
+    if (tradeList === requestedErc20s || tradeList === requestedEth) {
+        menuElements.deleteAssetButton.addEventListener("click", () => {
+            deleteEthOrErc20FromTradeList(key, tradeList, menuElements);
+            resetRequestedTradeListElementsInnerText();
+            displayRequestedTradeList();
+        });
+    }
+    if (tradeList === offeredErc20s || tradeList === offeredEth) {
+        menuElements.deleteAssetButton.addEventListener("click", () => {
+            deleteEthOrErc20FromTradeList(key, tradeList, menuElements);
+            resetOfferedTradeListElementsInnerText();
+            displayOfferedTradeList();
+        });
+    }
+};
 window.addEventListener("load", () => {
     displayTradeList();
 });
-export { displayOfferedTradeList, displayRequestedTradeList, displayTradeList, resetTradeListElementsInnerText, };
+export { displayOfferedTradeList, displayRequestedTradeList, displayTradeList, resetTradeListElementsInnerText, isNftInTradeListToDelete, isEthOrErc20InTradeListToDelete, };
