@@ -50,8 +50,8 @@ const createErc721TradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetTokenIdTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetTokenId);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
-    addDeleteNftEventListener("requestedErc721s", requestedErc721s, tradeListElements);
-    addDeleteNftEventListener("offeredErc721s", offeredErc721s, tradeListElements);
+    deleteNftFromTradeListEventListener("requestedErc721s", requestedErc721s, tradeListElements);
+    deleteNftFromTradeListEventListener("offeredErc721s", offeredErc721s, tradeListElements);
 };
 const createErc1155TradeListElements = (token, tradeListDiv) => {
     const tradeListElements = createCommonTradeListELements(token);
@@ -62,8 +62,8 @@ const createErc1155TradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmountTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmount);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
-    addDeleteNftEventListener("requestedErc1155s", requestedErc1155s, tradeListElements);
-    addDeleteNftEventListener("offeredErc1155s", offeredErc1155s, tradeListElements);
+    deleteNftFromTradeListEventListener("requestedErc1155s", requestedErc1155s, tradeListElements);
+    deleteNftFromTradeListEventListener("offeredErc1155s", offeredErc1155s, tradeListElements);
 };
 const createErc20TradeListElements = (token, tradeListDiv) => {
     const tradeListElements = createCommonTradeListELements(token);
@@ -71,8 +71,8 @@ const createErc20TradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmountTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmount);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
-    addDeleteEthOrErc20EventListener("requestedErc20s", requestedErc20s, tradeListElements);
-    addDeleteEthOrErc20EventListener("offeredErc20s", offeredErc20s, tradeListElements);
+    deleteEthOrErc20FromTradeListEventListener("requestedErc20s", requestedErc20s, tradeListElements);
+    deleteEthOrErc20FromTradeListEventListener("offeredErc20s", offeredErc20s, tradeListElements);
 };
 const createNativeTokenTradeListElements = (token, tradeListDiv) => {
     const tradeListElements = createCommonTradeListELements(token);
@@ -80,8 +80,8 @@ const createNativeTokenTradeListElements = (token, tradeListDiv) => {
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmountTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmount);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.deleteAssetButton);
-    addDeleteEthOrErc20EventListener("requestedEth", requestedEth, tradeListElements);
-    addDeleteEthOrErc20EventListener("offeredEth", offeredEth, tradeListElements);
+    deleteEthOrErc20FromTradeListEventListener("requestedEth", requestedEth, tradeListElements);
+    deleteEthOrErc20FromTradeListEventListener("offeredEth", offeredEth, tradeListElements);
 };
 const createRequestedTradeListMenu = (tradeList) => {
     try {
@@ -175,7 +175,7 @@ const isNftInTradeListToDelete = (tradeList, menuElements) => {
 const isEthOrErc20InTradeListToDelete = (tradeList, menuElements) => {
     return tradeList.some((token) => token.symbol === menuElements.termAssetSymbol.innerText);
 };
-const addDeleteNftEventListener = (key, tradeList, menuElements) => {
+const deleteNftFromTradeListEventListener = (key, tradeList, menuElements) => {
     if (tradeList === requestedErc721s || tradeList === requestedErc1155s) {
         menuElements.deleteAssetButton.addEventListener("click", () => {
             deleteNftFromTradeList(key, tradeList, menuElements);
@@ -191,7 +191,7 @@ const addDeleteNftEventListener = (key, tradeList, menuElements) => {
         });
     }
 };
-const addDeleteEthOrErc20EventListener = (key, tradeList, menuElements) => {
+const deleteEthOrErc20FromTradeListEventListener = (key, tradeList, menuElements) => {
     if (tradeList === requestedErc20s || tradeList === requestedEth) {
         menuElements.deleteAssetButton.addEventListener("click", () => {
             deleteEthOrErc20FromTradeList(key, tradeList, menuElements);
