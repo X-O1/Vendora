@@ -1,8 +1,8 @@
 type TokenOption = {
   logoURI?: string;
-  name?: string;
+  name: string;
   symbol: string;
-  address?: string;
+  address: string;
   tokenId?: string;
   amount?: string;
 };

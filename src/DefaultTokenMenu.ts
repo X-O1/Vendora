@@ -86,7 +86,6 @@ const createCommonTokenMenuElements = (
   tokenLogoDiv.appendChild(tokenLogo);
   tokenDetailsDiv.appendChild(tokenName);
   tokenDetailsDiv.appendChild(tokenSymbol);
-  tokenDetailsDiv.appendChild(tokenAddress);
   tokenOptionDiv.appendChild(tokenLogoDiv);
   tokenOptionDiv.appendChild(tokenDetailsDiv);
   tokenOptionDiv.appendChild(tokenOrderDetailsDiv);

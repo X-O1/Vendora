@@ -10,6 +10,7 @@ const createCommonTradeListELements = (token) => {
     const termAssetTokenId = document.createElement("div");
     const termAssetAmountTitle = document.createElement("div");
     const termAssetAmount = document.createElement("div");
+    const termAssetAddress = document.createElement("div");
     const deleteAssetButton = document.createElement("button");
     selectedTermAssetDiv.classList.add("selected-term-asset");
     termAssetImageDiv.classList.add("term-asset-image");
@@ -18,10 +19,12 @@ const createCommonTradeListELements = (token) => {
     termAssetTokenId.classList.add("term-asset-tokenId");
     termAssetAmountTitle.classList.add("term-asset-amount-title");
     termAssetAmount.classList.add("term-asset-amount");
+    termAssetAddress.classList.add("term-asset-address");
     deleteAssetButton.classList.add("delete-asset");
     termAssetImageDiv.appendChild(termAssetImage);
     selectedTermAssetDiv.appendChild(termAssetImageDiv);
     selectedTermAssetDiv.appendChild(termAssetSymbol);
+    selectedTermAssetDiv.appendChild(termAssetAddress);
     if (token.logoURI)
         termAssetImage.src = token.logoURI;
     termAssetSymbol.innerText = token.symbol;
@@ -31,6 +34,8 @@ const createCommonTradeListELements = (token) => {
         termAssetAmount.innerText = token.amount;
     if (token.tokenId)
         termAssetTokenId.innerText = token.tokenId;
+    if (token.address)
+        termAssetAddress.innerText = token.address;
     deleteAssetButton.innerText = "Delete";
     return {
         selectedTermAssetDiv,
@@ -41,6 +46,7 @@ const createCommonTradeListELements = (token) => {
         termAssetTokenId,
         termAssetAmountTitle,
         termAssetAmount,
+        termAssetAddress,
         deleteAssetButton,
     };
 };
@@ -56,7 +62,6 @@ const createErc721TradeListElements = (token, tradeListDiv) => {
 const createErc1155TradeListElements = (token, tradeListDiv) => {
     const tradeListElements = createCommonTradeListELements(token);
     tradeListDiv.appendChild(tradeListElements.selectedTermAssetDiv);
-    tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetSymbol);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetTokenIdTitle);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetTokenId);
     tradeListElements.selectedTermAssetDiv.appendChild(tradeListElements.termAssetAmountTitle);

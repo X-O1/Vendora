@@ -30,7 +30,9 @@ const closeFullscreen = document.querySelector(
   ".close-fullscreen img"
 ) as HTMLImageElement;
 const closeMenu = document.querySelector(".close-menu") as HTMLDivElement;
-const tokenOption = document.querySelector(".token-option") as HTMLDivElement;
+const tokenOptionDiv = document.querySelector(
+  ".token-option"
+) as HTMLDivElement;
 const optionImage = document.querySelector(
   "option-image img"
 ) as HTMLImageElement;
@@ -114,6 +116,9 @@ const requestedAssetsTitle = document.querySelector(
 const setTermsButton = document.querySelector(
   ".set-terms"
 ) as HTMLButtonElement;
+const connectWalletButton = document.querySelector(
+  ".connect"
+) as HTMLDivElement;
 
 export {
   assetPopUpContainer,
@@ -128,7 +133,7 @@ export {
   toggleFullscreen,
   closeFullscreen,
   closeMenu,
-  tokenOption,
+  tokenOptionDiv,
   optionImage,
   optionName,
   optionSymbol,
@@ -162,4 +167,5 @@ export {
   requestedAssetsTitle,
   offeredAssetsTitle,
   setTermsButton,
+  connectWalletButton,
 };
