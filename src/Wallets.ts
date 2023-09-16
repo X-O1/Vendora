@@ -40,7 +40,7 @@ const changeAccounts = (): void => {
 };
 window.addEventListener("load", changeAccounts);
 
-const connectionState = async (): Promise<void> => {
+const checkIfAccountIsConnected = async (): Promise<void> => {
   const provider = new ethers.BrowserProvider(window.ethereum);
   const signer = await provider.getSigner();
   const connectedAccount = await signer.getAddress();
@@ -52,5 +52,5 @@ const connectionState = async (): Promise<void> => {
 window.addEventListener("load", (): void => {
   connectWalletButton.addEventListener("click", connectToNode);
   changeAccounts();
-  connectionState();
+  checkIfAccountIsConnected();
 });
