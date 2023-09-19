@@ -1,11 +1,12 @@
 type TokenOption = {
   logoURI?: string;
-  name: string;
-  symbol: string;
+  name?: string;
+  symbol?: string;
   address: string;
   tokenId?: string;
   amount?: string;
 };
+
 /** Default tokens listed on the front-end */
 const defaultErc721s: TokenOption[] = [
   {

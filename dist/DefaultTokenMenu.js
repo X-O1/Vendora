@@ -40,7 +40,8 @@ const createCommonTokenMenuElements = (option) => {
         tokenName.innerText = option.name;
     if (option.address)
         tokenAddress.innerText = option.address;
-    tokenSymbol.innerText = option.symbol;
+    if (option.symbol)
+        tokenSymbol.innerText = option.symbol;
     tokenId.type = "text";
     tokenId.placeholder = "Token ID";
     tokenAmount.placeholder = "Amount";
@@ -84,7 +85,7 @@ const createErc721MenuElements = async (token) => {
         addNftToTradeListEventListener("offeredErc721s", offeredErc721s, tokenOption);
     }
     catch (error) {
-        console.log("Failed to create Erc721 menu elements", error);
+        console.error("Failed to create Erc721 menu elements", error);
     }
 };
 const createErc1155MenuElements = async (token) => {
@@ -101,7 +102,7 @@ const createErc1155MenuElements = async (token) => {
         addNftToTradeListEventListener("offeredErc1155s", offeredErc1155s, tokenOption);
     }
     catch (error) {
-        console.log("Failed to create Erc1155 menu elements", error);
+        console.error("Failed to create Erc1155 menu elements", error);
     }
 };
 const createErc20MenuElements = async (token) => {
@@ -117,7 +118,7 @@ const createErc20MenuElements = async (token) => {
         addEthOrErc20ToTradeListEventListener("offeredErc20s", offeredErc20s, tokenOption);
     }
     catch (error) {
-        console.log("Failed to create Erc20 menu elements", error);
+        console.error("Failed to create Erc20 menu elements", error);
     }
 };
 const createNativeTokenMenuElements = async (token) => {
@@ -154,8 +155,7 @@ const createTokenMenu = async (defaultTokens) => {
         });
     }
     catch (error) {
-        error = `Failed to display token menu items`;
-        console.log(error);
+        console.error("Failed to display token menu items", error);
     }
 };
 const displayErc721Menu = () => {

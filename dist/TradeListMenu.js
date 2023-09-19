@@ -27,7 +27,8 @@ const createCommonTradeListELements = (token) => {
     selectedTermAssetDiv.appendChild(termAssetAddress);
     if (token.logoURI)
         termAssetImage.src = token.logoURI;
-    termAssetSymbol.innerText = token.symbol;
+    if (token.symbol)
+        termAssetSymbol.innerText = token.symbol;
     termAssetTokenIdTitle.innerText = "#";
     termAssetAmountTitle.innerText = "Amt:";
     if (token.amount)
@@ -110,7 +111,7 @@ const createRequestedTradeListMenu = (tradeList) => {
         });
     }
     catch (error) {
-        console.log("Failed to create requested trade list menu", error);
+        console.error("Failed to create requested trade list menu", error);
     }
 };
 const createOfferedTradeListMenu = (tradeList) => {
@@ -135,7 +136,7 @@ const createOfferedTradeListMenu = (tradeList) => {
         });
     }
     catch (error) {
-        console.log("Failed to create offered trade list menu", error);
+        console.error("Failed to create offered trade list menu", error);
     }
 };
 const displayRequestedTradeList = async () => {

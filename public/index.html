@@ -21,8 +21,8 @@
     <script type="module" src="../dist/BuildTradeNavBar.js" defer></script>
     <script type="module" src="../dist/ManageTradeList.js" defer></script>
     <script type="module" src="../dist/TradeListMenu.js" defer></script>
-    <script type="module" src="../dist/EthersApp.js" defer></script>
     <script type="module" src="../dist/Wallets.js" defer></script>
+    <script src="../dist/bundle.js" defer></script>
 
 
 </head>
@@ -31,21 +31,27 @@
     <header>
         <div class="header-container">
             <div class="logo">Vendora</div>
+            <nav class="nav-bar">
+                <ul>
+                    <li class="profile-tab">Profile</li>
+                    <li class="build-trade-tab">Build Trade</li>
+                </ul>
+            </nav>
         </div>
     </header>
 
     <section class="main-container">
 
-        <h1 class="build-terms-title">Build Trade</h1>
+        <h1 class="tab-title">Profile</h1>
         <div class="trade-box">
-            <div class="trade-links">
+            <div class="build-trade-links">
                 <div class="request-link">1. Request</div>
                 <div class="offer-link">2. Offer</div>
                 <div class="finalize-terms-link">3. Finalize Terms</div>
-                 <div class="connect">Connect</div>
+                <div class="connect">Connect</div>
             </div>
 
-            <div class="build-terms">
+            <div class="build-trade">
                 <div class="select-assets">
                     <h2>Select Assets You Want</h1>
 
@@ -76,7 +82,7 @@
                     </div>
 
                     <button class="set-terms">Connect to Add Trade</button>
-     
+
                 </div>
 
                 <div class="asset-popups">
@@ -106,7 +112,21 @@
 
 
             </div>
+
+            <div class="profile-links">
+                <div class="request-link">Trades</div>
+                <div class="offer-link">Assets</div>
+                <div class="finalize-terms-link">Settings</div>
+                <div class="connect">Connect</div>
             </div>
+
+            <div class="profile">
+                <div class="active-trades">
+                    <h2>Active Trades</h1>
+                </div>
+            </div>
+
+        </div>
         </div>
     </section>
 

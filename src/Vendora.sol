@@ -58,6 +58,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
     /** MAPPINGS */
     mapping(bytes32 => Terms) public trades;
     mapping(address => bytes32[]) private userActiveTrades;
+    // need to make sure both data structures are updated **********************************
 
     /** EVENTS */
     event Trade_Started(

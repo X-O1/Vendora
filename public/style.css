@@ -7,7 +7,6 @@ body {
     margin: 0;
     box-sizing: border-box;
     background: rgb(13, 17, 28);
-
 }
 
 a {
@@ -29,9 +28,30 @@ header {
 .logo {
     font-size: 25px;
     margin-left: 15px;
+    margin-right: 11px;
     text-transform: uppercase;
 }
 
+.nav-bar {
+    font-size: 17px;
+}
+
+.nav-bar ul {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-bar li {
+    padding: 8px 14px;
+    cursor: pointer;
+}
+.profile-tab {
+    color: #fff;
+}
 .connect {
     background-color: #223666;
     border-radius: 10px;
@@ -45,7 +65,6 @@ header {
     text-transform: uppercase;
     position: absolute;
     right: 20px;
-
 }
 
 .main-container {
@@ -54,8 +73,6 @@ header {
     height: 95%;
     flex-direction: column;
 }
-
-
 
 .trade-box {
     border-radius: 20px;
@@ -70,7 +87,8 @@ header {
     box-shadow: rgba(100, 149, 237, 0.08) 0px 0px 10px 0px, rgba(100, 149, 237, 0.18) 0px 40px 120px 0px;
 }
 
-.trade-links {
+.build-trade-links,
+.profile-links {
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -85,9 +103,11 @@ header {
     box-sizing: border-box;
     margin-bottom: 10px;
 }
+
 .request-link {
     color: #FFF;
 }
+
 .request-link,
 .offer-link,
 .finalize-terms-link {
@@ -101,11 +121,11 @@ header {
     color: rgb(255, 255, 255);
 }
 
-.build-terms-title {
+.build-trade-title {
     margin-top: 40px;
 }
 
-.build-terms,
+.build-trade,
 .finalize-terms {
     border-radius: 20px;
     height: 90%;
@@ -115,13 +135,14 @@ header {
     gap: 20px;
 }
 
-.build-terms h2 {
+.build-trade h2 {
     margin: 5px auto 0px;
     font-size: 21px;
     color: rgb(255, 255, 255);
 }
 
-.select-assets {
+.select-assets,
+.active-trades {
     height: 47%;
     width: 100%;
     padding: 10px 20px;
@@ -499,7 +520,8 @@ header {
     border-radius: 10px;
     color: #4575E4;
 }
-.term-asset-address  {
+
+.term-asset-address {
     position: absolute;
     font-size: 15px;
     display: none;
@@ -511,4 +533,23 @@ header {
     height: 100%;
     border-radius: 10px;
     z-index: 9999;
+}
+
+.build-trade,
+.build-trade-links {
+    display: none;
+}
+/* .profile,
+.profile-links {
+    display: none;
+} */
+.profile {
+    height: 100%;
+}
+.active-trades {
+    height: 90%;
+}
+.active-trades h2 {
+    text-align: center;
+    margin-top: 15px;
 }

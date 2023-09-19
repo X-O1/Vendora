@@ -1,14 +1,13 @@
 import { connectWalletButton, setTermsButton } from "./FrontEndElements.js";
-import { ethers } from "ethers";
 const metamaskExist = () => {
     const metamaskExist = typeof window.ethereum !== "undefined";
     return metamaskExist;
 };
-const updateFrontEndConnected = () => {
+const updateFrontEndConnected = async () => {
     connectWalletButton.innerText = "Connected";
     setTermsButton.innerText = "Add Trade";
 };
-const updateFrontEndNotConnected = () => {
+const updateFrontEndNotConnected = async () => {
     connectWalletButton.innerText = "Connect";
     setTermsButton.innerText = "Connect to Add Trade";
 };
@@ -19,36 +18,59 @@ const connectToNode = async () => {
             connectWalletButton.innerText = "Connected";
         }
         catch (error) {
-            console.log("Please install Metamask", error);
+            console.error("Please install Metamask", error);
         }
     }
 };
-const changeAccounts = () => {
+const handleAccountChange = async () => {
     if (metamaskExist()) {
         try {
-            window.ethereum.on("accountsChanged", (newAccounts) => {
+            await window.ethereum.on("accountsChanged", async (newAccounts) => {
                 const walletConnected = newAccounts[0] !== undefined;
                 walletConnected
-                    ? updateFrontEndConnected()
-                    : updateFrontEndNotConnected();
+                    ? await updateFrontEndConnected()
+                    : await updateFrontEndNotConnected();
             });
         }
         catch (error) {
-            console.log("No wallet connected", error);
+            console.error("No wallet connected", error);
         }
     }
 };
-window.addEventListener("load", changeAccounts);
 const checkIfAccountIsConnected = async () => {
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const connectedAccount = await signer.getAddress();
-    connectedAccount !== undefined
-        ? updateFrontEndConnected()
-        : updateFrontEndNotConnected();
+    if (metamaskExist()) {
+        try {
+            const accounts = await window.ethereum.request({
+                method: "eth_accounts",
+            });
+            accounts.length > 0
+                ? await updateFrontEndConnected()
+                : await updateFrontEndNotConnected();
+        }
+        catch (error) {
+            console.error("Failed to check if account is connected", error);
+        }
+    }
 };
-window.addEventListener("load", () => {
-    connectWalletButton.addEventListener("click", connectToNode);
-    changeAccounts();
-    checkIfAccountIsConnected();
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        if (!metamaskExist()) {
+            console.error("MetaMask is not installed.");
+            return;
+        }
+        await checkIfAccountIsConnected();
+        await handleAccountChange();
+        connectWalletButton.addEventListener("click", async () => {
+            try {
+                await connectToNode();
+                await checkIfAccountIsConnected();
+            }
+            catch (error) {
+                console.error("Error while connecting to the node or checking connection status: ", error);
+            }
+        });
+    }
+    catch (error) {
+        console.error("An error occurred while initializing: ", error);
+    }
 });

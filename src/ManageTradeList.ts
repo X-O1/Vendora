@@ -51,7 +51,7 @@ const addNftToTradeList = (
       // createSelectedAssetMenu()
     }
   } catch (error) {
-    console.log("Failed to add NFT to trade list", error);
+    console.error("Failed to add NFT to trade list", error);
   }
 };
 
@@ -78,7 +78,7 @@ const addEthOrErc20ToTradeList = (
     }
     // createSelectedAssetMenu()
   } catch (error) {
-    console.log("Failed to add Erc-20 token or ETH to trade list", error);
+    console.error("Failed to add Erc-20 token or ETH to trade list", error);
   }
 };
 
@@ -93,12 +93,12 @@ const deleteNftFromTradeList = (
         const index = tradeList.indexOf(token);
         index !== -1
           ? tradeList.splice(index, 1)
-          : console.log("This NFT does not exist in trade list");
+          : console.error("This NFT does not exist in trade list");
       }
     });
     setTokenDetailsInLocalStorage(key, tradeList);
   } catch (error) {
-    console.log("Failed to delete NFT from trade list", error);
+    console.error("Failed to delete NFT from trade list", error);
   }
 };
 const deleteEthOrErc20FromTradeList = (
@@ -112,12 +112,12 @@ const deleteEthOrErc20FromTradeList = (
         const index = tradeList.indexOf(token);
         index !== -1
           ? tradeList.splice(index, 1)
-          : console.log("This Erc-20 or Eth does not exist in trade list");
+          : console.error("This Erc-20 or Eth does not exist in trade list");
       }
     });
     setTokenDetailsInLocalStorage(key, tradeList);
   } catch (error) {
-    console.log("Failed to delete Erc-20 or Eth from trade list", error);
+    console.error("Failed to delete Erc-20 or Eth from trade list", error);
   }
 };
 

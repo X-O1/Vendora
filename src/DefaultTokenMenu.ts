@@ -93,7 +93,7 @@ const createCommonTokenMenuElements = (
   if (option.logoURI) tokenLogo.src = option.logoURI;
   if (option.name) tokenName.innerText = option.name;
   if (option.address) tokenAddress.innerText = option.address;
-  tokenSymbol.innerText = option.symbol;
+  if (option.symbol) tokenSymbol.innerText = option.symbol;
   tokenId.type = "text";
   tokenId.placeholder = "Token ID";
   tokenAmount.placeholder = "Amount";
@@ -149,7 +149,7 @@ const createErc721MenuElements = async (token: TokenOption) => {
       tokenOption
     );
   } catch (error) {
-    console.log("Failed to create Erc721 menu elements", error);
+    console.error("Failed to create Erc721 menu elements", error);
   }
 };
 const createErc1155MenuElements = async (token: TokenOption) => {
@@ -174,7 +174,7 @@ const createErc1155MenuElements = async (token: TokenOption) => {
       tokenOption
     );
   } catch (error) {
-    console.log("Failed to create Erc1155 menu elements", error);
+    console.error("Failed to create Erc1155 menu elements", error);
   }
 };
 const createErc20MenuElements = async (token: TokenOption) => {
@@ -198,7 +198,7 @@ const createErc20MenuElements = async (token: TokenOption) => {
       tokenOption
     );
   } catch (error) {
-    console.log("Failed to create Erc20 menu elements", error);
+    console.error("Failed to create Erc20 menu elements", error);
   }
 };
 const createNativeTokenMenuElements = async (token: TokenOption) => {
@@ -243,8 +243,7 @@ const createTokenMenu = async (defaultTokens: TokenOption[]) => {
       }
     });
   } catch (error) {
-    error = `Failed to display token menu items`;
-    console.log(error);
+    console.error("Failed to display token menu items", error);
   }
 };
 
