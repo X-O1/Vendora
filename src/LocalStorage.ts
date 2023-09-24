@@ -1,4 +1,5 @@
 import { TokenOption } from "./DefaultTokens";
+import { User } from "./Profiles";
 
 const setTokenDetailsInLocalStorage = async (
   key: string,
@@ -33,9 +34,25 @@ const offeredErc20s: TokenOption[] =
 const offeredEth: TokenOption[] =
   getTokenDetailsInLocalStorage("offeredEth") || [];
 
+const setUserProfileInLocalStorage = (key: string, value: User) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error("Failed to set user profile in local storage", error);
+  }
+};
+const getUserProfileFromLocalStorage = (key: string): User[] | null => {
+  const value = localStorage.getItem(key);
+  return value ? (JSON.parse(value) as User[]) : null;
+};
+
+const accounts: User[] = getUserProfileFromLocalStorage("profile") || [];
+
 export {
   setTokenDetailsInLocalStorage,
   getTokenDetailsInLocalStorage,
+  setUserProfileInLocalStorage,
+  getUserProfileFromLocalStorage,
   deleteStorageItem,
   requestedErc721s,
   requestedErc1155s,
@@ -45,4 +62,5 @@ export {
   offeredErc1155s,
   offeredErc20s,
   offeredEth,
+  accounts,
 };

@@ -72,6 +72,9 @@ header {
     align-items: center;
     height: 95%;
     flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    gap: 50px;
 }
 
 .trade-box {
@@ -535,10 +538,10 @@ header {
     z-index: 9999;
 }
 
-.build-trade,
+/* .build-trade,
 .build-trade-links {
     display: none;
-}
+} */
 /* .profile,
 .profile-links {
     display: none;

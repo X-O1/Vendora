@@ -5,14 +5,14 @@ const getErc721TransferDetails = () => {
         requestedErc721s.forEach((token) => {
             requestedInfo.push({
                 erc721Address: token.address,
-                tokenId: token.tokenId ? BigInt(token.tokenId) : undefined,
+                tokenId: token.tokenId ? token.tokenId : undefined,
             });
         });
         const offeredInfo = [];
         offeredErc721s.forEach((token) => {
             offeredInfo.push({
                 erc721Address: token.address,
-                tokenId: token.tokenId ? BigInt(token.tokenId) : undefined,
+                tokenId: token.tokenId ? token.tokenId : undefined,
             });
         });
         return { requested: requestedInfo, offered: offeredInfo };
@@ -28,16 +28,16 @@ const getErc1155TransferDetails = () => {
         requestedErc1155s.forEach((token) => {
             requestedInfo.push({
                 erc1155Address: token.address,
-                tokenId: token.tokenId ? BigInt(token.tokenId) : undefined,
-                amount: token.amount ? BigInt(token.amount) : undefined,
+                tokenId: token.tokenId ? token.tokenId : undefined,
+                amount: token.amount ? token.amount : undefined,
             });
         });
         const offeredInfo = [];
         offeredErc1155s.forEach((token) => {
             offeredInfo.push({
                 erc1155Address: token.address,
-                tokenId: token.tokenId ? BigInt(token.tokenId) : undefined,
-                amount: token.amount ? BigInt(token.amount) : undefined,
+                tokenId: token.tokenId ? token.tokenId : undefined,
+                amount: token.amount ? token.amount : undefined,
             });
         });
         return { requested: requestedInfo, offered: offeredInfo };
@@ -53,14 +53,14 @@ const getErc20TransferDetails = () => {
         requestedErc20s.forEach((token) => {
             requestedInfo.push({
                 erc20Address: token.address,
-                amount: token.amount ? BigInt(token.amount) : undefined,
+                amount: token.amount ? token.amount : undefined,
             });
         });
         const offeredInfo = [];
         offeredErc20s.forEach((token) => {
             offeredInfo.push({
                 erc20Address: token.address,
-                amount: token.amount ? BigInt(token.amount) : undefined,
+                amount: token.amount ? token.amount : undefined,
             });
         });
         return { requested: requestedInfo, offered: offeredInfo };
@@ -72,15 +72,21 @@ const getErc20TransferDetails = () => {
 };
 const getEthTransferDetails = () => {
     try {
-        const requestedInfo = requestedEth[0] && requestedEth[0].amount
-            ? requestedEth[0].amount
-            : BigInt(0);
-        const offeredInfo = offeredEth[0] && offeredEth[0].amount ? offeredEth[0].amount : BigInt(0);
+        const requestedInfo = requestedEth[0] && requestedEth[0].amount ? requestedEth[0].amount : "0";
+        const offeredInfo = offeredEth[0] && offeredEth[0].amount ? offeredEth[0].amount : "0";
         return { requested: requestedInfo, offered: offeredInfo };
     }
     catch (error) {
         console.error("Failed to get Eth transfer info", error);
-        return { requested: BigInt(0), offered: BigInt(0) };
+        return { requested: "0", offered: "0" };
     }
 };
-export { getErc721TransferDetails, getErc1155TransferDetails, getErc20TransferDetails, getEthTransferDetails, };
+const requestedErc721Details = getErc721TransferDetails().requested;
+const requestedErc1155Details = getErc1155TransferDetails().requested;
+const requestedErc20Details = getErc20TransferDetails().requested;
+const requestedEthDetails = getEthTransferDetails().requested;
+const offeredErc721Details = getErc721TransferDetails().offered;
+const offeredErc1155Details = getErc1155TransferDetails().offered;
+const offeredErc20Details = getErc20TransferDetails().offered;
+const offeredEthDetails = getEthTransferDetails().offered;
+export { getErc721TransferDetails, getErc1155TransferDetails, getErc20TransferDetails, getEthTransferDetails, requestedErc721Details, requestedErc1155Details, requestedErc20Details, requestedEthDetails, offeredErc721Details, offeredErc1155Details, offeredErc20Details, offeredEthDetails, };

@@ -62,9 +62,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
       console.error("MetaMask is not installed.");
       return;
     }
-
     await checkIfAccountIsConnected();
-
     await handleAccountChange();
 
     connectWalletButton.addEventListener("click", async (): Promise<void> => {

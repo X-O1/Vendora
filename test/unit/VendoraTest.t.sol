@@ -133,7 +133,7 @@ contract VendoraTest is Test {
         );
         _;
     }
-    modifier termsSetTradeStartedAssetsVerfied() {
+    modifier termsSetTradeStartedAssetsApproved() {
         Vendora.Erc721Details[]
             memory offeredErc721s = new Vendora.Erc721Details[](1);
         Vendora.Erc721Details[]
@@ -187,10 +187,6 @@ contract VendoraTest is Test {
         );
         vm.prank(SELLER);
         link.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
-        vm.prank(SELLER);
-        vendora.verifySellerAssets(
-            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
-        );
 
         vm.prank(BUYER);
         nft2.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 2);
@@ -201,10 +197,6 @@ contract VendoraTest is Test {
         );
         vm.prank(BUYER);
         aave.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
-        vm.prank(BUYER);
-        vendora.verifyBuyerAssets(
-            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
-        );
         _;
     }
 
@@ -257,36 +249,6 @@ contract VendoraTest is Test {
         );
     }
 
-    function testVerifingUserAssets() public termsSetTradeStarted {
-        vm.prank(SELLER);
-        nft1.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 1);
-        vm.prank(SELLER);
-        resources1.setApprovalForAll(
-            0x90193C961A926261B756D1E5bb255e67ff9498A1,
-            true
-        );
-        vm.prank(SELLER);
-        link.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
-        vm.prank(SELLER);
-        vendora.verifySellerAssets(
-            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
-        );
-
-        vm.prank(BUYER);
-        nft2.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 2);
-        vm.prank(BUYER);
-        resources2.setApprovalForAll(
-            0x90193C961A926261B756D1E5bb255e67ff9498A1,
-            true
-        );
-        vm.prank(BUYER);
-        aave.approve(0x90193C961A926261B756D1E5bb255e67ff9498A1, 10e18);
-        vm.prank(BUYER);
-        vendora.verifyBuyerAssets(
-            0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
-        );
-    }
-
     function testUserMustHaveAllAssetsInTermsAndApprovedThemBeforeDepositsOpen()
         public
         termsSetTradeStarted
@@ -298,21 +260,21 @@ contract VendoraTest is Test {
         );
     }
 
-    function testSellerDeposits() public termsSetTradeStartedAssetsVerfied {
+    function testSellerDeposits() public termsSetTradeStartedAssetsApproved {
         vm.prank(SELLER);
         vendora.depositAssets{value: 1 ether}(
             0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 
-    function testBuyerDeposits() public termsSetTradeStartedAssetsVerfied {
+    function testBuyerDeposits() public termsSetTradeStartedAssetsApproved {
         vm.prank(BUYER);
         vendora.depositAssets{value: 0.5 ether}(
             0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
         );
     }
 
-    function testCancelingTrade() public termsSetTradeStartedAssetsVerfied {
+    function testCancelingTrade() public termsSetTradeStartedAssetsApproved {
         vm.prank(SELLER);
         vendora.depositAssets{value: 1 ether}(
             0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
@@ -328,7 +290,7 @@ contract VendoraTest is Test {
         );
     }
 
-    function testCompletingTrade() public termsSetTradeStartedAssetsVerfied {
+    function testCompletingTrade() public termsSetTradeStartedAssetsApproved {
         vm.prank(SELLER);
         vendora.depositAssets{value: 1 ether}(
             0xefc32cdffe5382ea0e3407394dcd1120a1fa5023886bead4e99a002094757787
