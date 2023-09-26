@@ -11,10 +11,10 @@ const isNftInTradeList = (
   tradeList: TokenOption[],
   menuElements: TokenMenuElements
 ): boolean => {
-  return tradeList.some(
-    (token) =>
-      token.symbol === menuElements.tokenSymbol.innerText &&
-      token.tokenId === menuElements.tokenId.value
+  return tradeList.some((token) =>
+    token.symbol === menuElements.tokenSymbol.innerText && token.tokenId
+      ? token.tokenId.toString() === menuElements.tokenId.value
+      : undefined
   );
 };
 
@@ -41,8 +41,8 @@ const addNftToTradeList = (
         name: menuElements.tokenName.innerText,
         symbol: menuElements.tokenSymbol.innerText,
         address: menuElements.tokenAddress.innerText,
-        tokenId: menuElements.tokenId.value,
-        amount: menuElements.tokenAmount.value,
+        tokenId: Number(menuElements.tokenId.value),
+        amount: BigInt(menuElements.tokenAmount.value),
       });
       setTokenDetailsInLocalStorage(key, tradeList);
       menuElements.tokenId.value = "";
@@ -70,7 +70,7 @@ const addEthOrErc20ToTradeList = (
         name: menuElements.tokenName.innerText,
         symbol: menuElements.tokenSymbol.innerText,
         address: menuElements.tokenAddress.innerText,
-        amount: menuElements.tokenAmount.value,
+        amount: BigInt(menuElements.tokenAmount.value),
       });
       setTokenDetailsInLocalStorage(key, tradeList);
       menuElements.tokenAmount.value = "";

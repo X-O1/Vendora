@@ -120,7 +120,9 @@ header {
 
 
 .connect:hover,
-.set-terms:hover {
+.set-terms:hover,
+.approve-assets:hover,
+.deposit:hover {
     color: rgb(255, 255, 255);
 }
 
@@ -504,7 +506,10 @@ header {
     margin-right: -12px;
 }
 
-.set-terms {
+.set-terms,
+.approve-seller-assets,
+.approve-buyer-assets,
+.deposit {
     padding: 20px 24px;
     width: 100%;
     font-size: 19px;
@@ -555,4 +560,14 @@ header {
 .active-trades h2 {
     text-align: center;
     margin-top: 15px;
+}
+.trades {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+.approve-seller-assets,
+.approve-buyer-assets,
+.deposit {
+    display: block;
 }

@@ -1,16 +1,36 @@
 import { TokenOption } from "./DefaultTokens";
-import { User } from "./Profiles";
+import { Profile } from "./Profiles";
 
 const setTokenDetailsInLocalStorage = async (
   key: string,
   value: TokenOption[]
 ) => {
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    const finalValue = value.map((token) => ({
+      ...token,
+      amount: token.amount ? token.amount.toString() : undefined,
+    }));
+    localStorage.setItem(key, JSON.stringify(finalValue));
+  } catch (error) {
+    console.error("Error setting token details in local storage", error);
+  }
 };
 
 const getTokenDetailsInLocalStorage = (key: string): TokenOption[] | null => {
   const value = localStorage.getItem(key);
-  return value ? (JSON.parse(value) as TokenOption[]) : null;
+  if (!value) return null;
+
+  try {
+    const parsedValue: TokenOption[] = JSON.parse(value);
+
+    return parsedValue.map((token) => ({
+      ...token,
+      amount: token.amount ? BigInt(token.amount) : undefined,
+    }));
+  } catch (error) {
+    console.error("Error getting token details from local storage", error);
+    return null;
+  }
 };
 
 const deleteStorageItem = (key: string): void => {
@@ -34,19 +54,17 @@ const offeredErc20s: TokenOption[] =
 const offeredEth: TokenOption[] =
   getTokenDetailsInLocalStorage("offeredEth") || [];
 
-const setUserProfileInLocalStorage = (key: string, value: User) => {
+const setUserProfileInLocalStorage = async (key: string, value: Profile) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
     console.error("Failed to set user profile in local storage", error);
   }
 };
-const getUserProfileFromLocalStorage = (key: string): User[] | null => {
+const getUserProfileFromLocalStorage = (key: string): Profile | null => {
   const value = localStorage.getItem(key);
-  return value ? (JSON.parse(value) as User[]) : null;
+  return value ? (JSON.parse(value) as Profile) : null;
 };
-
-const accounts: User[] = getUserProfileFromLocalStorage("profile") || [];
 
 export {
   setTokenDetailsInLocalStorage,
@@ -62,5 +80,4 @@ export {
   offeredErc1155s,
   offeredErc20s,
   offeredEth,
-  accounts,
 };

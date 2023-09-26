@@ -526,52 +526,34 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             );
     }
 
-    function getOfferedErc721s(
+    function getTerms(
         bytes32 tradeId
-    ) external view returns (Erc721Details[] memory) {
-        return trades[tradeId].offeredErc721s;
-    }
+    )
+        external
+        view
+        returns (
+            Erc721Details[] memory offeredErc721s,
+            Erc721Details[] memory requestedErc721s,
+            Erc1155Details[] memory offeredErc1155s,
+            Erc1155Details[] memory requestedErc1155s,
+            Erc20Details[] memory offeredErc20s,
+            Erc20Details[] memory requestedErc20s,
+            uint256 offeredEth,
+            uint256 requestedEth
+        )
+    {
+        Terms storage term = trades[tradeId];
 
-    function getRequestedErc721s(
-        bytes32 tradeId
-    ) external view returns (Erc721Details[] memory) {
-        return trades[tradeId].requestedErc721s;
-    }
-
-    function getOfferedErc1155s(
-        bytes32 tradeId
-    ) external view returns (Erc1155Details[] memory) {
-        return trades[tradeId].offeredErc1155s;
-    }
-
-    function getRequestedErc1155s(
-        bytes32 tradeId
-    ) external view returns (Erc1155Details[] memory) {
-        return trades[tradeId].requestedErc1155s;
-    }
-
-    function getOfferedErc20s(
-        bytes32 tradeId
-    ) external view returns (Erc20Details[] memory) {
-        return trades[tradeId].offeredErc20s;
-    }
-
-    function getRequestedErc20s(
-        bytes32 tradeId
-    ) external view returns (Erc20Details[] memory) {
-        return trades[tradeId].requestedErc20s;
-    }
-
-    function getOfferedEthAmount(
-        bytes32 tradeId
-    ) external view returns (uint256) {
-        return trades[tradeId].offeredEthAmount;
-    }
-
-    function getRequestedEthAmount(
-        bytes32 tradeId
-    ) external view returns (uint256) {
-        return trades[tradeId].requestedEthAmount;
+        return (
+            term.offeredErc721s,
+            term.requestedErc721s,
+            term.offeredErc1155s,
+            term.requestedErc1155s,
+            term.offeredErc20s,
+            term.requestedErc20s,
+            term.offeredEthAmount,
+            term.requestedEthAmount
+        );
     }
 
     function getUsersActiveTrades(

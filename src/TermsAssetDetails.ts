@@ -11,17 +11,17 @@ import {
 
 type Erc721TransferDetails = {
   erc721Address: string;
-  tokenId?: string;
+  tokenId?: number;
 };
 
 type Erc1155TransferDetails = {
   erc1155Address: string;
-  tokenId?: string;
-  amount?: string;
+  tokenId?: number;
+  amount?: bigint;
 };
 type Erc20TransferDetails = {
   erc20Address: string;
-  amount?: string;
+  amount?: bigint;
 };
 
 const getErc721TransferDetails = (): {
@@ -91,7 +91,7 @@ const getErc20TransferDetails = (): {
     requestedErc20s.forEach((token) => {
       requestedInfo.push({
         erc20Address: token.address,
-        amount: token.amount ? token.amount : undefined,
+        amount: token.amount ? BigInt(token.amount) : undefined,
       });
     });
 
@@ -99,7 +99,7 @@ const getErc20TransferDetails = (): {
     offeredErc20s.forEach((token) => {
       offeredInfo.push({
         erc20Address: token.address,
-        amount: token.amount ? token.amount : undefined,
+        amount: token.amount ? BigInt(token.amount) : undefined,
       });
     });
 
@@ -111,20 +111,24 @@ const getErc20TransferDetails = (): {
 };
 
 const getEthTransferDetails = (): {
-  requested: string;
-  offered: string;
+  requested: bigint;
+  offered: bigint;
 } => {
   try {
-    const requestedInfo: string =
-      requestedEth[0] && requestedEth[0].amount ? requestedEth[0].amount : "0";
+    const requestedInfo: bigint =
+      requestedEth[0] && requestedEth[0].amount
+        ? requestedEth[0].amount
+        : BigInt("0");
 
-    const offeredInfo: string =
-      offeredEth[0] && offeredEth[0].amount ? offeredEth[0].amount : "0";
+    const offeredInfo: bigint =
+      offeredEth[0] && offeredEth[0].amount
+        ? offeredEth[0].amount
+        : BigInt("0");
 
     return { requested: requestedInfo, offered: offeredInfo };
   } catch (error) {
     console.error("Failed to get Eth transfer info", error);
-    return { requested: "0", offered: "0" };
+    return { requested: BigInt("0"), offered: BigInt("0") };
   }
 };
 

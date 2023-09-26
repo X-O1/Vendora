@@ -119,6 +119,14 @@ const setTermsButton = document.querySelector(
 const connectWalletButton = document.querySelector(
   ".connect"
 ) as HTMLDivElement;
+const tradesContainer = document.querySelector(".trades") as HTMLDivElement;
+const approveSellerAssetsButton = document.querySelector(
+  ".approve-seller-assets"
+) as HTMLButtonElement;
+const approveBuyerAssetsButton = document.querySelector(
+  ".approve-buyer-assets"
+) as HTMLButtonElement;
+const depositButton = document.querySelector(".deposit") as HTMLButtonElement;
 
 export {
   assetPopUpContainer,
@@ -168,4 +176,8 @@ export {
   offeredAssetsTitle,
   setTermsButton,
   connectWalletButton,
+  tradesContainer,
+  approveBuyerAssetsButton,
+  approveSellerAssetsButton,
+  depositButton,
 };

@@ -7,55 +7,29 @@ const terms = {
     offeredErc20s: offeredErc20Details,
     requestedErc20s: requestedErc20Details,
     offeredEth: offeredEthDetails,
-    requested: requestedEthDetails,
+    requestedEth: requestedEthDetails,
 };
-class User {
+class Profile {
     constructor(address) {
-        this.addTrade = (tradeName, tradeId, tradeTerms) => {
-            try {
-                if (this.mapTradeId[tradeId]) {
-                    console.log("This trade already exist");
-                    return;
-                }
-                this.mapTradeName[tradeName] = tradeTerms;
-                this.mapTradeId[tradeId] = tradeTerms;
-                this.trades.push(tradeTerms);
-            }
-            catch (error) {
-                console.error("Failed to add trade to user profile", error);
-            }
-        };
         this.address = address;
         this.trades = [];
-        this.mapTradeId = {};
-        this.mapTradeName = {};
     }
-    getTradeById(id) {
-        try {
-            return this.mapTradeId[id] || undefined;
-        }
-        catch (error) {
-            console.error("Failed to get user trade terms", error);
-            return;
-        }
-    }
-    getTradeByName(name) {
-        try {
-            return this.mapTradeName[name] || undefined;
-        }
-        catch (error) {
-            console.error("Failed to get user's trade by trade name", error);
-            return;
-        }
-    }
-    getAllTrades() {
+    getTrades() {
         try {
             return this.trades;
         }
         catch (error) {
-            console.error("Failed to get all user's trades", error);
+            console.error("Failed to get user's trades", error);
             return [];
         }
     }
+    addTrade(trade) {
+        try {
+            this.trades.push(trade);
+        }
+        catch (error) {
+            console.error("Failed to add trade to user's trades", error);
+        }
+    }
 }
-export { User, terms };
+export { terms, Profile };

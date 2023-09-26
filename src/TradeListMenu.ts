@@ -69,8 +69,8 @@ const createCommonTradeListELements = (
   if (token.symbol) termAssetSymbol.innerText = token.symbol;
   termAssetTokenIdTitle.innerText = "#";
   termAssetAmountTitle.innerText = "Amt:";
-  if (token.amount) termAssetAmount.innerText = token.amount;
-  if (token.tokenId) termAssetTokenId.innerText = token.tokenId;
+  if (token.amount) termAssetAmount.innerText = token.amount.toString();
+  if (token.tokenId) termAssetTokenId.innerText = token.tokenId.toString();
   if (token.address) termAssetAddress.innerText = token.address;
 
   deleteAssetButton.innerText = "Delete";
@@ -310,7 +310,7 @@ const isNftInTradeListToDelete = (
   return tradeList.some(
     (token) =>
       token.symbol === menuElements.termAssetSymbol.innerText &&
-      token.tokenId === menuElements.termAssetTokenId.innerText
+      token.tokenId?.toString() === menuElements.termAssetTokenId.innerText
   );
 };
 const isEthOrErc20InTradeListToDelete = (

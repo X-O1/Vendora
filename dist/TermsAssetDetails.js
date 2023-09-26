@@ -53,14 +53,14 @@ const getErc20TransferDetails = () => {
         requestedErc20s.forEach((token) => {
             requestedInfo.push({
                 erc20Address: token.address,
-                amount: token.amount ? token.amount : undefined,
+                amount: token.amount ? BigInt(token.amount) : undefined,
             });
         });
         const offeredInfo = [];
         offeredErc20s.forEach((token) => {
             offeredInfo.push({
                 erc20Address: token.address,
-                amount: token.amount ? token.amount : undefined,
+                amount: token.amount ? BigInt(token.amount) : undefined,
             });
         });
         return { requested: requestedInfo, offered: offeredInfo };
@@ -72,13 +72,17 @@ const getErc20TransferDetails = () => {
 };
 const getEthTransferDetails = () => {
     try {
-        const requestedInfo = requestedEth[0] && requestedEth[0].amount ? requestedEth[0].amount : "0";
-        const offeredInfo = offeredEth[0] && offeredEth[0].amount ? offeredEth[0].amount : "0";
+        const requestedInfo = requestedEth[0] && requestedEth[0].amount
+            ? requestedEth[0].amount
+            : BigInt("0");
+        const offeredInfo = offeredEth[0] && offeredEth[0].amount
+            ? offeredEth[0].amount
+            : BigInt("0");
         return { requested: requestedInfo, offered: offeredInfo };
     }
     catch (error) {
         console.error("Failed to get Eth transfer info", error);
-        return { requested: "0", offered: "0" };
+        return { requested: BigInt("0"), offered: BigInt("0") };
     }
 };
 const requestedErc721Details = getErc721TransferDetails().requested;

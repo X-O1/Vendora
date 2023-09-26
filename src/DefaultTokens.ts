@@ -3,8 +3,8 @@ type TokenOption = {
   name?: string;
   symbol?: string;
   address: string;
-  tokenId?: string;
-  amount?: string;
+  tokenId?: number;
+  amount?: bigint;
 };
 
 /** Default tokens listed on the front-end */

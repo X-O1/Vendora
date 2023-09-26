@@ -32,74 +32,35 @@ type Terms = {
   requestedErc1155s: Erc1155TransferDetails[];
   offeredErc20s: Erc20TransferDetails[];
   requestedErc20s: Erc20TransferDetails[];
-  offeredEth: string;
-  requestedEth: string;
+  offeredEth: BigInt;
+  requestedEth: BigInt;
 };
 
-class User {
+class Profile {
   address: string;
   trades: Terms[];
-  mapTradeId: Record<string, Terms>;
-  mapTradeName: Record<string, Terms>;
 
   constructor(address: string) {
     this.address = address;
     this.trades = [];
-    this.mapTradeId = {};
-    this.mapTradeName = {};
   }
 
-  addTrade = (tradeName: string, tradeId: string, tradeTerms: Terms): void => {
-    try {
-      if (this.mapTradeId[tradeId]) {
-        console.log("This trade already exist");
-        return;
-      }
-      this.mapTradeName[tradeName] = tradeTerms;
-      this.mapTradeId[tradeId] = tradeTerms;
-      this.trades.push(tradeTerms);
-    } catch (error) {
-      console.error("Failed to add trade to user profile", error);
-    }
-  };
-
-  getTradeById(id: string): string | undefined {
-    try {
-      return this.mapTradeId[id].toString() || undefined;
-    } catch (error) {
-      console.error("Failed to get user trade terms", error);
-      return;
-    }
-  }
-
-  getTradeByName(name: string): string | undefined {
-    try {
-      return this.mapTradeName[name].toString() || undefined;
-    } catch (error) {
-      console.error("Failed to get user's trade by trade name", error);
-      return;
-    }
-  }
-
-  getAllTrades(): Terms[] | [] {
+  getTrades(): Terms[] {
     try {
       return this.trades;
     } catch (error) {
-      console.error("Failed to get all user's trades", error);
+      console.error("Failed to get user's trades", error);
       return [];
+    }
+  }
+
+  addTrade(trade: Terms) {
+    try {
+      this.trades.push(trade);
+    } catch (error) {
+      console.error("Failed to add trade to user's trades", error);
     }
   }
 }
 
-// const user = new User("0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
-
-// user.addTrade(
-//   "Trade 1",
-//   "0xe0e7c5faabf2fba21dd6b7b5f8d5c8464af5e90be8b8ae6ca78edd28f881d869",
-//   terms
-// );
-// console.log(user.getAllTrades()[0]);
-
-// console.log(user.getAllTrades()[0]?.offeredErc721s[0]?.erc721Address);
-
-export { User, terms };
+export { terms, Profile, Terms };

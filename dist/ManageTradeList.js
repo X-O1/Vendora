@@ -2,8 +2,9 @@ import { closeTokenMenu } from "./DefaultTokenMenu.js";
 import { setTokenDetailsInLocalStorage } from "./LocalStorage.js";
 import { isEthOrErc20InTradeListToDelete, isNftInTradeListToDelete, } from "./TradeListMenu.js";
 const isNftInTradeList = (tradeList, menuElements) => {
-    return tradeList.some((token) => token.symbol === menuElements.tokenSymbol.innerText &&
-        token.tokenId === menuElements.tokenId.value);
+    return tradeList.some((token) => token.symbol === menuElements.tokenSymbol.innerText && token.tokenId
+        ? token.tokenId.toString() === menuElements.tokenId.value
+        : undefined);
 };
 const isEthOrErc20InTradeList = (tradeList, menuElements) => {
     return tradeList.some((token) => token.symbol === menuElements.tokenSymbol.innerText);
@@ -17,8 +18,8 @@ const addNftToTradeList = (key, tradeList, menuElements) => {
                 name: menuElements.tokenName.innerText,
                 symbol: menuElements.tokenSymbol.innerText,
                 address: menuElements.tokenAddress.innerText,
-                tokenId: menuElements.tokenId.value,
-                amount: menuElements.tokenAmount.value,
+                tokenId: Number(menuElements.tokenId.value),
+                amount: BigInt(menuElements.tokenAmount.value),
             });
             setTokenDetailsInLocalStorage(key, tradeList);
             menuElements.tokenId.value = "";
@@ -39,7 +40,7 @@ const addEthOrErc20ToTradeList = (key, tradeList, menuElements) => {
                 name: menuElements.tokenName.innerText,
                 symbol: menuElements.tokenSymbol.innerText,
                 address: menuElements.tokenAddress.innerText,
-                amount: menuElements.tokenAmount.value,
+                amount: BigInt(menuElements.tokenAmount.value),
             });
             setTokenDetailsInLocalStorage(key, tradeList);
             menuElements.tokenAmount.value = "";
