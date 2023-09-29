@@ -12,18 +12,20 @@ import {
   Erc20TransferDetails,
   Erc1155TransferDetails,
 } from "./TermsAssetDetails";
-import {
-  approveBuyerAssetsButton,
-  approveSellerAssetsButton,
-  depositButton,
-  setTermsButton,
-} from "./FrontEndElements";
+import { finishTradeDiv, setTermsButton, tradesDiv } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
-import { Terms } from "./Profiles";
-// import { Terms } from "./Profiles";
+import { createTradeElements, createTradeMenuElements } from "./TradeMenu";
 
-const provider = new ethers.BrowserProvider(window.ethereum);
-const signer: ethers.JsonRpcSigner = await provider.getSigner();
+type Terms = {
+  offeredErc721s: Erc721TransferDetails[];
+  requestedErc721s: Erc721TransferDetails[];
+  offeredErc1155s: Erc1155TransferDetails[];
+  requestedErc1155s: Erc1155TransferDetails[];
+  offeredErc20s: Erc20TransferDetails[];
+  requestedErc20s: Erc20TransferDetails[];
+  offeredEth: BigInt;
+  requestedEth: BigInt;
+};
 
 const metamaskExist = (): boolean => {
   const metamaskExist = typeof window.ethereum !== "undefined";
@@ -33,6 +35,8 @@ const metamaskExist = (): boolean => {
 const addTrade = async (): Promise<void> => {
   if (metamaskExist()) {
     try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
       const contract = new ethers.Contract(
         VendoraContract.address,
         VendoraContract.abi,
@@ -55,7 +59,44 @@ const addTrade = async (): Promise<void> => {
   }
 };
 
-setTermsButton.addEventListener("click", addTrade);
+const enterTrade = async (tradeId: string): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
+
+      const contract: ethers.Contract = new ethers.Contract(
+        VendoraContract.address,
+        VendoraContract.abi,
+        signer
+      );
+
+      const tx = await contract.startTrade(tradeId);
+      await tx.wait();
+    } catch (error) {
+      console.error("Error starting trade", error);
+    }
+  }
+};
+
+const cancelAndWithdraw = async (tradeId: string): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
+      const contract: ethers.Contract = new ethers.Contract(
+        VendoraContract.address,
+        VendoraContract.abi,
+        signer
+      );
+
+      const tx = await contract.cancelTradeAndWithdraw(tradeId);
+      await tx.wait();
+    } catch (error) {
+      console.error("Error canceling trade", error);
+    }
+  }
+};
 
 const _approveAssets = async (
   tokenAddress: string,
@@ -70,11 +111,14 @@ const _approveAssets = async (
         const Erc20AbiFrag: string[] = [
           "function approve(address spender, uint256 amount) external returns (bool)",
         ];
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer: ethers.JsonRpcSigner = await provider.getSigner();
         const contract: ethers.Contract = new ethers.Contract(
           tokenAddress,
           Erc20AbiFrag,
           signer
         );
+
         const approveTx = await contract.approve(contractAddress, amount);
         await approveTx.wait();
         return;
@@ -92,6 +136,8 @@ const _approveAssets = async (
       const Erc721AbiFrag: string[] = [
         "function approve(address to, uint256 tokenId) external",
       ];
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
       const contract: ethers.Contract = new ethers.Contract(
         tokenAddress,
         Erc721AbiFrag,
@@ -114,6 +160,8 @@ const _approveAssets = async (
       const Erc1155AbiFrag: string[] = [
         "function setApprovalForAll(address operator, bool approved) external",
       ];
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
       const contract: ethers.Contract = new ethers.Contract(
         tokenAddress,
         Erc1155AbiFrag,
@@ -136,9 +184,9 @@ const _approveAssets = async (
 const approveSellerAssetsInTrade = async (tradeId: string): Promise<void> => {
   if (metamaskExist()) {
     try {
-      const terms: Terms = await getTerms(tradeId);
+      const terms: Terms = await _getTerms(tradeId);
 
-      if (terms.offeredErc721s.length > 0) {
+      if (terms?.offeredErc721s?.length > 0) {
         try {
           terms.offeredErc721s.forEach(
             async (asset: Erc721TransferDetails): Promise<void> => {
@@ -154,7 +202,7 @@ const approveSellerAssetsInTrade = async (tradeId: string): Promise<void> => {
         }
       }
 
-      if (terms.offeredErc20s.length > 0) {
+      if (terms?.offeredErc20s?.length > 0) {
         try {
           terms.offeredErc20s.forEach(
             async (asset: Erc20TransferDetails): Promise<void> => {
@@ -171,7 +219,7 @@ const approveSellerAssetsInTrade = async (tradeId: string): Promise<void> => {
         }
       }
 
-      if (terms.offeredErc1155s.length > 0) {
+      if (terms?.offeredErc1155s?.length > 0) {
         try {
           terms.offeredErc1155s.forEach(
             async (asset: Erc1155TransferDetails): Promise<void> => {
@@ -188,20 +236,17 @@ const approveSellerAssetsInTrade = async (tradeId: string): Promise<void> => {
     } catch (error) {
       console.error("Error approving seller's assets", error);
     }
+
+    // check if tokens have been approved
   }
 };
-
-approveSellerAssetsButton.addEventListener(
-  "click",
-  (): Promise<void> => approveSellerAssetsInTrade("")
-);
 
 const approveBuyerAssetsInTrade = async (tradeId: string): Promise<void> => {
   if (metamaskExist()) {
     try {
-      const terms: Terms = await getTerms(tradeId);
+      const terms: Terms = await _getTerms(tradeId);
 
-      if (terms.requestedErc721s.length > 0) {
+      if (terms?.requestedErc721s?.length > 0) {
         try {
           terms.requestedErc721s.forEach(
             async (asset: Erc721TransferDetails): Promise<void> => {
@@ -217,7 +262,7 @@ const approveBuyerAssetsInTrade = async (tradeId: string): Promise<void> => {
         }
       }
 
-      if (terms.requestedErc20s.length > 0) {
+      if (terms?.requestedErc20s?.length > 0) {
         try {
           terms.requestedErc20s.forEach(
             async (asset: Erc20TransferDetails): Promise<void> => {
@@ -234,7 +279,7 @@ const approveBuyerAssetsInTrade = async (tradeId: string): Promise<void> => {
         }
       }
 
-      if (terms.requestedErc1155s.length > 0) {
+      if (terms?.requestedErc1155s?.length > 0) {
         try {
           terms.requestedErc1155s.forEach(
             async (asset: Erc1155TransferDetails): Promise<void> => {
@@ -254,52 +299,166 @@ const approveBuyerAssetsInTrade = async (tradeId: string): Promise<void> => {
   }
 };
 
-approveBuyerAssetsButton.addEventListener(
-  "click",
-  (): Promise<void> => approveBuyerAssetsInTrade("")
-);
-
 const depositAssets = async (tradeId: string): Promise<void> => {
   if (metamaskExist()) {
     try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
       const contract = new ethers.Contract(
         VendoraContract.address,
         VendoraContract.abi,
         signer
       );
 
-      const depositTx = await contract.depositAssests(tradeId);
+      const depositTx = await contract.depositAssets(tradeId);
       await depositTx.wait();
     } catch (error) {
-      console.error("Error depositing seller's assets", error);
+      console.error("Error depositing assets", error);
+    }
+  }
+};
+const getAllUserTradeIds = async (): Promise<string[]> => {
+  if (metamaskExist()) {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
+      const contract = new ethers.Contract(
+        VendoraContract.address,
+        VendoraContract.abi,
+        signer
+      );
+      const trades: string[] = await contract.getUsersActiveTrades(signer);
+      return trades;
+    } catch (error) {
+      console.error("Failed to get active trades", error);
+    }
+  }
+  return [];
+};
+
+const searchAllUserTradeIds = async (address: string): Promise<string[]> => {
+  if (metamaskExist()) {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
+      const contract = new ethers.Contract(
+        VendoraContract.address,
+        VendoraContract.abi,
+        signer
+      );
+      const trades: string[] = await contract.getUsersActiveTrades(address);
+      return trades;
+    } catch (error) {
+      console.error("Failed to search active trades", error);
+    }
+  }
+  return [];
+};
+
+const displaySearchedUserTradeList = async (address: string): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      const tradeIds: string[] = await searchAllUserTradeIds(address);
+
+      tradeIds?.forEach((id: string): void => {
+        const tradeMenuElements = createTradeMenuElements(id);
+
+        tradeMenuElements?.tradeDiv.addEventListener("click", () => {
+          finishTradeDiv.innerHTML = "";
+          _addListenersToTradeButtons(id);
+        });
+      });
+    } catch (error) {
+      console.error("Error displaying searched trades", error);
     }
   }
 };
 
-depositButton.addEventListener(
-  "click",
-  (): Promise<void> => depositAssets("7897987")
-);
-// GET
-// const getAllUserTradeIds = async (): Promise<string[]> => {
-//   if (metamaskExist()) {
-//     try {
-//       const contract = new ethers.Contract(
-//         VendoraContract.address,
-//         VendoraContract.abi,
-//         signer
-//       );
-//       const trades: string[] = await contract.getUsersActiveTrades(signer);
-//       console.log(trades);
-//       return trades;
-//     } catch (error) {
-//       console.error("Failed to get active trades", error);
-//     }
-//   }
-//   return [];
-// };
-const getTerms = async (tradeId: string): Promise<any> => {
+const displayCurrentUserTradeList = async (): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      const tradeIds: string[] = await getAllUserTradeIds();
+
+      tradeIds?.forEach((id: string): void => {
+        const tradeMenuElements = createTradeMenuElements(id);
+
+        tradeMenuElements?.tradeDiv.addEventListener("click", () => {
+          finishTradeDiv.innerHTML = "";
+          _addListenersToTradeButtons(id);
+        });
+      });
+    } catch (error) {
+      console.error("Error displaying current user trades", error);
+    }
+  }
+};
+
+const refreshTradeList = async (): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      await window.ethereum.on(
+        "accountsChanged",
+        async (newAccounts: string[]): Promise<void> => {
+          const walletConnected: boolean = newAccounts[0] !== undefined;
+          if (walletConnected) {
+            tradesDiv.innerHTML = "";
+            await displayCurrentUserTradeList();
+          }
+        }
+      );
+    } catch (error) {
+      console.error("No wallet connected", error);
+    }
+  }
+};
+document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      await refreshTradeList();
+      await displayCurrentUserTradeList();
+    } catch (error) {
+      console.error("Error loading functions on content loaded");
+    }
+  }
+});
+
+const _addListenersToTradeButtons = (tradeId: string): void => {
   try {
+    const tradeElements = createTradeElements();
+
+    tradeElements?.enterTradeButton.addEventListener(
+      "click",
+      (): Promise<void> => enterTrade(tradeId)
+    );
+
+    tradeElements?.approveSellerAssetsButton.addEventListener(
+      "click",
+      (): Promise<void> => approveSellerAssetsInTrade(tradeId)
+    );
+
+    tradeElements?.approveBuyerAssetsButton.addEventListener(
+      "click",
+      (): Promise<void> => approveBuyerAssetsInTrade(tradeId)
+    );
+
+    tradeElements?.depositButton.addEventListener(
+      "click",
+      (): Promise<void> => depositAssets(tradeId)
+    );
+
+    tradeElements?.cancelButton.addEventListener(
+      "click",
+      (): Promise<void> => cancelAndWithdraw(tradeId)
+    );
+  } catch (error) {
+    console.error("Error creating event listeners for trade buttons", error);
+  }
+};
+
+const _getTerms = async (tradeId: string): Promise<any> => {
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+
     const contract = new ethers.Contract(
       VendoraContract.address,
       VendoraContract.abi,
@@ -333,10 +492,11 @@ const getTerms = async (tradeId: string): Promise<any> => {
     return;
   }
 };
-
 // const getTradeId = async (): Promise<string> => {
 //   if (metamaskExist()) {
 //     try {
+//       const provider = new ethers.BrowserProvider(window.ethereum);
+
 //       const contract = new ethers.Contract(
 //         VendoraContract.address,
 //         VendoraContract.abi,
@@ -344,8 +504,8 @@ const getTerms = async (tradeId: string): Promise<any> => {
 //       );
 
 //       await contract.on("Terms_Set", (tradeId: string) => {
-//         const id: string = tradeId;
-//         console.log(id);
+//         console.log(tradeId);
+//         return tradeId;
 //       });
 //     } catch (error) {
 //       console.error("Log trade id failed", error);
@@ -355,5 +515,31 @@ const getTerms = async (tradeId: string): Promise<any> => {
 // };
 // getTradeId();
 
-// Call the function with a tradeId
-// export { getAllUserTradeIds, getTerms };
+setTermsButton.addEventListener("click", addTrade);
+
+/** check if tokens have been approved */
+// const contractReadOnly: ethers.Contract = new ethers.Contract(
+//   tokenAddress,
+//   Erc20AbiFrag,
+//   provider
+// );
+// let isApprovedErc20: boolean;
+// const allowance: bigint = await contractReadOnly.allowance(
+//   signer,
+//   contractAddress
+// );
+// allowance >= amount
+//   ? (isApprovedErc20 = true)
+//   : (isApprovedErc20 = false);
+
+// console.log(isApprovedErc20);
+
+export {
+  enterTrade as startTrade,
+  cancelAndWithdraw,
+  depositAssets,
+  approveBuyerAssetsInTrade,
+  approveSellerAssetsInTrade,
+  displayCurrentUserTradeList,
+  displaySearchedUserTradeList,
+};

@@ -56,6 +56,7 @@ const checkIfAccountIsConnected = async (): Promise<void> => {
     }
   }
 };
+
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
   try {
     if (!metamaskExist()) {

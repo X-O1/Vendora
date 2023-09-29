@@ -31,16 +31,4 @@ const offeredErc721s = getTokenDetailsInLocalStorage("offeredErc721s") || [];
 const offeredErc1155s = getTokenDetailsInLocalStorage("offeredErc1155s") || [];
 const offeredErc20s = getTokenDetailsInLocalStorage("offeredErc20s") || [];
 const offeredEth = getTokenDetailsInLocalStorage("offeredEth") || [];
-const setUserProfileInLocalStorage = async (key, value) => {
-    try {
-        localStorage.setItem(key, JSON.stringify(value));
-    }
-    catch (error) {
-        console.error("Failed to set user profile in local storage", error);
-    }
-};
-const getUserProfileFromLocalStorage = (key) => {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : null;
-};
-export { setTokenDetailsInLocalStorage, getTokenDetailsInLocalStorage, setUserProfileInLocalStorage, getUserProfileFromLocalStorage, deleteStorageItem, requestedErc721s, requestedErc1155s, requestedErc20s, requestedEth, offeredErc721s, offeredErc1155s, offeredErc20s, offeredEth, };
+export { setTokenDetailsInLocalStorage, getTokenDetailsInLocalStorage, deleteStorageItem, requestedErc721s, requestedErc1155s, requestedErc20s, requestedEth, offeredErc721s, offeredErc1155s, offeredErc20s, offeredEth, };

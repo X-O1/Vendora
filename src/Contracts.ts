@@ -1,5 +1,5 @@
 const VendoraContract = {
-  address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  address: "0xA07A7260E214A9D630E6901ae30016F198F9ECe5",
   abi: [
     {
       inputs: [],
@@ -169,6 +169,149 @@ const VendoraContract = {
       name: "depositAssets",
       outputs: [],
       stateMutability: "payable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          components: [
+            {
+              internalType: "address",
+              name: "erc721Address",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          internalType: "struct Vendora.Erc721Details[]",
+          name: "offeredErc721s",
+          type: "tuple[]",
+        },
+        {
+          components: [
+            {
+              internalType: "address",
+              name: "erc721Address",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          internalType: "struct Vendora.Erc721Details[]",
+          name: "requestedErc721s",
+          type: "tuple[]",
+        },
+        {
+          components: [
+            {
+              internalType: "address",
+              name: "erc1155Address",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          internalType: "struct Vendora.Erc1155Details[]",
+          name: "offeredErc1155s",
+          type: "tuple[]",
+        },
+        {
+          components: [
+            {
+              internalType: "address",
+              name: "erc1155Address",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          internalType: "struct Vendora.Erc1155Details[]",
+          name: "requestedErc1155s",
+          type: "tuple[]",
+        },
+        {
+          components: [
+            {
+              internalType: "address",
+              name: "erc20Address",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          internalType: "struct Vendora.Erc20Details[]",
+          name: "offeredErc20s",
+          type: "tuple[]",
+        },
+        {
+          components: [
+            {
+              internalType: "address",
+              name: "erc20Address",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          internalType: "struct Vendora.Erc20Details[]",
+          name: "requestedErc20s",
+          type: "tuple[]",
+        },
+        {
+          internalType: "uint256",
+          name: "offeredEthAmount",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "requestedEthAmount",
+          type: "uint256",
+        },
+      ],
+      name: "setTerms",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "bytes32",
+          name: "tradeId",
+          type: "bytes32",
+        },
+      ],
+      name: "startTrade",
+      outputs: [],
+      stateMutability: "nonpayable",
       type: "function",
     },
     {
@@ -436,149 +579,6 @@ const VendoraContract = {
         },
       ],
       stateMutability: "pure",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          components: [
-            {
-              internalType: "address",
-              name: "erc721Address",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-          ],
-          internalType: "struct Vendora.Erc721Details[]",
-          name: "offeredErc721s",
-          type: "tuple[]",
-        },
-        {
-          components: [
-            {
-              internalType: "address",
-              name: "erc721Address",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-          ],
-          internalType: "struct Vendora.Erc721Details[]",
-          name: "requestedErc721s",
-          type: "tuple[]",
-        },
-        {
-          components: [
-            {
-              internalType: "address",
-              name: "erc1155Address",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          internalType: "struct Vendora.Erc1155Details[]",
-          name: "offeredErc1155s",
-          type: "tuple[]",
-        },
-        {
-          components: [
-            {
-              internalType: "address",
-              name: "erc1155Address",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          internalType: "struct Vendora.Erc1155Details[]",
-          name: "requestedErc1155s",
-          type: "tuple[]",
-        },
-        {
-          components: [
-            {
-              internalType: "address",
-              name: "erc20Address",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          internalType: "struct Vendora.Erc20Details[]",
-          name: "offeredErc20s",
-          type: "tuple[]",
-        },
-        {
-          components: [
-            {
-              internalType: "address",
-              name: "erc20Address",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          internalType: "struct Vendora.Erc20Details[]",
-          name: "requestedErc20s",
-          type: "tuple[]",
-        },
-        {
-          internalType: "uint256",
-          name: "offeredEthAmount",
-          type: "uint256",
-        },
-        {
-          internalType: "uint256",
-          name: "requestedEthAmount",
-          type: "uint256",
-        },
-      ],
-      name: "setTerms",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "bytes32",
-          name: "tradeId",
-          type: "bytes32",
-        },
-      ],
-      name: "startTrade",
-      outputs: [],
-      stateMutability: "nonpayable",
       type: "function",
     },
     {
