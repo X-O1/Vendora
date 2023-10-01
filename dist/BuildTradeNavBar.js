@@ -1,5 +1,5 @@
 import { closeTokenMenu, getOfferAssetButton, getRequestAssetButton, } from "./DefaultTokenMenu.js";
-import { offerTab, requestTab, finalizeTermsTab, selectAssetsH2, selectAssets, finalizeTermsDiv, requestedAssets, offeredAssets, offeredAssetsTitle, requestedAssetsTitle, setTermsButton, } from "./FrontEndElements.js";
+import { offerTab, requestTab, finalizeTermsTab, selectAssetsH2, selectAssets, finalizeTermsDiv, requestedAssets, offeredAssets, offeredAssetsTitle, requestedAssetsTitle, setTermsButton, buildTradeTab, findTradeTab, tradesTab, tradesBox, findBox, buildBox, } from "./FrontEndElements.js";
 import { displayOfferedTradeList, displayRequestedTradeList, displayTradeList, resetTradeListElementsInnerText, } from "./TradeListMenu.js";
 const displayRequestLinkContent = () => {
     requestTab.style.color = "#FFF";
@@ -74,4 +74,67 @@ offerTab.addEventListener("click", async () => {
 finalizeTermsTab.addEventListener("click", () => {
     displayFinalizeTermsLinkContent();
     closeTokenMenu();
+});
+const displayBuildTradeTabContent = () => {
+    try {
+        findTradeTab.style.color = "#7F87A2";
+        buildTradeTab.style.color = "rgb(255, 255, 255)";
+        tradesTab.style.color = "#7F87A2";
+        tradesBox.style.display = "none";
+        findBox.style.display = "none";
+        buildBox.style.display = "block";
+    }
+    catch (error) {
+        console.error("Error displaying build trade tab content", error);
+    }
+};
+const displayTradesTabContent = () => {
+    try {
+        findTradeTab.style.color = "#7F87A2";
+        buildTradeTab.style.color = "#7F87A2";
+        tradesTab.style.color = "rgb(255, 255, 255)";
+        findBox.style.display = "none";
+        buildBox.style.display = "none";
+        tradesBox.style.display = "block";
+    }
+    catch (error) {
+        console.error("Error displaying trades tab content", error);
+    }
+};
+const displayFindTradeTabContent = () => {
+    try {
+        findTradeTab.style.color = "rgb(255, 255, 255)";
+        buildTradeTab.style.color = "#7F87A2";
+        tradesTab.style.color = "#7F87A2";
+        tradesBox.style.display = "none";
+        buildBox.style.display = "none";
+        findBox.style.display = "block";
+    }
+    catch (error) {
+        console.error("Error displaying find trade tab content", error);
+    }
+};
+buildTradeTab.addEventListener("click", () => {
+    try {
+        displayBuildTradeTabContent();
+    }
+    catch (error) {
+        console.error("Error handling build trade tab event listener", error);
+    }
+});
+findTradeTab.addEventListener("click", () => {
+    try {
+        displayFindTradeTabContent();
+    }
+    catch (error) {
+        console.error("Error handling find trade tab event listener", error);
+    }
+});
+tradesTab.addEventListener("click", () => {
+    try {
+        displayTradesTabContent();
+    }
+    catch (error) {
+        console.error("Error handling trades tab event listener", error);
+    }
 });

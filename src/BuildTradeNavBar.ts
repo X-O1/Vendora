@@ -15,6 +15,12 @@ import {
   offeredAssetsTitle,
   requestedAssetsTitle,
   setTermsButton,
+  buildTradeTab,
+  findTradeTab,
+  tradesTab,
+  tradesBox,
+  findBox,
+  buildBox,
 } from "./FrontEndElements.js";
 import {
   displayOfferedTradeList,
@@ -100,4 +106,65 @@ offerTab.addEventListener("click", async () => {
 finalizeTermsTab.addEventListener("click", () => {
   displayFinalizeTermsLinkContent();
   closeTokenMenu();
+});
+
+const displayBuildTradeTabContent = (): void => {
+  try {
+    findTradeTab.style.color = "#7F87A2";
+    buildTradeTab.style.color = "rgb(255, 255, 255)";
+    tradesTab.style.color = "#7F87A2";
+    tradesBox.style.display = "none";
+    findBox.style.display = "none";
+    buildBox.style.display = "block";
+  } catch (error) {
+    console.error("Error displaying build trade tab content", error);
+  }
+};
+
+const displayTradesTabContent = (): void => {
+  try {
+    findTradeTab.style.color = "#7F87A2";
+    buildTradeTab.style.color = "#7F87A2";
+    tradesTab.style.color = "rgb(255, 255, 255)";
+    findBox.style.display = "none";
+    buildBox.style.display = "none";
+    tradesBox.style.display = "block";
+  } catch (error) {
+    console.error("Error displaying trades tab content", error);
+  }
+};
+const displayFindTradeTabContent = (): void => {
+  try {
+    findTradeTab.style.color = "rgb(255, 255, 255)";
+    buildTradeTab.style.color = "#7F87A2";
+    tradesTab.style.color = "#7F87A2";
+    tradesBox.style.display = "none";
+    buildBox.style.display = "none";
+    findBox.style.display = "block";
+  } catch (error) {
+    console.error("Error displaying find trade tab content", error);
+  }
+};
+buildTradeTab.addEventListener("click", (): void => {
+  try {
+    displayBuildTradeTabContent();
+  } catch (error) {
+    console.error("Error handling build trade tab event listener", error);
+  }
+});
+
+findTradeTab.addEventListener("click", (): void => {
+  try {
+    displayFindTradeTabContent();
+  } catch (error) {
+    console.error("Error handling find trade tab event listener", error);
+  }
+});
+
+tradesTab.addEventListener("click", (): void => {
+  try {
+    displayTradesTabContent();
+  } catch (error) {
+    console.error("Error handling trades tab event listener", error);
+  }
 });

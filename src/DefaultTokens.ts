@@ -3,7 +3,7 @@ type TokenOption = {
   name?: string;
   symbol?: string;
   address: string;
-  tokenId?: number;
+  tokenId?: bigint;
   amount?: bigint;
 };
 

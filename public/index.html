@@ -33,8 +33,9 @@
             <div class="logo">Vendora</div>
             <nav class="nav-bar">
                 <ul>
-                    <li class="profile-tab">Profile</li>
                     <li class="build-trade-tab">Build Trade</li>
+                    <li class="trades-tab">Active Trades</li>
+                    <li class="find-trade-tab">Find Trade</li>
                 </ul>
             </nav>
         </div>
@@ -42,25 +43,25 @@
 
     <section class="main-container">
 
-        <div class="trade-box">
+        <div class="trade-box build-box">
+            <div class="connect">Connect</div>
+
             <div class="build-trade-links">
                 <div class="request-link">1. Request</div>
                 <div class="offer-link">2. Offer</div>
                 <div class="finalize-terms-link">3. Finalize Terms</div>
-                <div class="connect">Connect</div>
             </div>
 
             <div class="build-trade">
                 <div class="select-assets">
-                    <h2>Select Assets You Want</h1>
+                    <h2>Select Assets You Want</h2>
 
-                        <div class="token-standard-options">
-                            <button class="choose-erc721 toggleMenu" tabindex="0">NFTs</button>
-                            <button class="choose-erc20 toggleMenu" tabindex="0">Tokens</button>
-                            <button class="choose-erc1155 toggleMenu"
-                                tabindex="0">Resources</button>
-                            <button class="choose-eth toggleMenu" tabindex="0">Native Token</button>
-                        </div>
+                    <div class="token-standard-options">
+                        <button class="choose-erc721 toggleMenu" tabindex="0">NFTs</button>
+                        <button class="choose-erc20 toggleMenu" tabindex="0">Tokens</button>
+                        <button class="choose-erc1155 toggleMenu" tabindex="0">Resources</button>
+                        <button class="choose-eth toggleMenu" tabindex="0">Native Token</button>
+                    </div>
                 </div>
 
                 <div class="finalize-terms">
@@ -109,67 +110,42 @@
             </div>
         </div>
 
-        <div class="trade-box">
+        <div class="trade-box trades-box">
+            <div class="connect">Connect</div>
 
             <div class="profile-links">
-                <div class="request-link">Trades</div>
-                <div class="offer-link">Assets</div>
-                <div class="finalize-terms-link">Settings</div>
-                <div class="connect">Connect</div>
+                <h1 class="tab-title">Active Trades</h1>
+
             </div>
 
             <div class="profile">
                 <div class="active-trades">
-                    <h2>Trades</h1>
-                        <div class="trades">
-                            <!-- <div class="trade">
-                                <div class="trade-name">Name</div>
-                                <div class="trade-preview">
-                                    <div class="token-images">
-                                        <img src="./images/erc721-project-images/rareshipLogo.png"
-                                        alt="token" class="token-image">
-                                    <img src="./images/erc721-project-images/msamaLogo.png"
-                                        alt="token" class="token-image">
-                                    <img src="./images/erc20-project-images/linktokenimage.png"
-                                        alt="token" class="token-image">
-                                    <img src="./images/erc20-project-images/samaToken.png"
-                                        alt="token" class="token-image">
-                                    </div>
-                                </div>
-                                <div class="token-id">
-                                    <div class="id">
-                                        0x1a8acde7b9be91391ed85be5288577425bbc4444c7edafe5b52c64e426d3f959
-                                    </div>
-                                </div>
-                            </div> -->
-
-                        </div>
+                    <div class="trades"></div>
+                </div>
+                <div class="finish-trade-container">
+                    <h2>Finish Trade</h2>
+                    <div class="back-to-trades">Back</div>
+                    <div class="finish-trade"></div>
                 </div>
             </div>
         </div>
 
-
-        <div class="trade-box">
+        <div class="trade-box find-box">
+            <div class="connect">Connect</div>
 
             <div class="profile-links">
-                <div class="request-link">Trades</div>
-                <div class="offer-link">Assets</div>
-                <div class="finalize-terms-link">Settings</div>
-                <div class="connect">Connect</div>
+                <h1 class="tab-title">Find Trades</h1>
+
             </div>
 
             <div class="profile">
                 <div class="active-trades">
-                    <h2>Finish Trade</h1>
-                        <div class="finish-trade">
-        
-                        </div>
-
-
+                    <div class="trades"></div>
                 </div>
-            </div>
 
+            </div>
         </div>
+
         </div>
     </section>
 

@@ -122,9 +122,26 @@ const connectWalletButton = document.querySelector(
 const tradesContainer = document.querySelector(".trades") as HTMLDivElement;
 
 const tradesDiv = document.querySelector(".trades") as HTMLDivElement;
+const finishTradeContainer = document.querySelector(
+  ".finish-trade-container"
+) as HTMLDivElement;
 const finishTradeDiv = document.querySelector(
   ".finish-trade"
 ) as HTMLDivElement;
+const activeTradesDiv = document.querySelector(
+  ".active-trades"
+) as HTMLDivElement;
+const backToTrade = document.querySelector(".back-to-trades") as HTMLDivElement;
+const buildTradeTab = document.querySelector(
+  ".build-trade-tab"
+) as HTMLDivElement;
+const findTradeTab = document.querySelector(
+  ".find-trade-tab"
+) as HTMLDivElement;
+const tradesTab = document.querySelector(".trades-tab") as HTMLDivElement;
+const tradesBox = document.querySelector(".trades-box") as HTMLDivElement;
+const buildBox = document.querySelector(".build-box") as HTMLDivElement;
+const findBox = document.querySelector(".find-box") as HTMLDivElement;
 
 export {
   assetPopUpContainer,
@@ -177,4 +194,13 @@ export {
   tradesContainer,
   tradesDiv,
   finishTradeDiv,
+  finishTradeContainer,
+  activeTradesDiv,
+  backToTrade,
+  buildTradeTab,
+  findTradeTab,
+  tradesTab,
+  tradesBox,
+  buildBox,
+  findBox,
 };

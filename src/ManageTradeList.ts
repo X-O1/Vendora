@@ -41,7 +41,7 @@ const addNftToTradeList = (
         name: menuElements.tokenName.innerText,
         symbol: menuElements.tokenSymbol.innerText,
         address: menuElements.tokenAddress.innerText,
-        tokenId: Number(menuElements.tokenId.value),
+        tokenId: BigInt(menuElements.tokenId.value),
         amount: BigInt(menuElements.tokenAmount.value),
       });
       setTokenDetailsInLocalStorage(key, tradeList);

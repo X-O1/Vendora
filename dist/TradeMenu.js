@@ -1,4 +1,4 @@
-import { finishTradeDiv, tradesDiv } from "./FrontEndElements";
+import { activeTradesDiv, backToTrade, finishTradeContainer, finishTradeDiv, tradesDiv, } from "./FrontEndElements";
 const createTradeMenuElements = (tradeId) => {
     try {
         const tradeDiv = document.createElement("div");
@@ -90,4 +90,30 @@ const createTradeElements = () => {
         return;
     }
 };
-export { createTradeMenuElements, createTradeElements, };
+const displayActiveTradesPage = () => {
+    try {
+        activeTradesDiv.style.display = "flex";
+        finishTradeContainer.style.display = "none";
+    }
+    catch (error) {
+        console.log("Error displaying active trades page", error);
+    }
+};
+const displayFinishTradePage = () => {
+    try {
+        activeTradesDiv.style.display = "none";
+        finishTradeContainer.style.display = "flex";
+    }
+    catch (error) {
+        console.log("Error displaying finish trade page", error);
+    }
+};
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        backToTrade === null || backToTrade === void 0 ? void 0 : backToTrade.addEventListener("click", displayActiveTradesPage);
+    }
+    catch (error) {
+        console.error("Error loading functions on content loaded");
+    }
+});
+export { createTradeMenuElements, createTradeElements, displayFinishTradePage, };

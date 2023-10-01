@@ -11,12 +11,12 @@ import {
 
 type Erc721TransferDetails = {
   erc721Address: string;
-  tokenId?: number;
+  tokenId?: bigint;
 };
 
 type Erc1155TransferDetails = {
   erc1155Address: string;
-  tokenId?: number;
+  tokenId?: bigint;
   amount?: bigint;
 };
 type Erc20TransferDetails = {

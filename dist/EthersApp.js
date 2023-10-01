@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { requestedErc721Details, requestedErc1155Details, requestedErc20Details, requestedEthDetails, offeredErc721Details, offeredErc1155Details, offeredErc20Details, offeredEthDetails, } from "./TermsAssetDetails";
 import { finishTradeDiv, setTermsButton, tradesDiv } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
-import { createTradeElements, createTradeMenuElements } from "./TradeMenu";
+import { createTradeElements, createTradeMenuElements, displayFinishTradePage, } from "./TradeMenu";
 const metamaskExist = () => {
     const metamaskExist = typeof window.ethereum !== "undefined";
     return metamaskExist;
@@ -192,7 +192,7 @@ const depositAssets = async (tradeId) => {
         }
     }
 };
-const getAllUserTradeIds = async () => {
+const _getAllUserTradeIds = async () => {
     if (metamaskExist()) {
         try {
             const provider = new ethers.BrowserProvider(window.ethereum);
@@ -207,47 +207,15 @@ const getAllUserTradeIds = async () => {
     }
     return [];
 };
-const searchAllUserTradeIds = async (address) => {
+const displayCurrentUserTradeList = async () => {
     if (metamaskExist()) {
         try {
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, signer);
-            const trades = await contract.getUsersActiveTrades(address);
-            return trades;
-        }
-        catch (error) {
-            console.error("Failed to search active trades", error);
-        }
-    }
-    return [];
-};
-const displaySearchedUserTrades = async (address) => {
-    if (metamaskExist()) {
-        try {
-            const tradeIds = await searchAllUserTradeIds(address);
+            const tradeIds = await _getAllUserTradeIds();
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
                 const tradeMenuElements = createTradeMenuElements(id);
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
-                    finishTradeDiv.innerHTML = "";
-                    _addListenersToTradeButtons(id);
-                });
-            });
-        }
-        catch (error) {
-            console.error("Error displaying searched trades", error);
-        }
-    }
-};
-const displayCurrentUserTrades = async () => {
-    if (metamaskExist()) {
-        try {
-            const tradeIds = await getAllUserTradeIds();
-            tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
-                const tradeMenuElements = createTradeMenuElements(id);
-                tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
-                    finishTradeDiv.innerHTML = "";
-                    _addListenersToTradeButtons(id);
+                    _createTradeButtonsAndAddListeners(id);
+                    displayFinishTradePage();
                 });
             });
         }
@@ -263,7 +231,7 @@ const refreshTradeList = async () => {
                 const walletConnected = newAccounts[0] !== undefined;
                 if (walletConnected) {
                     tradesDiv.innerHTML = "";
-                    await displayCurrentUserTrades();
+                    await displayCurrentUserTradeList();
                 }
             });
         }
@@ -272,10 +240,9 @@ const refreshTradeList = async () => {
         }
     }
 };
-refreshTradeList();
-displayCurrentUserTrades();
-const _addListenersToTradeButtons = (tradeId) => {
+const _createTradeButtonsAndAddListeners = (tradeId) => {
     try {
+        finishTradeDiv.innerHTML = "";
         const tradeElements = createTradeElements();
         tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.enterTradeButton.addEventListener("click", () => enterTrade(tradeId));
         tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.approveSellerAssetsButton.addEventListener("click", () => approveSellerAssetsInTrade(tradeId));
@@ -309,5 +276,15 @@ const _getTerms = async (tradeId) => {
         return;
     }
 };
-setTermsButton.addEventListener("click", addTrade);
-export { enterTrade as startTrade, cancelAndWithdraw, depositAssets, approveBuyerAssetsInTrade, approveSellerAssetsInTrade, displayCurrentUserTrades, displaySearchedUserTrades, };
+window.addEventListener("load", async () => {
+    if (metamaskExist()) {
+        try {
+            setTermsButton === null || setTermsButton === void 0 ? void 0 : setTermsButton.addEventListener("click", addTrade);
+            await refreshTradeList();
+            await displayCurrentUserTradeList();
+        }
+        catch (error) {
+            console.error("Error loading functions on content loaded");
+        }
+    }
+});

@@ -14,7 +14,11 @@ import {
 } from "./TermsAssetDetails";
 import { finishTradeDiv, setTermsButton, tradesDiv } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
-import { createTradeElements, createTradeMenuElements } from "./TradeMenu";
+import {
+  createTradeElements,
+  createTradeMenuElements,
+  displayFinishTradePage,
+} from "./TradeMenu";
 
 type Terms = {
   offeredErc721s: Erc721TransferDetails[];
@@ -101,7 +105,7 @@ const cancelAndWithdraw = async (tradeId: string): Promise<void> => {
 const _approveAssets = async (
   tokenAddress: string,
   contractAddress: string,
-  tokenId?: number,
+  tokenId?: bigint,
   amount?: bigint
 ): Promise<void> => {
   if (metamaskExist()) {
@@ -317,7 +321,46 @@ const depositAssets = async (tradeId: string): Promise<void> => {
     }
   }
 };
-const getAllUserTradeIds = async (): Promise<string[]> => {
+
+// const _searchAllUserTradeIds = async (address: string): Promise<string[]> => {
+//   if (metamaskExist()) {
+//     try {
+//       const provider = new ethers.BrowserProvider(window.ethereum);
+//       const signer: ethers.JsonRpcSigner = await provider.getSigner();
+//       const contract = new ethers.Contract(
+//         VendoraContract.address,
+//         VendoraContract.abi,
+//         signer
+//       );
+//       const trades: string[] = await contract.getUsersActiveTrades(address);
+//       return trades;
+//     } catch (error) {
+//       console.error("Failed to search active trades", error);
+//     }
+//   }
+//   return [];
+// };
+
+// const displaySearchedUserTradeList = async (address: string): Promise<void> => {
+//   if (metamaskExist()) {
+//     try {
+//       const tradeIds: string[] = await _searchAllUserTradeIds(address);
+
+//       tradeIds?.forEach((id: string): void => {
+//         const tradeMenuElements = createTradeMenuElements(id);
+
+//         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
+//           finishTradeDiv.innerHTML = "";
+//           _addListenersToTradeButtons(id);
+//         });
+//       });
+//     } catch (error) {
+//       console.error("Error displaying searched trades", error);
+//     }
+//   }
+// };
+
+const _getAllUserTradeIds = async (): Promise<string[]> => {
   if (metamaskExist()) {
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -336,55 +379,17 @@ const getAllUserTradeIds = async (): Promise<string[]> => {
   return [];
 };
 
-const searchAllUserTradeIds = async (address: string): Promise<string[]> => {
-  if (metamaskExist()) {
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer: ethers.JsonRpcSigner = await provider.getSigner();
-      const contract = new ethers.Contract(
-        VendoraContract.address,
-        VendoraContract.abi,
-        signer
-      );
-      const trades: string[] = await contract.getUsersActiveTrades(address);
-      return trades;
-    } catch (error) {
-      console.error("Failed to search active trades", error);
-    }
-  }
-  return [];
-};
-
-const displaySearchedUserTradeList = async (address: string): Promise<void> => {
-  if (metamaskExist()) {
-    try {
-      const tradeIds: string[] = await searchAllUserTradeIds(address);
-
-      tradeIds?.forEach((id: string): void => {
-        const tradeMenuElements = createTradeMenuElements(id);
-
-        tradeMenuElements?.tradeDiv.addEventListener("click", () => {
-          finishTradeDiv.innerHTML = "";
-          _addListenersToTradeButtons(id);
-        });
-      });
-    } catch (error) {
-      console.error("Error displaying searched trades", error);
-    }
-  }
-};
-
 const displayCurrentUserTradeList = async (): Promise<void> => {
   if (metamaskExist()) {
     try {
-      const tradeIds: string[] = await getAllUserTradeIds();
+      const tradeIds: string[] = await _getAllUserTradeIds();
 
       tradeIds?.forEach((id: string): void => {
         const tradeMenuElements = createTradeMenuElements(id);
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
-          finishTradeDiv.innerHTML = "";
-          _addListenersToTradeButtons(id);
+          _createTradeButtonsAndAddListeners(id);
+          displayFinishTradePage();
         });
       });
     } catch (error) {
@@ -411,19 +416,10 @@ const refreshTradeList = async (): Promise<void> => {
     }
   }
 };
-document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
-  if (metamaskExist()) {
-    try {
-      await refreshTradeList();
-      await displayCurrentUserTradeList();
-    } catch (error) {
-      console.error("Error loading functions on content loaded");
-    }
-  }
-});
 
-const _addListenersToTradeButtons = (tradeId: string): void => {
+const _createTradeButtonsAndAddListeners = (tradeId: string): void => {
   try {
+    finishTradeDiv.innerHTML = "";
     const tradeElements = createTradeElements();
 
     tradeElements?.enterTradeButton.addEventListener(
@@ -492,6 +488,20 @@ const _getTerms = async (tradeId: string): Promise<any> => {
     return;
   }
 };
+
+window.addEventListener("load", async (): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      setTermsButton?.addEventListener("click", addTrade);
+
+      await refreshTradeList();
+      await displayCurrentUserTradeList();
+    } catch (error) {
+      console.error("Error loading functions on content loaded");
+    }
+  }
+});
+
 // const getTradeId = async (): Promise<string> => {
 //   if (metamaskExist()) {
 //     try {
@@ -514,32 +524,3 @@ const _getTerms = async (tradeId: string): Promise<any> => {
 //   return "";
 // };
 // getTradeId();
-
-setTermsButton.addEventListener("click", addTrade);
-
-/** check if tokens have been approved */
-// const contractReadOnly: ethers.Contract = new ethers.Contract(
-//   tokenAddress,
-//   Erc20AbiFrag,
-//   provider
-// );
-// let isApprovedErc20: boolean;
-// const allowance: bigint = await contractReadOnly.allowance(
-//   signer,
-//   contractAddress
-// );
-// allowance >= amount
-//   ? (isApprovedErc20 = true)
-//   : (isApprovedErc20 = false);
-
-// console.log(isApprovedErc20);
-
-export {
-  enterTrade as startTrade,
-  cancelAndWithdraw,
-  depositAssets,
-  approveBuyerAssetsInTrade,
-  approveSellerAssetsInTrade,
-  displayCurrentUserTradeList,
-  displaySearchedUserTradeList,
-};
