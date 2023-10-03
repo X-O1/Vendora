@@ -413,8 +413,8 @@ header {
 
 .select-assets:hover,
 .requested-assets:hover,
-.offered-assets:hover ,
-.trade:hover{
+.offered-assets:hover,
+.trade:hover {
     border: .1px solid rgba(152, 161, 192, 0.24);
 }
 
@@ -570,8 +570,7 @@ header {
 
 .active-trades h2,
 .finish-trade-container h2,
-.finish-trade-container2 h2
- {
+.finish-trade-container2 h2 {
     text-align: center;
     margin-top: 10px;
     color: rgb(255, 255, 255);
@@ -580,8 +579,7 @@ header {
 .trades,
 .trades2,
 .finish-trade,
-.finish-trade2
- {
+.finish-trade2 {
     display: flex;
     gap: 10px;
     flex-direction: column;
@@ -650,16 +648,14 @@ header {
 }
 
 .finish-trade-container,
-.finish-trade-container2
- {
+.finish-trade-container2 {
     position: relative;
     display: none;
 }
 
 
 .back-to-trades,
-.back-to-trades2
- {
+.back-to-trades2 {
     position: absolute;
     top: 2%;
     font-size: 14px;
@@ -674,7 +670,7 @@ header {
 
 .build-trade-tab {
     color: rgb(255, 255, 255);
-    
+
 }
 
 .find-box {
@@ -686,6 +682,7 @@ header {
     box-sizing: border-box;
 
 }
+
 .search-bar {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 7px;
@@ -700,6 +697,7 @@ header {
     margin-bottom: 4px;
     cursor: auto;
 }
+
 .search-button {
     padding: 12px 24px;
     width: 100%;

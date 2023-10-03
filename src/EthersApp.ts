@@ -21,7 +21,6 @@ import {
   setTermsButton,
   tradesDiv,
   tradesDiv2,
-  // tradesDiv,
 } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
 import {
@@ -30,6 +29,7 @@ import {
   displayFinishTradePage,
   displayFinishTradePage2,
 } from "./TradeMenu";
+import { defaultErc721s } from "./DefaultTokens";
 
 type Terms = {
   offeredErc721s: Erc721TransferDetails[];
@@ -249,8 +249,6 @@ const approveSellerAssetsInTrade = async (tradeId: string): Promise<void> => {
     } catch (error) {
       console.error("Error approving seller's assets", error);
     }
-
-    // check if tokens have been approved
   }
 };
 
@@ -506,43 +504,37 @@ const _getTerms = async (tradeId: string): Promise<any> => {
   }
 };
 
+// const tradePreview = async (tradeId: string, imgSrc: string): Promise<void> => {
+//   if (metamaskExist()) {
+//     try {
+//       const terms = _getTerms(tradeId);
+
+//       for (let i: number = 0; i < defaultErc721s.length; i++) {
+//         for (let j: number = 0; j < terms[; j++) {
+//           terms[j].
+//         }
+//         defaultErc721s[i].
+//       }
+//     } catch (error) {
+//       console.error("Error getting trade preview", error);
+//     }
+//   }
+// };
+
 window.addEventListener("load", async (): Promise<void> => {
   if (metamaskExist()) {
     try {
       setTermsButton?.addEventListener("click", addTrade);
 
+      searchButton.addEventListener(
+        "click",
+        async (): Promise<void> => await displaySearchedUserTradeList()
+      );
+
       await refreshTradeList();
       await displayCurrentUserTradeList();
     } catch (error) {
-      console.error("Error loading functions on content loaded");
+      console.error("Error loading functions on window load");
     }
   }
 });
-
-searchButton.addEventListener(
-  "click",
-  async (): Promise<void> => await displaySearchedUserTradeList()
-);
-
-// const getTradeId = async (): Promise<string> => {
-//   if (metamaskExist()) {
-//     try {
-//       const provider = new ethers.BrowserProvider(window.ethereum);
-
-//       const contract = new ethers.Contract(
-//         VendoraContract.address,
-//         VendoraContract.abi,
-//         provider
-//       );
-
-//       await contract.on("Terms_Set", (tradeId: string) => {
-//         console.log(tradeId);
-//         return tradeId;
-//       });
-//     } catch (error) {
-//       console.error("Log trade id failed", error);
-//     }
-//   }
-//   return "";
-// };
-// getTradeId();
