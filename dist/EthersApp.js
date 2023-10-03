@@ -201,7 +201,7 @@ const _searchAllUserTradeIds = async () => {
             return trades;
         }
         catch (error) {
-            console.error("Failed to search active trades", error);
+            console.error("Failed to search active trades, not valid address", error);
         }
     }
     return [];
@@ -210,6 +210,7 @@ const displaySearchedUserTradeList = async () => {
     if (metamaskExist()) {
         try {
             const tradeIds = await _searchAllUserTradeIds();
+            tradesDiv2.innerHTML = "";
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
