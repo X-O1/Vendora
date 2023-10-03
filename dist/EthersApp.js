@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { requestedErc721Details, requestedErc1155Details, requestedErc20Details, requestedEthDetails, offeredErc721Details, offeredErc1155Details, offeredErc20Details, offeredEthDetails, } from "./TermsAssetDetails";
-import { finishTradeDiv, finishTradeDiv2, searchBar, searchButton, setTermsButton, tradesDiv, tradesDiv2, } from "./FrontEndElements";
+import { finishTradeDiv, finishTradeDiv2, searchBar, searchButton, searchContainer, setTermsButton, tradesDiv, tradesDiv2, } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
 import { createTradeElements, createTradeMenuElements, displayFinishTradePage, displayFinishTradePage2, } from "./TradeMenu";
 const metamaskExist = () => {
@@ -214,6 +214,7 @@ const displaySearchedUserTradeList = async () => {
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
+                    searchContainer.style.display = "none";
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
                     displayFinishTradePage2();
                 });

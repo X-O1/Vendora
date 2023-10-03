@@ -5,6 +5,7 @@ import {
   backToTrade2,
   finishTradeContainer,
   finishTradeContainer2,
+  searchContainer,
 } from "./FrontEndElements";
 
 type TradeMenuElements = {
@@ -154,6 +155,7 @@ const displayFinishTradePage = (): void => {
 
 const displayActiveTradesPage2 = (): void => {
   try {
+    searchContainer.style.display = "block";
     activeTradesDiv2.style.display = "flex";
     finishTradeContainer2.style.display = "none";
   } catch (error) {

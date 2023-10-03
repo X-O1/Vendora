@@ -17,6 +17,7 @@ import {
   finishTradeDiv2,
   searchBar,
   searchButton,
+  searchContainer,
   setTermsButton,
   tradesDiv,
   tradesDiv2,
@@ -361,6 +362,7 @@ const displaySearchedUserTradeList = async (): Promise<void> => {
         const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
+          searchContainer.style.display = "none";
           _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
           displayFinishTradePage2();
         });

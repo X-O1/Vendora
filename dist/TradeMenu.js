@@ -1,4 +1,4 @@
-import { activeTradesDiv, activeTradesDiv2, backToTrade, backToTrade2, finishTradeContainer, finishTradeContainer2, } from "./FrontEndElements";
+import { activeTradesDiv, activeTradesDiv2, backToTrade, backToTrade2, finishTradeContainer, finishTradeContainer2, searchContainer, } from "./FrontEndElements";
 const createTradeMenuElements = (tradeId, div) => {
     try {
         const tradeDiv = document.createElement("div");
@@ -110,6 +110,7 @@ const displayFinishTradePage = () => {
 };
 const displayActiveTradesPage2 = () => {
     try {
+        searchContainer.style.display = "block";
         activeTradesDiv2.style.display = "flex";
         finishTradeContainer2.style.display = "none";
     }

@@ -166,6 +166,9 @@ const finishTradeDiv2 = document.querySelector(
 const backToTrade2 = document.querySelector(
   ".back-to-trades2"
 ) as HTMLDivElement;
+const searchContainer = document.querySelector(
+  ".search-container"
+) as HTMLDivElement;
 
 export {
   assetPopUpContainer,
@@ -235,4 +238,5 @@ export {
   finishTradeContainer2,
   finishTradeDiv2,
   backToTrade2,
+  searchContainer,
 };
