@@ -3,7 +3,6 @@ import {
   backToTrade,
   finishTradeContainer,
   finishTradeDiv,
-  tradesDiv,
 } from "./FrontEndElements";
 
 type TradeMenuElements = {
@@ -28,7 +27,8 @@ type TradeElements = {
 };
 
 const createTradeMenuElements = (
-  tradeId: string /** tradeName: string,  imgSrc1: string, imgSrc2: string, imgSrc3: string, imgSrc4: string */
+  tradeId: string,
+  div: HTMLDivElement /** tradeName: string,  imgSrc1: string, imgSrc2: string, imgSrc3: string, imgSrc4: string */
 ): TradeMenuElements | undefined => {
   try {
     const tradeDiv: HTMLDivElement = document.createElement("div");
@@ -53,7 +53,7 @@ const createTradeMenuElements = (
     tradeIdDiv.classList.add("trade-id");
     id.classList.add("id");
 
-    tradesDiv.appendChild(tradeDiv);
+    div.appendChild(tradeDiv);
     tradeDiv.appendChild(tradeNameDiv);
     tradeDiv.appendChild(tradePreviewDiv);
     tradePreviewDiv.appendChild(tokenImagesDiv);

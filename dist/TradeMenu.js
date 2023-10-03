@@ -1,5 +1,5 @@
-import { activeTradesDiv, backToTrade, finishTradeContainer, finishTradeDiv, tradesDiv, } from "./FrontEndElements";
-const createTradeMenuElements = (tradeId) => {
+import { activeTradesDiv, backToTrade, finishTradeContainer, finishTradeDiv, } from "./FrontEndElements";
+const createTradeMenuElements = (tradeId, div) => {
     try {
         const tradeDiv = document.createElement("div");
         const tradeNameDiv = document.createElement("div");
@@ -21,7 +21,7 @@ const createTradeMenuElements = (tradeId) => {
         tokenImage4.classList.add("token-image");
         tradeIdDiv.classList.add("trade-id");
         id.classList.add("id");
-        tradesDiv.appendChild(tradeDiv);
+        div.appendChild(tradeDiv);
         tradeDiv.appendChild(tradeNameDiv);
         tradeDiv.appendChild(tradePreviewDiv);
         tradePreviewDiv.appendChild(tokenImagesDiv);

@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { requestedErc721Details, requestedErc1155Details, requestedErc20Details, requestedEthDetails, offeredErc721Details, offeredErc1155Details, offeredErc20Details, offeredEthDetails, } from "./TermsAssetDetails";
-import { finishTradeDiv, setTermsButton, tradesDiv } from "./FrontEndElements";
+import { finishTradeDiv, searchBar, searchButton, setTermsButton, tradesDiv, tradesDiv2, } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
 import { createTradeElements, createTradeMenuElements, displayFinishTradePage, } from "./TradeMenu";
 const metamaskExist = () => {
@@ -192,6 +192,37 @@ const depositAssets = async (tradeId) => {
         }
     }
 };
+const _searchAllUserTradeIds = async () => {
+    if (metamaskExist()) {
+        try {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, provider);
+            const trades = await contract.getUsersActiveTrades(searchBar.value);
+            return trades;
+        }
+        catch (error) {
+            console.error("Failed to search active trades", error);
+        }
+    }
+    return [];
+};
+const displaySearchedUserTradeList = async () => {
+    if (metamaskExist()) {
+        try {
+            const tradeIds = await _searchAllUserTradeIds();
+            tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
+                const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
+                tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
+                    _createTradeButtonsAndAddListeners(id);
+                    displayFinishTradePage();
+                });
+            });
+        }
+        catch (error) {
+            console.error("Error displaying searched trades", error);
+        }
+    }
+};
 const _getAllUserTradeIds = async () => {
     if (metamaskExist()) {
         try {
@@ -212,7 +243,7 @@ const displayCurrentUserTradeList = async () => {
         try {
             const tradeIds = await _getAllUserTradeIds();
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
-                const tradeMenuElements = createTradeMenuElements(id);
+                const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
                     _createTradeButtonsAndAddListeners(id);
                     displayFinishTradePage();
@@ -288,3 +319,4 @@ window.addEventListener("load", async () => {
         }
     }
 });
+searchButton.addEventListener("click", async () => await displaySearchedUserTradeList());

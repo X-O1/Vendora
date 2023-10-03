@@ -84,7 +84,7 @@ header {
     height: 80%;
     max-height: 750px;
     width: 75%;
-    max-width: 350px;
+    max-width: 360px;
     background: rgb(13, 17, 28);
     padding: 10px 20px;
     position: relative;
@@ -93,7 +93,8 @@ header {
 }
 
 .build-trade-links,
-.profile-links {
+.profile-links,
+.find-trade-title {
     display: flex;
     flex-direction: row;
     gap: 8px;
@@ -151,7 +152,9 @@ header {
 
 .select-assets,
 .active-trades,
-.finish-trade-container {
+.active-trades2,
+.finish-trade-container,
+.find-trade-container {
     height: 47%;
     width: 100%;
     padding: 10px 20px;
@@ -283,7 +286,8 @@ header {
 .selected-assets::-webkit-scrollbar,
 .requested-assets::-webkit-scrollbar,
 .offered-assets::-webkit-scrollbar,
-.trades::-webkit-scrollbar {
+.trades::-webkit-scrollbar,
+.trades2::-webkit-scrollbar {
     display: none;
 }
 
@@ -292,7 +296,8 @@ header {
 .selected-assets,
 .requested-assets,
 .offered-assets,
-.trades {
+.trades,
+.trades2 {
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
@@ -554,7 +559,9 @@ header {
 }
 
 .active-trades,
-.finish-trade-container {
+.active-trades2,
+.finish-trade-container,
+.find-trade-container {
     height: 90%;
 }
 
@@ -566,6 +573,7 @@ header {
 }
 
 .trades,
+.trades2,
 .finish-trade {
     display: flex;
     gap: 10px;
@@ -647,7 +655,8 @@ header {
 }
 
 .trades-box,
-.find-box {
+.find-box,
+.build-box {
     display: none;
 }
 
@@ -656,3 +665,49 @@ header {
     
 }
 
+.find-box {
+    display: block;
+}
+
+.search-container {
+    width: 100%;
+    box-sizing: border-box;
+
+}
+.search-bar {
+    border: 1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 7px;
+    padding: 9px 10px;
+    cursor: pointer;
+    background: none;
+    width: 100%;
+    height: 40px;
+    font-size: 11px;
+    color: rgb(255, 255, 255);
+    box-sizing: border-box;
+    margin-bottom: 4px;
+    cursor: auto;
+}
+.search-button {
+    padding: 12px 24px;
+    width: 100%;
+    font-size: 17px;
+    font-weight: 600;
+    color: rgb(255, 255, 255);
+    background: rgb(13, 17, 28);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 2px 2px 4px #101a2d;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s linear;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.active-trades2 {
+    padding: 10px 0px;
+    border: none;
+}

@@ -12,7 +12,15 @@ import {
   Erc20TransferDetails,
   Erc1155TransferDetails,
 } from "./TermsAssetDetails";
-import { finishTradeDiv, setTermsButton, tradesDiv } from "./FrontEndElements";
+import {
+  finishTradeDiv,
+  searchBar,
+  searchButton,
+  setTermsButton,
+  tradesDiv,
+  tradesDiv2,
+  // tradesDiv,
+} from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
 import {
   createTradeElements,
@@ -134,7 +142,6 @@ const _approveAssets = async (
         );
       }
     }
-
     // Approve ERC721
     try {
       const Erc721AbiFrag: string[] = [
@@ -158,7 +165,6 @@ const _approveAssets = async (
         error
       );
     }
-
     // Approve Erc1155
     try {
       const Erc1155AbiFrag: string[] = [
@@ -322,43 +328,46 @@ const depositAssets = async (tradeId: string): Promise<void> => {
   }
 };
 
-// const _searchAllUserTradeIds = async (address: string): Promise<string[]> => {
-//   if (metamaskExist()) {
-//     try {
-//       const provider = new ethers.BrowserProvider(window.ethereum);
-//       const signer: ethers.JsonRpcSigner = await provider.getSigner();
-//       const contract = new ethers.Contract(
-//         VendoraContract.address,
-//         VendoraContract.abi,
-//         signer
-//       );
-//       const trades: string[] = await contract.getUsersActiveTrades(address);
-//       return trades;
-//     } catch (error) {
-//       console.error("Failed to search active trades", error);
-//     }
-//   }
-//   return [];
-// };
+const _searchAllUserTradeIds = async (): Promise<string[]> => {
+  if (metamaskExist()) {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const contract = new ethers.Contract(
+        VendoraContract.address,
+        VendoraContract.abi,
+        provider
+      );
 
-// const displaySearchedUserTradeList = async (address: string): Promise<void> => {
-//   if (metamaskExist()) {
-//     try {
-//       const tradeIds: string[] = await _searchAllUserTradeIds(address);
+      const trades: string[] = await contract.getUsersActiveTrades(
+        searchBar.value
+      );
+      return trades;
+    } catch (error) {
+      console.error("Failed to search active trades, not valid address", error);
+    }
+  }
+  return [];
+};
 
-//       tradeIds?.forEach((id: string): void => {
-//         const tradeMenuElements = createTradeMenuElements(id);
+const displaySearchedUserTradeList = async (): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      const tradeIds: string[] = await _searchAllUserTradeIds();
+      tradesDiv2.innerHTML = "";
 
-//         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
-//           finishTradeDiv.innerHTML = "";
-//           _addListenersToTradeButtons(id);
-//         });
-//       });
-//     } catch (error) {
-//       console.error("Error displaying searched trades", error);
-//     }
-//   }
-// };
+      tradeIds?.forEach((id: string): void => {
+        const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
+
+        tradeMenuElements?.tradeDiv.addEventListener("click", () => {
+          _createTradeButtonsAndAddListeners(id);
+          displayFinishTradePage();
+        });
+      });
+    } catch (error) {
+      console.error("Error displaying searched trades", error);
+    }
+  }
+};
 
 const _getAllUserTradeIds = async (): Promise<string[]> => {
   if (metamaskExist()) {
@@ -385,7 +394,7 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
       const tradeIds: string[] = await _getAllUserTradeIds();
 
       tradeIds?.forEach((id: string): void => {
-        const tradeMenuElements = createTradeMenuElements(id);
+        const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
           _createTradeButtonsAndAddListeners(id);
@@ -501,6 +510,11 @@ window.addEventListener("load", async (): Promise<void> => {
     }
   }
 });
+
+searchButton.addEventListener(
+  "click",
+  async (): Promise<void> => await displaySearchedUserTradeList()
+);
 
 // const getTradeId = async (): Promise<string> => {
 //   if (metamaskExist()) {
