@@ -116,9 +116,9 @@ const requestedAssetsTitle = document.querySelector(
 const setTermsButton = document.querySelector(
   ".set-terms"
 ) as HTMLButtonElement;
-const connectWalletButton = document.querySelector(
+const connectWalletButton = document.querySelectorAll(
   ".connect"
-) as HTMLDivElement;
+) as NodeListOf<HTMLDivElement>;
 
 const tradesDiv = document.querySelector(".trades") as HTMLDivElement;
 const finishTradeContainer = document.querySelector(

@@ -314,12 +314,12 @@ window.addEventListener("load", async () => {
     if (metamaskExist()) {
         try {
             setTermsButton === null || setTermsButton === void 0 ? void 0 : setTermsButton.addEventListener("click", addTrade);
+            searchButton.addEventListener("click", async () => await displaySearchedUserTradeList());
             await refreshTradeList();
             await displayCurrentUserTradeList();
         }
         catch (error) {
-            console.error("Error loading functions on content loaded");
+            console.error("Error loading functions on window load");
         }
     }
 });
-searchButton.addEventListener("click", async () => await displaySearchedUserTradeList());

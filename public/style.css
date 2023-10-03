@@ -82,7 +82,7 @@ header {
 .trade-box {
     border-radius: 20px;
     height: 80%;
-    max-height: 750px;
+    max-height: 760px;
     width: 75%;
     max-width: 360px;
     background: rgb(13, 17, 28);
@@ -663,18 +663,12 @@ header {
 }
 
 .trades-box,
-.find-box,
-.build-box {
+.find-box{
     display: none;
 }
 
 .build-trade-tab {
     color: rgb(255, 255, 255);
-
-}
-
-.find-box {
-    display: block;
 }
 
 .search-container {

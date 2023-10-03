@@ -179,6 +179,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
     console.error("Error loading functions on content loaded");
   }
 });
+
 export {
   createTradeMenuElements,
   createTradeElements,

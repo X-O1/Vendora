@@ -29,7 +29,7 @@ import {
   displayFinishTradePage,
   displayFinishTradePage2,
 } from "./TradeMenu";
-import { defaultErc721s } from "./DefaultTokens";
+// import { defaultErc721s } from "./DefaultTokens";
 
 type Terms = {
   offeredErc721s: Erc721TransferDetails[];
