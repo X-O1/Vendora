@@ -1,0 +1,358 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    color: #7F87A2;
+    font-family: 'Dosis', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    background-image: url(./images/bg1.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+
+
+a {
+    color: #7F87A2;
+    text-decoration: none;
+}
+
+header {
+    width: 100%;
+    height: 5%;
+}
+
+.header-container {
+    padding-top: 10px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    text-transform: uppercase;
+
+}
+
+.logo {
+    font-size: 25px;
+    margin-left: 10px;
+    color: rgb(255, 255, 255);
+}
+
+.connect {
+    background-color: #223666;
+    color: #4575E4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: inherit;
+    margin-right: 10px;
+    padding: 15px;
+}
+
+.main-container {
+    display: flex;
+    align-items: center;
+    height: 95%;
+    flex-direction: column;
+}
+
+.trade-box {
+    border: 1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 20px;
+    height: 90%;
+    max-height: 750px;
+    width: 85%;
+    max-width: 450px;
+    background: rgb(13, 17, 28);
+    padding: 10px;
+    position: relative;
+}
+
+.trade-links {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: left;
+    align-items: center;
+    width: 100%;
+    height: 6%;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 0px 12px;
+    gap: 16px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.connect:hover {
+    color: rgb(255, 255, 255);
+}
+
+.build-terms-title {
+    margin-top: 40px;
+
+}
+
+.build-terms {
+    border-radius: 20px;
+    height: 90%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.build-terms h2 {
+    margin: 5px auto 0px;
+    text-transform: uppercase;
+    font-size: 21px;
+    color: rgb(255, 255, 255);
+
+
+}
+
+.what-do-you-want {
+    height: 47%;
+    width: 100%;
+    padding: 10px 20px;
+    background-color: rgb(19, 26, 42);
+    border-radius: 20px;
+    border: .1px solid #0D111C;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.token-standard-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 100%;
+    align-items: center;
+    text-align: center;
+}
+
+.choose-erc721,
+.choose-erc20,
+.choose-erc1155,
+.choose-eth {
+    width: 80%;
+    border: 1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 30px;
+    padding: 9px 10px;
+    cursor: pointer;
+    background: none;
+    font-size: 18px;
+}
+
+.choose-erc721:hover,
+.choose-erc20:hover,
+.choose-erc1155:hover,
+.choose-eth:hover 
+ {
+    color: rgb(255, 255, 255);
+
+}
+
+.toggle-fullscreen img {
+    width: 20px;
+    position: absolute;
+    right: 50%;
+    top: 5px;
+    cursor: pointer;
+    display: none;
+
+}
+
+.close-fullscreen img {
+    width: 20px;
+    position: absolute;
+    right: 50%;
+    top: 5px;
+    cursor: pointer;
+    display: none;
+
+}
+
+.asset-popups {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 50%;
+    /* toggles to 100% on scroll*/
+    width: 100%;
+    border: 1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 20px;
+    background: rgb(13, 17, 28);
+    padding: 20px;
+    box-sizing: border-box;
+    display: none;
+}
+
+.section-title {
+    padding-left: 5px;
+}
+
+.erc721-menu-popup {
+    width: 100%;
+    height: 100%;
+    background: rgb(13, 17, 28);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 10px;
+    display: none;
+}
+
+.erc1155-menu-popup {
+    width: 100%;
+    height: 100%;
+    background: rgb(13, 17, 28);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 10px;
+    display: none;
+}
+
+.erc20-menu-popup {
+    width: 100%;
+    height: 100%;
+    background: rgb(13, 17, 28);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 10px;
+    display: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.token-menu-popup::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.token-menu-popup {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.token-option {
+    display: flex;
+    padding-top: 10px;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    height: 50px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.token-option img {
+    width: 100%;
+}
+
+.option-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 100px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    background: black;
+    display: flex;
+    justify-content: center;
+}
+
+.option-name {
+    font-size: 21px;
+    color: rgb(255, 255, 255);
+}
+
+.option-order-details {
+    display: flex;
+    gap: 10px;
+}
+
+.option-token-id,
+.option-amount,
+.add-asset {
+    border: 1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 10px;
+    padding: 9px 10px;
+    cursor: pointer;
+    background: none;
+    width: 60px;
+    font-size: 13px;
+    color: rgb(255, 255, 255);
+}
+
+.eth-amount::placeholder,
+.option-token-id::placeholder,
+.option-amount::placeholder,
+.erc1155-token-id::placeholder,
+.erc1155-amount::placeholder,
+.add-asset {
+    color: #7F87A2;
+}
+
+.what-do-you-want:hover,
+.wanted-assets:hover {
+    border: .1px solid rgba(152, 161, 192, 0.24);
+}
+
+.add-asset:hover {
+    color: rgb(255, 255, 255);
+}
+
+.wanted-assets {
+    height: 47%;
+    width: 100%;
+    padding: 10px 20px;
+    background-color: rgb(19, 26, 42);
+    border-radius: 20px;
+    border: .1px solid #0D111C;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.selected-assets {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 5px;
+}
+
+.selected-assets h4 {
+    margin: 5px auto;
+    padding-left: 5px;
+}
+
+.selected-asset {
+    border: .1px solid rgba(152, 161, 192, 0.24);
+    border-radius: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    width: 99%;
+    margin-bottom: 5px;
+
+}
+
+.selected-asset img {
+    width: 50px;
+    height: auto;
+}
+
+.wanted-erc721s .selected-asset img {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendora</title>
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dosis:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <script type="module" src="../dist/DefaultTokens.js" defer></script>
+    <script type="module" src="../dist/LocalStorage.js" defer></script>
+    <script type="module" src="../dist/FrontEndElements.js" defer></script>
+    <script type="module" src="../dist/DefaultTokenMenu.js" defer></script>
+    <script type="module" src="../dist/BuildTradeNavBar.js" defer></script>
+    <script type="module" src="../dist/ManageTradeList.js" defer></script>
+    <script type="module" src="../dist/TradeListMenu.js" defer></script>
+    <script type="module" src="../dist/Wallets.js" defer></script>
+    <script src="../dist/bundle.js" defer></script>
+
+
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Vendora</div>
+            <nav class="nav-bar">
+                <ul>
+                    <li class="build-trade-tab">Build Trade</li>
+                    <li class="trades-tab">Active Trades</li>
+                    <li class="find-trade-tab">Find Trade</li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="main-container">
+
+        <div class="trade-box build-box">
+            <div class="connect">Connect</div>
+
+            <div class="build-trade-links">
+                <div class="request-link">1. Request</div>
+                <div class="offer-link">2. Offer</div>
+                <div class="finalize-terms-link">3. Finalize Terms</div>
+            </div>
+
+            <div class="build-trade">
+                <div class="select-assets">
+                    <h2>Select Assets You Want</h2>
+
+                    <div class="token-standard-options">
+                        <button class="choose-erc721 toggleMenu" tabindex="0">NFTs</button>
+                        <button class="choose-erc20 toggleMenu" tabindex="0">Tokens</button>
+                        <button class="choose-erc1155 toggleMenu" tabindex="0">Resources</button>
+                        <button class="choose-eth toggleMenu" tabindex="0">Native Token</button>
+                    </div>
+                </div>
+
+                <div class="finalize-terms">
+                    <div class="offered-assets">
+                        <h2 class="offered-assets-title">GIVE</h2>
+                        <div class="offered-erc721s"></div>
+                        <div class="offered-erc20s"></div>
+                        <div class="offered-erc1155s"></div>
+                        <div class="offered-eth"></div>
+                    </div>
+
+                    <div class="requested-assets">
+                        <h2 class="requested-assets-title">RECIEVE</h2>
+                        <div class="requested-erc721s"></div>
+                        <div class="requested-erc20s"></div>
+                        <div class="requested-erc1155s"></div>
+                        <div class="requested-eth"></div>
+                    </div>
+
+                    <button class="set-terms">Connect to Add Trade</button>
+
+                </div>
+
+                <div class="asset-popups">
+                    <div class="toggle-fullscreen"><img
+                            src="./images/site-icons/icons8-expand-arrow-UP.png" alt=""></div>
+                    <div class="close-fullscreen"><img
+                            src="./images/site-icons/icons8-expand-arrow-48.png" alt="">
+                    </div>
+                    <div class="close-menu">Close</div>
+
+                    <div class="erc721-menu-popup menu">
+                        <span class="section-title">Erc-721s</span>
+                    </div>
+                    <div class="erc1155-menu-popup menu">
+                        <span class="section-title">Erc-1155s</span>
+                    </div>
+                    <div class="erc20-menu-popup menu">
+                        <span class="section-title">Erc-20s</span>
+                    </div>
+                    <div class="eth-menu-popup menu">
+                        <span class="section-title">Native Tokens</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="trade-box trades-box">
+            <div class="connect">Connect</div>
+
+            <div class="profile-links">
+                <h1 class="tab-title">Active Trades</h1>
+
+            </div>
+
+            <div class="profile">
+                <div class="active-trades">
+                    <div class="trades"></div>
+                </div>
+                <div class="finish-trade-container">
+                    <h2>Finish Trade</h2>
+                    <div class="back-to-trades">Back</div>
+                    <div class="finish-trade"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="trade-box find-box">
+            <div class="connect">Connect</div>
+
+            <div class="find-trade-title">
+                <h1 class="tab-title">Find Trades</h1>
+
+            </div>
+
+            <div class="profile">
+                <div class="find-trade-container">
+
+                    
+                    <div class="search-container">
+                        <input type="text" class="search-bar" placeholder="Enter address">
+                        <button class="search-button">Search</button>
+                    </div>
+                    <div class="active-trades2">
+                        <div class="trades2"></div>
+                    </div>
+                    <div class="finish-trade-container">
+                        <h2>Finish Trade</h2>
+                        <div class="back-to-trades">Back</div>
+                        <div class="finish-trade"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        </div>
+    </section>
+
+</body>
+
+</html>
