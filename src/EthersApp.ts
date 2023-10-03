@@ -515,26 +515,3 @@ searchButton.addEventListener(
   "click",
   async (): Promise<void> => await displaySearchedUserTradeList()
 );
-
-// const getTradeId = async (): Promise<string> => {
-//   if (metamaskExist()) {
-//     try {
-//       const provider = new ethers.BrowserProvider(window.ethereum);
-
-//       const contract = new ethers.Contract(
-//         VendoraContract.address,
-//         VendoraContract.abi,
-//         provider
-//       );
-
-//       await contract.on("Terms_Set", (tradeId: string) => {
-//         console.log(tradeId);
-//         return tradeId;
-//       });
-//     } catch (error) {
-//       console.error("Log trade id failed", error);
-//     }
-//   }
-//   return "";
-// };
-// getTradeId();
