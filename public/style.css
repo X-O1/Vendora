@@ -154,6 +154,7 @@ header {
 .active-trades,
 .active-trades2,
 .finish-trade-container,
+.finish-trade-container2,
 .find-trade-container {
     height: 47%;
     width: 100%;
@@ -561,12 +562,16 @@ header {
 .active-trades,
 .active-trades2,
 .finish-trade-container,
+.finish-trade-container2,
 .find-trade-container {
     height: 90%;
 }
 
+
 .active-trades h2,
-.finish-trade-container h2 {
+.finish-trade-container h2,
+.finish-trade-container2 h2
+ {
     text-align: center;
     margin-top: 10px;
     color: rgb(255, 255, 255);
@@ -574,13 +579,16 @@ header {
 
 .trades,
 .trades2,
-.finish-trade {
+.finish-trade,
+.finish-trade2
+ {
     display: flex;
     gap: 10px;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
 }
+
 
 .approve-seller-assets,
 .approve-buyer-assets,
@@ -641,13 +649,17 @@ header {
     opacity: 0;
 }
 
-.finish-trade-container {
+.finish-trade-container,
+.finish-trade-container2
+ {
     position: relative;
     display: none;
 }
 
 
-.back-to-trades {
+.back-to-trades,
+.back-to-trades2
+ {
     position: absolute;
     top: 2%;
     font-size: 14px;
@@ -709,5 +721,10 @@ header {
 
 .active-trades2 {
     padding: 10px 0px;
+    border: none;
+}
+
+.finish-trade-container2 {
+    padding: 0;
     border: none;
 }

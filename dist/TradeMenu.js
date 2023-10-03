@@ -1,4 +1,4 @@
-import { activeTradesDiv, backToTrade, finishTradeContainer, finishTradeDiv, } from "./FrontEndElements";
+import { activeTradesDiv, activeTradesDiv2, backToTrade, backToTrade2, finishTradeContainer, finishTradeContainer2, } from "./FrontEndElements";
 const createTradeMenuElements = (tradeId, div) => {
     try {
         const tradeDiv = document.createElement("div");
@@ -55,7 +55,7 @@ const createTradeMenuElements = (tradeId, div) => {
         return;
     }
 };
-const createTradeElements = () => {
+const createTradeElements = (div) => {
     try {
         const enterTradeButton = document.createElement("button");
         const approveSellerAssetsButton = document.createElement("button");
@@ -67,11 +67,11 @@ const createTradeElements = () => {
         approveBuyerAssetsButton.classList.add("approve-buyer-assets");
         depositButton.classList.add("deposit");
         cancelButton.classList.add("cancel-trade");
-        finishTradeDiv.appendChild(enterTradeButton);
-        finishTradeDiv.appendChild(approveSellerAssetsButton);
-        finishTradeDiv.appendChild(approveBuyerAssetsButton);
-        finishTradeDiv.appendChild(depositButton);
-        finishTradeDiv.appendChild(cancelButton);
+        div.appendChild(enterTradeButton);
+        div.appendChild(approveSellerAssetsButton);
+        div.appendChild(approveBuyerAssetsButton);
+        div.appendChild(depositButton);
+        div.appendChild(cancelButton);
         enterTradeButton.innerText = "Enter Trade";
         approveSellerAssetsButton.innerText = "Approve Seller Assets";
         approveBuyerAssetsButton.innerText = "Approve Buyer Assets";
@@ -108,12 +108,31 @@ const displayFinishTradePage = () => {
         console.log("Error displaying finish trade page", error);
     }
 };
+const displayActiveTradesPage2 = () => {
+    try {
+        activeTradesDiv2.style.display = "flex";
+        finishTradeContainer2.style.display = "none";
+    }
+    catch (error) {
+        console.log("Error displaying active trades page", error);
+    }
+};
+const displayFinishTradePage2 = () => {
+    try {
+        activeTradesDiv2.style.display = "none";
+        finishTradeContainer2.style.display = "flex";
+    }
+    catch (error) {
+        console.log("Error displaying finish trade page", error);
+    }
+};
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         backToTrade === null || backToTrade === void 0 ? void 0 : backToTrade.addEventListener("click", displayActiveTradesPage);
+        backToTrade2 === null || backToTrade2 === void 0 ? void 0 : backToTrade2.addEventListener("click", displayActiveTradesPage2);
     }
     catch (error) {
         console.error("Error loading functions on content loaded");
     }
 });
-export { createTradeMenuElements, createTradeElements, displayFinishTradePage, };
+export { createTradeMenuElements, createTradeElements, displayFinishTradePage, displayFinishTradePage2, };

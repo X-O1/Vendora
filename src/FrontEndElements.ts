@@ -124,6 +124,7 @@ const tradesDiv = document.querySelector(".trades") as HTMLDivElement;
 const finishTradeContainer = document.querySelector(
   ".finish-trade-container"
 ) as HTMLDivElement;
+
 const finishTradeDiv = document.querySelector(
   ".finish-trade"
 ) as HTMLDivElement;
@@ -155,6 +156,16 @@ const activeTradesDiv2 = document.querySelector(
   ".active-trades2"
 ) as HTMLDivElement;
 const tradesDiv2 = document.querySelector(".trades2") as HTMLDivElement;
+const finishTradeContainer2 = document.querySelector(
+  ".finish-trade-container2"
+) as HTMLDivElement;
+
+const finishTradeDiv2 = document.querySelector(
+  ".finish-trade2"
+) as HTMLDivElement;
+const backToTrade2 = document.querySelector(
+  ".back-to-trades2"
+) as HTMLDivElement;
 
 export {
   assetPopUpContainer,
@@ -221,4 +232,7 @@ export {
   findTradeContainer,
   activeTradesDiv2,
   tradesDiv2,
+  finishTradeContainer2,
+  finishTradeDiv2,
+  backToTrade2,
 };

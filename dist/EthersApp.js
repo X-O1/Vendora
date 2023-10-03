@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import { requestedErc721Details, requestedErc1155Details, requestedErc20Details, requestedEthDetails, offeredErc721Details, offeredErc1155Details, offeredErc20Details, offeredEthDetails, } from "./TermsAssetDetails";
-import { finishTradeDiv, searchBar, searchButton, setTermsButton, tradesDiv, tradesDiv2, } from "./FrontEndElements";
+import { finishTradeDiv, finishTradeDiv2, searchBar, searchButton, setTermsButton, tradesDiv, tradesDiv2, } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
-import { createTradeElements, createTradeMenuElements, displayFinishTradePage, } from "./TradeMenu";
+import { createTradeElements, createTradeMenuElements, displayFinishTradePage, displayFinishTradePage2, } from "./TradeMenu";
 const metamaskExist = () => {
     const metamaskExist = typeof window.ethereum !== "undefined";
     return metamaskExist;
@@ -214,8 +214,8 @@ const displaySearchedUserTradeList = async () => {
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
-                    _createTradeButtonsAndAddListeners(id);
-                    displayFinishTradePage();
+                    _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
+                    displayFinishTradePage2();
                 });
             });
         }
@@ -246,7 +246,7 @@ const displayCurrentUserTradeList = async () => {
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
-                    _createTradeButtonsAndAddListeners(id);
+                    _createTradeButtonsAndAddListeners(id, finishTradeDiv);
                     displayFinishTradePage();
                 });
             });
@@ -272,10 +272,11 @@ const refreshTradeList = async () => {
         }
     }
 };
-const _createTradeButtonsAndAddListeners = (tradeId) => {
+const _createTradeButtonsAndAddListeners = (tradeId, div) => {
     try {
         finishTradeDiv.innerHTML = "";
-        const tradeElements = createTradeElements();
+        finishTradeDiv2.innerHTML = "";
+        const tradeElements = createTradeElements(div);
         tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.enterTradeButton.addEventListener("click", () => enterTrade(tradeId));
         tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.approveSellerAssetsButton.addEventListener("click", () => approveSellerAssetsInTrade(tradeId));
         tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.approveBuyerAssetsButton.addEventListener("click", () => approveBuyerAssetsInTrade(tradeId));

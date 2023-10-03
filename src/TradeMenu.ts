@@ -1,8 +1,10 @@
 import {
   activeTradesDiv,
+  activeTradesDiv2,
   backToTrade,
+  backToTrade2,
   finishTradeContainer,
-  finishTradeDiv,
+  finishTradeContainer2,
 } from "./FrontEndElements";
 
 type TradeMenuElements = {
@@ -89,7 +91,9 @@ const createTradeMenuElements = (
   }
 };
 
-const createTradeElements = (): TradeElements | undefined => {
+const createTradeElements = (
+  div: HTMLDivElement
+): TradeElements | undefined => {
   try {
     const enterTradeButton: HTMLButtonElement =
       document.createElement("button");
@@ -106,11 +110,11 @@ const createTradeElements = (): TradeElements | undefined => {
     depositButton.classList.add("deposit");
     cancelButton.classList.add("cancel-trade");
 
-    finishTradeDiv.appendChild(enterTradeButton);
-    finishTradeDiv.appendChild(approveSellerAssetsButton);
-    finishTradeDiv.appendChild(approveBuyerAssetsButton);
-    finishTradeDiv.appendChild(depositButton);
-    finishTradeDiv.appendChild(cancelButton);
+    div.appendChild(enterTradeButton);
+    div.appendChild(approveSellerAssetsButton);
+    div.appendChild(approveBuyerAssetsButton);
+    div.appendChild(depositButton);
+    div.appendChild(cancelButton);
 
     enterTradeButton.innerText = "Enter Trade";
     approveSellerAssetsButton.innerText = "Approve Seller Assets";
@@ -148,9 +152,27 @@ const displayFinishTradePage = (): void => {
   }
 };
 
+const displayActiveTradesPage2 = (): void => {
+  try {
+    activeTradesDiv2.style.display = "flex";
+    finishTradeContainer2.style.display = "none";
+  } catch (error) {
+    console.log("Error displaying active trades page", error);
+  }
+};
+const displayFinishTradePage2 = (): void => {
+  try {
+    activeTradesDiv2.style.display = "none";
+    finishTradeContainer2.style.display = "flex";
+  } catch (error) {
+    console.log("Error displaying finish trade page", error);
+  }
+};
+
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
   try {
     backToTrade?.addEventListener("click", displayActiveTradesPage);
+    backToTrade2?.addEventListener("click", displayActiveTradesPage2);
   } catch (error) {
     console.error("Error loading functions on content loaded");
   }
@@ -161,4 +183,5 @@ export {
   TradeMenuElements,
   TradeElements,
   displayFinishTradePage,
+  displayFinishTradePage2,
 };

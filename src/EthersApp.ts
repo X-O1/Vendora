@@ -14,6 +14,7 @@ import {
 } from "./TermsAssetDetails";
 import {
   finishTradeDiv,
+  finishTradeDiv2,
   searchBar,
   searchButton,
   setTermsButton,
@@ -26,6 +27,7 @@ import {
   createTradeElements,
   createTradeMenuElements,
   displayFinishTradePage,
+  displayFinishTradePage2,
 } from "./TradeMenu";
 
 type Terms = {
@@ -359,8 +361,8 @@ const displaySearchedUserTradeList = async (): Promise<void> => {
         const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
-          _createTradeButtonsAndAddListeners(id);
-          displayFinishTradePage();
+          _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
+          displayFinishTradePage2();
         });
       });
     } catch (error) {
@@ -397,7 +399,7 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
         const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
-          _createTradeButtonsAndAddListeners(id);
+          _createTradeButtonsAndAddListeners(id, finishTradeDiv);
           displayFinishTradePage();
         });
       });
@@ -426,10 +428,14 @@ const refreshTradeList = async (): Promise<void> => {
   }
 };
 
-const _createTradeButtonsAndAddListeners = (tradeId: string): void => {
+const _createTradeButtonsAndAddListeners = (
+  tradeId: string,
+  div: HTMLDivElement
+): void => {
   try {
     finishTradeDiv.innerHTML = "";
-    const tradeElements = createTradeElements();
+    finishTradeDiv2.innerHTML = "";
+    const tradeElements = createTradeElements(div);
 
     tradeElements?.enterTradeButton.addEventListener(
       "click",

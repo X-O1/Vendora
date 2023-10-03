@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3",
     "ethers": "^6.7.1"
   },
   "scripts": {
