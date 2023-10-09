@@ -170,6 +170,50 @@ const searchContainer = document.querySelector(
   ".search-container"
 ) as HTMLDivElement;
 
+const requestedAssetsPreview = document.querySelector(
+  ".requested-assets-preview"
+) as HTMLDivElement;
+const requestedAssetsH2Preview = document.querySelector(
+  ".requested-assets-title-preview"
+) as HTMLElement;
+const requestedErc721sDivPreview = document.querySelectorAll(
+  ".requested-erc721s-preview"
+) as NodeListOf<HTMLDivElement>;
+const requestedErc1155sDivPreview = document.querySelectorAll(
+  ".requested-erc1155s-preview"
+) as NodeListOf<HTMLDivElement>;
+const requestedErc20sDivPreview = document.querySelectorAll(
+  ".requested-erc20s-preview"
+) as NodeListOf<HTMLDivElement>;
+const requestedEthDivPreview = document.querySelectorAll(
+  ".requested-eth-preview"
+) as NodeListOf<HTMLDivElement>;
+
+const offeredAssetsPreview = document.querySelectorAll(
+  ".offered-assets-preview"
+) as NodeListOf<HTMLDivElement>;
+const offeredAssetsH2Preview = document.querySelector(
+  ".requested-assets-title-preview"
+) as HTMLElement;
+const offeredErc721sDivPreview = document.querySelectorAll(
+  ".offered-erc721s-preview"
+) as NodeListOf<HTMLDivElement>;
+const offeredErc1155sDivPreview = document.querySelectorAll(
+  ".offered-erc1155s-preview"
+) as NodeListOf<HTMLDivElement>;
+const offeredErc20sDivPreview = document.querySelectorAll(
+  ".offered-erc20s-preview"
+) as NodeListOf<HTMLDivElement>;
+const offeredEthDivPreview = document.querySelectorAll(
+  ".offered-eth-preview"
+) as NodeListOf<HTMLDivElement>;
+const offeredAssetsTitlePreview = document.querySelectorAll(
+  ".offered-assets-title-preview"
+) as NodeListOf<HTMLDivElement>;
+const requestedAssetsTitlePreview = document.querySelectorAll(
+  ".requested-assets-title-preview"
+) as NodeListOf<HTMLDivElement>;
+
 export {
   assetPopUpContainer,
   erc721MenuToggle,
@@ -239,4 +283,18 @@ export {
   finishTradeDiv2,
   backToTrade2,
   searchContainer,
+  requestedAssetsPreview,
+  requestedAssetsH2Preview,
+  requestedErc721sDivPreview,
+  requestedErc1155sDivPreview,
+  requestedErc20sDivPreview,
+  requestedEthDivPreview,
+  offeredAssetsPreview,
+  offeredAssetsH2Preview,
+  offeredErc721sDivPreview,
+  offeredErc1155sDivPreview,
+  offeredErc20sDivPreview,
+  offeredEthDivPreview,
+  offeredAssetsTitlePreview,
+  requestedAssetsTitlePreview,
 };

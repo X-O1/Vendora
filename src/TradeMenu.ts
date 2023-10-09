@@ -27,8 +27,8 @@ type TradeElements = {
   approveBuyerAssetsButton: HTMLButtonElement;
   depositButton: HTMLButtonElement;
   cancelButton: HTMLButtonElement;
+  deleteTradeButton: HTMLButtonElement;
 };
-
 const createTradeMenuElements = (
   tradeId: string,
   div: HTMLDivElement /** tradeName: string,  imgSrc1: string, imgSrc2: string, imgSrc3: string, imgSrc4: string */
@@ -104,24 +104,29 @@ const createTradeElements = (
       document.createElement("button");
     const depositButton: HTMLButtonElement = document.createElement("button");
     const cancelButton: HTMLButtonElement = document.createElement("button");
+    const deleteTradeButton: HTMLButtonElement =
+      document.createElement("button");
 
     enterTradeButton.classList.add("enter-trade");
     approveSellerAssetsButton.classList.add("approve-seller-assets");
     approveBuyerAssetsButton.classList.add("approve-buyer-assets");
     depositButton.classList.add("deposit");
     cancelButton.classList.add("cancel-trade");
+    deleteTradeButton.classList.add("delete-trade");
 
     div.appendChild(enterTradeButton);
     div.appendChild(approveSellerAssetsButton);
     div.appendChild(approveBuyerAssetsButton);
     div.appendChild(depositButton);
     div.appendChild(cancelButton);
+    div.appendChild(deleteTradeButton);
 
     enterTradeButton.innerText = "Enter Trade";
     approveSellerAssetsButton.innerText = "Approve Seller Assets";
     approveBuyerAssetsButton.innerText = "Approve Buyer Assets";
     depositButton.innerText = "Deposit";
     cancelButton.innerText = "Cancel and Withdraw";
+    deleteTradeButton.innerText = "Delete Trade";
 
     return {
       enterTradeButton,
@@ -129,6 +134,7 @@ const createTradeElements = (
       approveBuyerAssetsButton,
       depositButton,
       cancelButton,
+      deleteTradeButton,
     };
   } catch (error) {
     console.error("Error creating trade elements", error);
@@ -173,8 +179,12 @@ const displayFinishTradePage2 = (): void => {
 
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
   try {
-    backToTrade?.addEventListener("click", displayActiveTradesPage);
-    backToTrade2?.addEventListener("click", displayActiveTradesPage2);
+    backToTrade?.addEventListener("click", (): void => {
+      displayActiveTradesPage();
+    });
+    backToTrade2?.addEventListener("click", (): void => {
+      displayActiveTradesPage2();
+    });
   } catch (error) {
     console.error("Error loading functions on content loaded");
   }
@@ -187,4 +197,5 @@ export {
   TradeElements,
   displayFinishTradePage,
   displayFinishTradePage2,
+  displayActiveTradesPage,
 };

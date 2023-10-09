@@ -1,34 +1,24 @@
 import { TokenOption } from "./DefaultTokens";
 
-const setTokenDetailsInLocalStorage = async (
-  key: string,
-  value: TokenOption[]
-) => {
+const setTokenDetailsInLocalStorage = (key: string, value: TokenOption[]) => {
   try {
-    const finalValue = value.map((token) => ({
-      ...token,
-      amount: token.amount ? token.amount.toString() : undefined,
-    }));
-    localStorage.setItem(key, JSON.stringify(finalValue));
+    const serializedValue = JSON.stringify(value);
+    localStorage.setItem(key, serializedValue);
   } catch (error) {
     console.error("Error setting token details in local storage", error);
   }
 };
 
-const getTokenDetailsInLocalStorage = (key: string): TokenOption[] | null => {
-  const value = localStorage.getItem(key);
-  if (!value) return null;
-
+const getTokenDetailsInLocalStorage = async (
+  key: string
+): Promise<TokenOption[]> => {
   try {
-    const parsedValue: TokenOption[] = JSON.parse(value);
+    const storedValue = await JSON.parse(localStorage.getItem(key) || "[]");
 
-    return parsedValue.map((token) => ({
-      ...token,
-      amount: token.amount ? BigInt(token.amount) : undefined,
-    }));
+    return storedValue;
   } catch (error) {
     console.error("Error getting token details from local storage", error);
-    return null;
+    return [];
   }
 };
 
@@ -36,22 +26,30 @@ const deleteStorageItem = (key: string): void => {
   localStorage.removeItem(key);
 };
 
-const requestedErc721s: TokenOption[] =
-  getTokenDetailsInLocalStorage("requestedErc721s") || [];
-const requestedErc1155s: TokenOption[] =
-  getTokenDetailsInLocalStorage("requestedErc1155s") || [];
-const requestedErc20s: TokenOption[] =
-  getTokenDetailsInLocalStorage("requestedErc20s") || [];
-const requestedEth: TokenOption[] =
-  getTokenDetailsInLocalStorage("requestedEth") || [];
-const offeredErc721s: TokenOption[] =
-  getTokenDetailsInLocalStorage("offeredErc721s") || [];
-const offeredErc1155s: TokenOption[] =
-  getTokenDetailsInLocalStorage("offeredErc1155s") || [];
-const offeredErc20s: TokenOption[] =
-  getTokenDetailsInLocalStorage("offeredErc20s") || [];
-const offeredEth: TokenOption[] =
-  getTokenDetailsInLocalStorage("offeredEth") || [];
+const requestedErc721s: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "requestedErc721s"
+);
+const requestedErc1155s: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "requestedErc1155s"
+);
+const requestedErc20s: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "requestedErc20s"
+);
+const requestedEth: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "requestedEth"
+);
+const offeredErc721s: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "offeredErc721s"
+);
+const offeredErc1155s: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "offeredErc1155s"
+);
+const offeredErc20s: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "offeredErc20s"
+);
+const offeredEth: TokenOption[] = await getTokenDetailsInLocalStorage(
+  "offeredEth"
+);
 
 export {
   setTokenDetailsInLocalStorage,

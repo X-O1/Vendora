@@ -18,8 +18,8 @@ const addNftToTradeList = (key, tradeList, menuElements) => {
                 name: menuElements.tokenName.innerText,
                 symbol: menuElements.tokenSymbol.innerText,
                 address: menuElements.tokenAddress.innerText,
-                tokenId: BigInt(menuElements.tokenId.value),
-                amount: BigInt(menuElements.tokenAmount.value),
+                tokenId: Number(menuElements.tokenId.value),
+                amount: Number(menuElements.tokenAmount.value),
             });
             setTokenDetailsInLocalStorage(key, tradeList);
             menuElements.tokenId.value = "";
@@ -40,7 +40,7 @@ const addEthOrErc20ToTradeList = (key, tradeList, menuElements) => {
                 name: menuElements.tokenName.innerText,
                 symbol: menuElements.tokenSymbol.innerText,
                 address: menuElements.tokenAddress.innerText,
-                amount: BigInt(menuElements.tokenAmount.value),
+                amount: Number(menuElements.tokenAmount.value),
             });
             setTokenDetailsInLocalStorage(key, tradeList);
             menuElements.tokenAmount.value = "";

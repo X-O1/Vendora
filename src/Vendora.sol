@@ -118,11 +118,16 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         emit Terms_Set(tradeId, terms.seller);
     }
 
-    function deleteTermsFromProfile(bytes32 tradeId) public {
-        require(msg.sender == trades[tradeId].seller, "Seller only");
-        require(trades[tradeId].termsFinalized == false, "Buyer entered");
-
+    function deleteTrade(bytes32 tradeId) public {
+        Terms storage terms = trades[tradeId];
         bytes32[] storage profile = usersActiveTrades[msg.sender];
+
+        require(msg.sender == terms.seller, "Seller only");
+        require(terms.termsFinalized == false, "Trade started");
+        require(terms.buyer == address(0), "Buyer entered");
+
+        delete trades[tradeId];
+
         for (uint256 i = 0; i < profile.length; i++) {
             if (profile[i] == tradeId) {
                 if (i != profile.length - 1) {
@@ -137,7 +142,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         }
     }
 
-    function startTrade(bytes32 tradeId) external {
+    function enterTrade(bytes32 tradeId) external {
         Terms storage terms = trades[tradeId];
         require(terms.seller != address(0), "Trade doesnt exist");
         require(msg.sender != terms.seller, "Buyer only");

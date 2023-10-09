@@ -1,18 +1,20 @@
-import { requestedErc721s, requestedErc1155s, requestedErc20s, requestedEth, offeredErc721s, offeredErc1155s, offeredErc20s, offeredEth, } from "./LocalStorage";
-const getErc721TransferDetails = () => {
+import { getTokenDetailsInLocalStorage } from "./LocalStorage";
+const getErc721TransferDetails = async () => {
     try {
+        const requestedErc721s = await getTokenDetailsInLocalStorage("requestedErc721s");
         const requestedInfo = [];
         requestedErc721s.forEach((token) => {
             requestedInfo.push({
                 erc721Address: token.address,
-                tokenId: token.tokenId ? token.tokenId : undefined,
+                tokenId: token.tokenId,
             });
         });
+        const offeredErc721s = await getTokenDetailsInLocalStorage("offeredErc721s");
         const offeredInfo = [];
         offeredErc721s.forEach((token) => {
             offeredInfo.push({
                 erc721Address: token.address,
-                tokenId: token.tokenId ? token.tokenId : undefined,
+                tokenId: token.tokenId,
             });
         });
         return { requested: requestedInfo, offered: offeredInfo };
@@ -22,22 +24,24 @@ const getErc721TransferDetails = () => {
         return { requested: [], offered: [] };
     }
 };
-const getErc1155TransferDetails = () => {
+const getErc1155TransferDetails = async () => {
     try {
+        const requestedErc1155s = await getTokenDetailsInLocalStorage("requestedErc1155s");
         const requestedInfo = [];
         requestedErc1155s.forEach((token) => {
             requestedInfo.push({
                 erc1155Address: token.address,
-                tokenId: token.tokenId ? token.tokenId : undefined,
-                amount: token.amount ? token.amount : undefined,
+                tokenId: token.tokenId,
+                amount: token.amount,
             });
         });
+        const offeredErc1155s = await getTokenDetailsInLocalStorage("offeredErc1155s");
         const offeredInfo = [];
         offeredErc1155s.forEach((token) => {
             offeredInfo.push({
                 erc1155Address: token.address,
-                tokenId: token.tokenId ? token.tokenId : undefined,
-                amount: token.amount ? token.amount : undefined,
+                tokenId: token.tokenId,
+                amount: token.amount,
             });
         });
         return { requested: requestedInfo, offered: offeredInfo };
@@ -47,20 +51,22 @@ const getErc1155TransferDetails = () => {
         return { requested: [], offered: [] };
     }
 };
-const getErc20TransferDetails = () => {
+const getErc20TransferDetails = async () => {
     try {
+        const requestedErc20s = await getTokenDetailsInLocalStorage("requestedErc20s");
         const requestedInfo = [];
         requestedErc20s.forEach((token) => {
             requestedInfo.push({
                 erc20Address: token.address,
-                amount: token.amount ? BigInt(token.amount) : undefined,
+                amount: token.amount,
             });
         });
+        const offeredErc20s = await getTokenDetailsInLocalStorage("offeredErc20s");
         const offeredInfo = [];
         offeredErc20s.forEach((token) => {
             offeredInfo.push({
                 erc20Address: token.address,
-                amount: token.amount ? BigInt(token.amount) : undefined,
+                amount: token.amount,
             });
         });
         return { requested: requestedInfo, offered: offeredInfo };
@@ -70,27 +76,17 @@ const getErc20TransferDetails = () => {
         return { requested: [], offered: [] };
     }
 };
-const getEthTransferDetails = () => {
+const getEthTransferDetails = async () => {
     try {
-        const requestedInfo = requestedEth[0] && requestedEth[0].amount
-            ? requestedEth[0].amount
-            : BigInt("0");
-        const offeredInfo = offeredEth[0] && offeredEth[0].amount
-            ? offeredEth[0].amount
-            : BigInt("0");
+        const requestedEth = await getTokenDetailsInLocalStorage("requestedEth");
+        const requestedInfo = requestedEth[0] && requestedEth[0].amount ? requestedEth[0].amount : 0;
+        const offeredEth = await getTokenDetailsInLocalStorage("offeredEth");
+        const offeredInfo = offeredEth[0] && offeredEth[0].amount ? offeredEth[0].amount : 0;
         return { requested: requestedInfo, offered: offeredInfo };
     }
     catch (error) {
         console.error("Failed to get Eth transfer info", error);
-        return { requested: BigInt("0"), offered: BigInt("0") };
+        return { requested: 0, offered: 0 };
     }
 };
-const requestedErc721Details = getErc721TransferDetails().requested;
-const requestedErc1155Details = getErc1155TransferDetails().requested;
-const requestedErc20Details = getErc20TransferDetails().requested;
-const requestedEthDetails = getEthTransferDetails().requested;
-const offeredErc721Details = getErc721TransferDetails().offered;
-const offeredErc1155Details = getErc1155TransferDetails().offered;
-const offeredErc20Details = getErc20TransferDetails().offered;
-const offeredEthDetails = getEthTransferDetails().offered;
-export { getErc721TransferDetails, getErc1155TransferDetails, getErc20TransferDetails, getEthTransferDetails, requestedErc721Details, requestedErc1155Details, requestedErc20Details, requestedEthDetails, offeredErc721Details, offeredErc1155Details, offeredErc20Details, offeredEthDetails, };
+export { getErc721TransferDetails, getErc1155TransferDetails, getErc20TransferDetails, getEthTransferDetails, };

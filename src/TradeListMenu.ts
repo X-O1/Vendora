@@ -1,4 +1,4 @@
-import { TokenOption } from "./DefaultTokens";
+import { TokenOption } from "./DefaultTokens.js";
 import {
   offeredErc1155sDiv,
   offeredErc20sDiv,
@@ -36,6 +36,7 @@ type CommonTradeListElements = {
   termAssetAddress: HTMLDivElement;
   deleteAssetButton: HTMLButtonElement;
 };
+
 const createCommonTradeListELements = (
   token: TokenOption
 ): CommonTradeListElements => {

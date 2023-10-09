@@ -288,7 +288,10 @@ header {
 .requested-assets::-webkit-scrollbar,
 .offered-assets::-webkit-scrollbar,
 .trades::-webkit-scrollbar,
-.trades2::-webkit-scrollbar {
+.trades2::-webkit-scrollbar,
+.finish-trade::-webkit-scrollbar,
+.offered-assets-preview::-webkit-scrollbar,
+.requested-assets-preview::-webkit-scrollbar {
     display: none;
 }
 
@@ -298,7 +301,10 @@ header {
 .requested-assets,
 .offered-assets,
 .trades,
-.trades2 {
+.trades2,
+.finish-trade,
+.offered-assets-preview,
+.requested-assets-preview{
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
@@ -323,7 +329,8 @@ header {
 
 
 .token-logo,
-.term-asset-image {
+.term-asset-image,
+.term-asset-image-preview {
     width: 50px;
     height: 50px;
     border-radius: 100px;
@@ -352,7 +359,6 @@ header {
 .erc1155-menu-popup .option-order-details {
     gap: 0px;
 }
-
 
 .offer-erc721-button,
 .offer-erc1155-button,
@@ -428,7 +434,9 @@ header {
 }
 
 .requested-assets,
-.offered-assets {
+.offered-assets,
+.requested-assets-preview,
+.offered-assets-preview {
     height: 47%;
     width: 100%;
     padding: 10px 20px;
@@ -449,7 +457,8 @@ header {
 
 }
 
-.selected-term-asset {
+.selected-term-asset,
+.selected-term-asset-preview {
     border-radius: 10px;
     padding: 15px 20px;
     box-sizing: border-box;
@@ -483,7 +492,13 @@ header {
 .requested-erc20s,
 .offered-erc721s,
 .offered-erc1155s,
-.offered-erc20s {
+.offered-erc20s,
+.requested-erc721s-preview,
+.requested-erc1155s-preview,
+.requested-erc20s-preview,
+.offered-erc721s-preview,
+.offered-erc1155s-preview,
+.offered-erc20s-preview {
     display: none;
 }
 
@@ -493,7 +508,9 @@ header {
 }
 
 .requested-assets,
-.offered-assets {
+.offered-assets,
+.requested-assets-preview,
+.offered-assets-preview {
     background-color: rgb(19, 26, 42);
     border-radius: 20px;
     height: 100%;
@@ -506,8 +523,14 @@ header {
 }
 
 .requested-assets-title,
-.offered-assets-title {
-    margin-bottom: 10px !important;
+.offered-assets-title
+ {
+    margin-bottom: 10px;
+}
+
+.requested-assets-title-preview,
+.offered-assets-title-preview {
+    margin-bottom: 0px;
 }
 
 .term-asset-tokenId-title,
@@ -520,8 +543,9 @@ header {
 .approve-buyer-assets,
 .deposit,
 .enter-trade,
-.cancel-trade {
-    padding: 20px 24px;
+.cancel-trade,
+.delete-trade {
+    padding: 15px;
     width: 100%;
     font-size: 19px;
     font-weight: 700;
@@ -540,7 +564,8 @@ header {
     color: #4575E4;
 }
 
-.term-asset-address {
+.term-asset-address,
+.term-asset-address-preview {
     position: absolute;
     font-size: 15px;
     display: none;
@@ -592,7 +617,8 @@ header {
 .approve-buyer-assets,
 .deposit,
 .enter-trade,
-.cancel-trade {
+.cancel-trade,
+.delete-trade {
     display: block;
 }
 
@@ -663,7 +689,7 @@ header {
 }
 
 .trades-box,
-.find-box{
+.find-box {
     display: none;
 }
 
@@ -719,4 +745,27 @@ header {
 .finish-trade-container2 {
     padding: 0;
     border: none;
+}
+
+.trade-preview {
+    display: flex;
+    flex-direction: column;
+    height: 85%;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.offered-assets-preview,
+.requested-assets-preview {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0px;
+    border: none;
+    border-radius: 0px;
+}
+
+.finish-trade {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 15%;
 }

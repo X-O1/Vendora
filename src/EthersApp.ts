@@ -1,18 +1,15 @@
 import { ethers } from "ethers";
 import {
-  requestedErc721Details,
-  requestedErc1155Details,
-  requestedErc20Details,
-  requestedEthDetails,
-  offeredErc721Details,
-  offeredErc1155Details,
-  offeredErc20Details,
-  offeredEthDetails,
   Erc721TransferDetails,
   Erc20TransferDetails,
   Erc1155TransferDetails,
+  getErc721TransferDetails,
+  getErc1155TransferDetails,
+  getErc20TransferDetails,
+  getEthTransferDetails,
 } from "./TermsAssetDetails";
 import {
+  // activeTradesDiv,
   finishTradeDiv,
   finishTradeDiv2,
   searchBar,
@@ -21,15 +18,35 @@ import {
   setTermsButton,
   tradesDiv,
   tradesDiv2,
+  tradesTab,
 } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
 import {
   createTradeElements,
   createTradeMenuElements,
+  displayActiveTradesPage,
   displayFinishTradePage,
   displayFinishTradePage2,
 } from "./TradeMenu";
-// import { defaultErc721s } from "./DefaultTokens";
+import {
+  TokenPreview,
+  TradePreview,
+  _createOfferedErc1155PreviewMenu,
+  _createOfferedErc20PreviewMenu,
+  _createOfferedErc721PreviewMenu,
+  _createOfferedEthPreviewMenu,
+  _createRequestedErc1155PreviewMenu,
+  _createRequestedErc20PreviewMenu,
+  _createRequestedErc721PreviewMenu,
+  _createRequestedEthPreviewMenu,
+} from "./TradePreview";
+import {
+  TokenOption,
+  defaultErc1155s,
+  defaultErc20s,
+  defaultErc721s,
+  defaultNativeTokens,
+} from "./DefaultTokens";
 
 type Terms = {
   offeredErc721s: Erc721TransferDetails[];
@@ -38,8 +55,8 @@ type Terms = {
   requestedErc1155s: Erc1155TransferDetails[];
   offeredErc20s: Erc20TransferDetails[];
   requestedErc20s: Erc20TransferDetails[];
-  offeredEth: BigInt;
-  requestedEth: BigInt;
+  offeredEth: number;
+  requestedEth: number;
 };
 
 const metamaskExist = (): boolean => {
@@ -58,16 +75,35 @@ const addTrade = async (): Promise<void> => {
         signer
       );
 
-      await contract.setTerms(
-        offeredErc721Details,
-        requestedErc721Details,
-        offeredErc1155Details,
-        requestedErc1155Details,
-        offeredErc20Details,
-        requestedErc20Details,
-        offeredEthDetails,
-        requestedEthDetails
+      const tx = await contract.setTerms(
+        (
+          await getErc721TransferDetails()
+        ).offered,
+        (
+          await getErc721TransferDetails()
+        ).requested,
+        (
+          await getErc1155TransferDetails()
+        ).offered,
+        (
+          await getErc1155TransferDetails()
+        ).requested,
+        (
+          await getErc20TransferDetails()
+        ).offered,
+        (
+          await getErc20TransferDetails()
+        ).requested,
+        (
+          await getEthTransferDetails()
+        ).offered,
+        (
+          await getEthTransferDetails()
+        ).requested
       );
+      await tx.wait();
+
+      localStorage.clear();
     } catch (error) {
       console.error("Failed to add trade", error);
     }
@@ -113,11 +149,30 @@ const cancelAndWithdraw = async (tradeId: string): Promise<void> => {
   }
 };
 
+const deleteTrade = async (tradeId: string): Promise<void> => {
+  if (metamaskExist()) {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer: ethers.JsonRpcSigner = await provider.getSigner();
+      const contract: ethers.Contract = new ethers.Contract(
+        VendoraContract.address,
+        VendoraContract.abi,
+        signer
+      );
+
+      const tx = await contract.deleteTermsFromProfile(tradeId);
+      await tx.wait();
+    } catch (error) {
+      console.error("Error deleting trade", tradeId, error);
+    }
+  }
+};
+
 const _approveAssets = async (
   tokenAddress: string,
   contractAddress: string,
-  tokenId?: bigint,
-  amount?: bigint
+  tokenId?: number,
+  amount?: number
 ): Promise<void> => {
   if (metamaskExist()) {
     // Approve ERC20
@@ -363,6 +418,7 @@ const displaySearchedUserTradeList = async (): Promise<void> => {
           searchContainer.style.display = "none";
           _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
           displayFinishTradePage2();
+          displayTradePreview(id);
         });
       });
     } catch (error) {
@@ -394,6 +450,7 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
   if (metamaskExist()) {
     try {
       const tradeIds: string[] = await _getAllUserTradeIds();
+      tradesDiv.innerHTML = "";
 
       tradeIds?.forEach((id: string): void => {
         const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
@@ -401,6 +458,7 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
           _createTradeButtonsAndAddListeners(id, finishTradeDiv);
           displayFinishTradePage();
+          displayTradePreview(id);
         });
       });
     } catch (error) {
@@ -439,27 +497,36 @@ const _createTradeButtonsAndAddListeners = (
 
     tradeElements?.enterTradeButton.addEventListener(
       "click",
-      (): Promise<void> => enterTrade(tradeId)
+      async (): Promise<void> => await enterTrade(tradeId)
     );
 
     tradeElements?.approveSellerAssetsButton.addEventListener(
       "click",
-      (): Promise<void> => approveSellerAssetsInTrade(tradeId)
+      async (): Promise<void> => await approveSellerAssetsInTrade(tradeId)
     );
 
     tradeElements?.approveBuyerAssetsButton.addEventListener(
       "click",
-      (): Promise<void> => approveBuyerAssetsInTrade(tradeId)
+      async (): Promise<void> => await approveBuyerAssetsInTrade(tradeId)
     );
 
     tradeElements?.depositButton.addEventListener(
       "click",
-      (): Promise<void> => depositAssets(tradeId)
+      async (): Promise<void> => await depositAssets(tradeId)
     );
 
     tradeElements?.cancelButton.addEventListener(
       "click",
-      (): Promise<void> => cancelAndWithdraw(tradeId)
+      async (): Promise<void> => await cancelAndWithdraw(tradeId)
+    );
+
+    tradeElements?.deleteTradeButton.addEventListener(
+      "click",
+      async (): Promise<void> => {
+        await deleteTrade(tradeId);
+        displayActiveTradesPage();
+        await displayCurrentUserTradeList();
+      }
     );
   } catch (error) {
     console.error("Error creating event listeners for trade buttons", error);
@@ -504,28 +571,204 @@ const _getTerms = async (tradeId: string): Promise<any> => {
   }
 };
 
-// const tradePreview = async (tradeId: string, imgSrc: string): Promise<void> => {
-//   if (metamaskExist()) {
-//     try {
-//       const terms = _getTerms(tradeId);
+const _tradePreview = async (
+  tradeId: string
+): Promise<
+  | {
+      offeredErc721s: TokenPreview[];
+      requestedErc721s: TokenPreview[];
+      offeredErc1155s: TokenPreview[];
+      requestedErc1155s: TokenPreview[];
+      offeredErc20s: TokenPreview[];
+      requestedErc20s: TokenPreview[];
+      offeredEth: TokenPreview[];
+      requestedEth: TokenPreview[];
+    }
+  | undefined
+> => {
+  if (metamaskExist()) {
+    try {
+      const preview: TradePreview = {
+        offeredErc721s: [],
+        requestedErc721s: [],
+        offeredErc1155s: [],
+        requestedErc1155s: [],
+        offeredErc20s: [],
+        requestedErc20s: [],
+        offeredEth: [],
+        requestedEth: [],
+      };
 
-//       for (let i: number = 0; i < defaultErc721s.length; i++) {
-//         for (let j: number = 0; j < terms[; j++) {
-//           terms[j].
-//         }
-//         defaultErc721s[i].
-//       }
-//     } catch (error) {
-//       console.error("Error getting trade preview", error);
-//     }
-//   }
-// };
+      const terms: Terms = await _getTerms(tradeId);
+
+      if (terms?.offeredErc721s && terms.offeredErc721s.length > 0) {
+        terms.offeredErc721s.forEach((asset: Erc721TransferDetails) => {
+          defaultErc721s.forEach((defaultToken: TokenOption) => {
+            if (defaultToken.address === asset.erc721Address) {
+              preview.offeredErc721s.push({
+                address: asset.erc721Address,
+                tokenId: asset.tokenId,
+                name: defaultToken.name,
+                symbol: defaultToken.symbol,
+                logoURI: defaultToken.logoURI,
+              });
+            }
+          });
+        });
+      }
+
+      if (terms?.requestedErc721s && terms.requestedErc721s.length > 0) {
+        terms?.requestedErc721s.forEach((asset: Erc721TransferDetails) => {
+          defaultErc721s.forEach((defaultToken: TokenOption) => {
+            if (defaultToken.address === asset.erc721Address) {
+              preview.requestedErc721s.push({
+                address: asset.erc721Address,
+                tokenId: asset.tokenId,
+                logoURI: defaultToken.logoURI,
+                name: defaultToken.name,
+                symbol: defaultToken.symbol,
+              });
+            }
+          });
+        });
+      }
+
+      if (terms?.offeredErc1155s && terms.offeredErc1155s.length > 0) {
+        terms.offeredErc1155s.forEach((asset: Erc1155TransferDetails) => {
+          defaultErc1155s.forEach((defaultToken: TokenOption) => {
+            if (defaultToken.address === asset.erc1155Address) {
+              preview.offeredErc1155s.push({
+                address: asset.erc1155Address,
+                tokenId: asset.tokenId,
+                amount: asset.amount,
+                logoURI: defaultToken.logoURI,
+                name: defaultToken.name,
+                symbol: defaultToken.symbol,
+              });
+            }
+          });
+        });
+      }
+
+      if (terms?.requestedErc1155s && terms.requestedErc1155s.length > 0) {
+        terms?.requestedErc1155s.forEach((asset: Erc1155TransferDetails) => {
+          defaultErc1155s.forEach((defaultToken: TokenOption) => {
+            if (defaultToken.address === asset.erc1155Address) {
+              preview.requestedErc1155s.push({
+                address: asset.erc1155Address,
+                tokenId: asset.tokenId,
+                amount: asset.amount,
+                logoURI: defaultToken.logoURI,
+                name: defaultToken.name,
+                symbol: defaultToken.symbol,
+              });
+            }
+          });
+        });
+      }
+
+      // For offeredErc20s
+      if (terms?.offeredErc20s && terms.offeredErc20s.length > 0) {
+        terms.offeredErc20s.forEach((asset: Erc20TransferDetails) => {
+          defaultErc20s.forEach((defaultToken: TokenOption) => {
+            if (defaultToken.address === asset.erc20Address) {
+              preview.offeredErc20s.push({
+                address: asset.erc20Address,
+                name: defaultToken.name,
+                symbol: defaultToken.symbol,
+                logoURI: defaultToken.logoURI,
+                amount: asset.amount,
+              });
+            }
+          });
+        });
+      }
+
+      // For requestedErc20s
+      if (terms?.requestedErc20s && terms.requestedErc20s.length > 0) {
+        terms?.requestedErc20s.forEach((asset: Erc20TransferDetails) => {
+          defaultErc20s.forEach((defaultToken: TokenOption) => {
+            if (defaultToken.address === asset.erc20Address) {
+              preview.requestedErc20s.push({
+                address: asset.erc20Address,
+                name: defaultToken.name,
+                symbol: defaultToken.symbol,
+                logoURI: defaultToken.logoURI,
+                amount: asset.amount,
+              });
+            }
+          });
+        });
+      }
+
+      if (terms?.offeredEth) {
+        defaultNativeTokens.forEach((nativeCurrency: TokenOption) => {
+          preview.offeredEth.push({
+            name: nativeCurrency.name,
+            symbol: nativeCurrency.symbol,
+            logoURI: nativeCurrency.logoURI,
+            amount: terms.offeredEth,
+          });
+        });
+      }
+
+      // For requestedEth
+      if (terms?.requestedEth) {
+        defaultNativeTokens.forEach((nativeCurrency: TokenOption) => {
+          preview.requestedEth.push({
+            name: nativeCurrency.name,
+            symbol: nativeCurrency.symbol,
+            logoURI: nativeCurrency.logoURI,
+            amount: terms.requestedEth,
+          });
+        });
+      }
+
+      return preview;
+    } catch (error) {
+      console.error("Error getting trade preview", error);
+    }
+  }
+  return;
+};
+
+const _displayRequestedTradePreview = async (
+  tradeId: string
+): Promise<void> => {
+  try {
+    const preview = await _tradePreview(tradeId);
+
+    _createRequestedErc721PreviewMenu(preview?.requestedErc721s);
+    _createRequestedErc1155PreviewMenu(preview?.requestedErc1155s);
+    _createRequestedErc20PreviewMenu(preview?.requestedErc20s);
+    _createRequestedEthPreviewMenu(preview?.requestedEth);
+  } catch (error) {
+    console.error("Error displaying requested trade preview", error);
+  }
+};
+
+const _displayOfferedTradePreview = async (tradeId: string): Promise<void> => {
+  try {
+    const preview = await _tradePreview(tradeId);
+
+    _createOfferedErc721PreviewMenu(preview?.offeredErc721s);
+    _createOfferedErc1155PreviewMenu(preview?.offeredErc1155s);
+    _createOfferedErc20PreviewMenu(preview?.offeredErc20s);
+    _createOfferedEthPreviewMenu(preview?.offeredEth);
+  } catch (error) {
+    console.error("Error displaying offered trade preview", error);
+  }
+};
+
+const displayTradePreview = (tradeId: string): void => {
+  _displayOfferedTradePreview(tradeId);
+  _displayRequestedTradePreview(tradeId);
+};
 
 window.addEventListener("load", async (): Promise<void> => {
   if (metamaskExist()) {
     try {
       setTermsButton?.addEventListener("click", addTrade);
-
       searchButton.addEventListener(
         "click",
         async (): Promise<void> => await displaySearchedUserTradeList()
@@ -536,5 +779,13 @@ window.addEventListener("load", async (): Promise<void> => {
     } catch (error) {
       console.error("Error loading functions on window load");
     }
+  }
+});
+
+tradesTab.addEventListener("click", async (): Promise<void> => {
+  try {
+    await displayCurrentUserTradeList();
+  } catch (error) {
+    console.error("Error handling trades tab event listener", error);
   }
 });

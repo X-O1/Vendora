@@ -1,8 +1,10 @@
 import { ethers } from "ethers";
-import { requestedErc721Details, requestedErc1155Details, requestedErc20Details, requestedEthDetails, offeredErc721Details, offeredErc1155Details, offeredErc20Details, offeredEthDetails, } from "./TermsAssetDetails";
-import { finishTradeDiv, finishTradeDiv2, searchBar, searchButton, searchContainer, setTermsButton, tradesDiv, tradesDiv2, } from "./FrontEndElements";
+import { getErc721TransferDetails, getErc1155TransferDetails, getErc20TransferDetails, getEthTransferDetails, } from "./TermsAssetDetails";
+import { finishTradeDiv, finishTradeDiv2, searchBar, searchButton, searchContainer, setTermsButton, tradesDiv, tradesDiv2, tradesTab, } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
-import { createTradeElements, createTradeMenuElements, displayFinishTradePage, displayFinishTradePage2, } from "./TradeMenu";
+import { createTradeElements, createTradeMenuElements, displayActiveTradesPage, displayFinishTradePage, displayFinishTradePage2, } from "./TradeMenu";
+import { _createOfferedErc1155PreviewMenu, _createOfferedErc20PreviewMenu, _createOfferedErc721PreviewMenu, _createOfferedEthPreviewMenu, _createRequestedErc1155PreviewMenu, _createRequestedErc20PreviewMenu, _createRequestedErc721PreviewMenu, _createRequestedEthPreviewMenu, } from "./TradePreview";
+import { defaultErc1155s, defaultErc20s, defaultErc721s, defaultNativeTokens, } from "./DefaultTokens";
 const metamaskExist = () => {
     const metamaskExist = typeof window.ethereum !== "undefined";
     return metamaskExist;
@@ -13,7 +15,9 @@ const addTrade = async () => {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, signer);
-            await contract.setTerms(offeredErc721Details, requestedErc721Details, offeredErc1155Details, requestedErc1155Details, offeredErc20Details, requestedErc20Details, offeredEthDetails, requestedEthDetails);
+            const tx = await contract.setTerms((await getErc721TransferDetails()).offered, (await getErc721TransferDetails()).requested, (await getErc1155TransferDetails()).offered, (await getErc1155TransferDetails()).requested, (await getErc20TransferDetails()).offered, (await getErc20TransferDetails()).requested, (await getEthTransferDetails()).offered, (await getEthTransferDetails()).requested);
+            await tx.wait();
+            localStorage.clear();
         }
         catch (error) {
             console.error("Failed to add trade", error);
@@ -45,6 +49,20 @@ const cancelAndWithdraw = async (tradeId) => {
         }
         catch (error) {
             console.error("Error canceling trade", error);
+        }
+    }
+};
+const deleteTrade = async (tradeId) => {
+    if (metamaskExist()) {
+        try {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, signer);
+            const tx = await contract.deleteTermsFromProfile(tradeId);
+            await tx.wait();
+        }
+        catch (error) {
+            console.error("Error deleting trade", tradeId, error);
         }
     }
 };
@@ -217,6 +235,7 @@ const displaySearchedUserTradeList = async () => {
                     searchContainer.style.display = "none";
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
                     displayFinishTradePage2();
+                    displayTradePreview(id);
                 });
             });
         }
@@ -244,11 +263,13 @@ const displayCurrentUserTradeList = async () => {
     if (metamaskExist()) {
         try {
             const tradeIds = await _getAllUserTradeIds();
+            tradesDiv.innerHTML = "";
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv);
                     displayFinishTradePage();
+                    displayTradePreview(id);
                 });
             });
         }
@@ -278,11 +299,16 @@ const _createTradeButtonsAndAddListeners = (tradeId, div) => {
         finishTradeDiv.innerHTML = "";
         finishTradeDiv2.innerHTML = "";
         const tradeElements = createTradeElements(div);
-        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.enterTradeButton.addEventListener("click", () => enterTrade(tradeId));
-        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.approveSellerAssetsButton.addEventListener("click", () => approveSellerAssetsInTrade(tradeId));
-        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.approveBuyerAssetsButton.addEventListener("click", () => approveBuyerAssetsInTrade(tradeId));
-        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.depositButton.addEventListener("click", () => depositAssets(tradeId));
-        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.cancelButton.addEventListener("click", () => cancelAndWithdraw(tradeId));
+        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.enterTradeButton.addEventListener("click", async () => await enterTrade(tradeId));
+        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.approveSellerAssetsButton.addEventListener("click", async () => await approveSellerAssetsInTrade(tradeId));
+        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.approveBuyerAssetsButton.addEventListener("click", async () => await approveBuyerAssetsInTrade(tradeId));
+        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.depositButton.addEventListener("click", async () => await depositAssets(tradeId));
+        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.cancelButton.addEventListener("click", async () => await cancelAndWithdraw(tradeId));
+        tradeElements === null || tradeElements === void 0 ? void 0 : tradeElements.deleteTradeButton.addEventListener("click", async () => {
+            await deleteTrade(tradeId);
+            displayActiveTradesPage();
+            await displayCurrentUserTradeList();
+        });
     }
     catch (error) {
         console.error("Error creating event listeners for trade buttons", error);
@@ -310,6 +336,168 @@ const _getTerms = async (tradeId) => {
         return;
     }
 };
+const _tradePreview = async (tradeId) => {
+    if (metamaskExist()) {
+        try {
+            const preview = {
+                offeredErc721s: [],
+                requestedErc721s: [],
+                offeredErc1155s: [],
+                requestedErc1155s: [],
+                offeredErc20s: [],
+                requestedErc20s: [],
+                offeredEth: [],
+                requestedEth: [],
+            };
+            const terms = await _getTerms(tradeId);
+            if ((terms === null || terms === void 0 ? void 0 : terms.offeredErc721s) && terms.offeredErc721s.length > 0) {
+                terms.offeredErc721s.forEach((asset) => {
+                    defaultErc721s.forEach((defaultToken) => {
+                        if (defaultToken.address === asset.erc721Address) {
+                            preview.offeredErc721s.push({
+                                address: asset.erc721Address,
+                                tokenId: asset.tokenId,
+                                name: defaultToken.name,
+                                symbol: defaultToken.symbol,
+                                logoURI: defaultToken.logoURI,
+                            });
+                        }
+                    });
+                });
+            }
+            if ((terms === null || terms === void 0 ? void 0 : terms.requestedErc721s) && terms.requestedErc721s.length > 0) {
+                terms === null || terms === void 0 ? void 0 : terms.requestedErc721s.forEach((asset) => {
+                    defaultErc721s.forEach((defaultToken) => {
+                        if (defaultToken.address === asset.erc721Address) {
+                            preview.requestedErc721s.push({
+                                address: asset.erc721Address,
+                                tokenId: asset.tokenId,
+                                logoURI: defaultToken.logoURI,
+                                name: defaultToken.name,
+                                symbol: defaultToken.symbol,
+                            });
+                        }
+                    });
+                });
+            }
+            if ((terms === null || terms === void 0 ? void 0 : terms.offeredErc1155s) && terms.offeredErc1155s.length > 0) {
+                terms.offeredErc1155s.forEach((asset) => {
+                    defaultErc1155s.forEach((defaultToken) => {
+                        if (defaultToken.address === asset.erc1155Address) {
+                            preview.offeredErc1155s.push({
+                                address: asset.erc1155Address,
+                                tokenId: asset.tokenId,
+                                amount: asset.amount,
+                                logoURI: defaultToken.logoURI,
+                                name: defaultToken.name,
+                                symbol: defaultToken.symbol,
+                            });
+                        }
+                    });
+                });
+            }
+            if ((terms === null || terms === void 0 ? void 0 : terms.requestedErc1155s) && terms.requestedErc1155s.length > 0) {
+                terms === null || terms === void 0 ? void 0 : terms.requestedErc1155s.forEach((asset) => {
+                    defaultErc1155s.forEach((defaultToken) => {
+                        if (defaultToken.address === asset.erc1155Address) {
+                            preview.requestedErc1155s.push({
+                                address: asset.erc1155Address,
+                                tokenId: asset.tokenId,
+                                amount: asset.amount,
+                                logoURI: defaultToken.logoURI,
+                                name: defaultToken.name,
+                                symbol: defaultToken.symbol,
+                            });
+                        }
+                    });
+                });
+            }
+            if ((terms === null || terms === void 0 ? void 0 : terms.offeredErc20s) && terms.offeredErc20s.length > 0) {
+                terms.offeredErc20s.forEach((asset) => {
+                    defaultErc20s.forEach((defaultToken) => {
+                        if (defaultToken.address === asset.erc20Address) {
+                            preview.offeredErc20s.push({
+                                address: asset.erc20Address,
+                                name: defaultToken.name,
+                                symbol: defaultToken.symbol,
+                                logoURI: defaultToken.logoURI,
+                                amount: asset.amount,
+                            });
+                        }
+                    });
+                });
+            }
+            if ((terms === null || terms === void 0 ? void 0 : terms.requestedErc20s) && terms.requestedErc20s.length > 0) {
+                terms === null || terms === void 0 ? void 0 : terms.requestedErc20s.forEach((asset) => {
+                    defaultErc20s.forEach((defaultToken) => {
+                        if (defaultToken.address === asset.erc20Address) {
+                            preview.requestedErc20s.push({
+                                address: asset.erc20Address,
+                                name: defaultToken.name,
+                                symbol: defaultToken.symbol,
+                                logoURI: defaultToken.logoURI,
+                                amount: asset.amount,
+                            });
+                        }
+                    });
+                });
+            }
+            if (terms === null || terms === void 0 ? void 0 : terms.offeredEth) {
+                defaultNativeTokens.forEach((nativeCurrency) => {
+                    preview.offeredEth.push({
+                        name: nativeCurrency.name,
+                        symbol: nativeCurrency.symbol,
+                        logoURI: nativeCurrency.logoURI,
+                        amount: terms.offeredEth,
+                    });
+                });
+            }
+            if (terms === null || terms === void 0 ? void 0 : terms.requestedEth) {
+                defaultNativeTokens.forEach((nativeCurrency) => {
+                    preview.requestedEth.push({
+                        name: nativeCurrency.name,
+                        symbol: nativeCurrency.symbol,
+                        logoURI: nativeCurrency.logoURI,
+                        amount: terms.requestedEth,
+                    });
+                });
+            }
+            return preview;
+        }
+        catch (error) {
+            console.error("Error getting trade preview", error);
+        }
+    }
+    return;
+};
+const _displayRequestedTradePreview = async (tradeId) => {
+    try {
+        const preview = await _tradePreview(tradeId);
+        _createRequestedErc721PreviewMenu(preview === null || preview === void 0 ? void 0 : preview.requestedErc721s);
+        _createRequestedErc1155PreviewMenu(preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s);
+        _createRequestedErc20PreviewMenu(preview === null || preview === void 0 ? void 0 : preview.requestedErc20s);
+        _createRequestedEthPreviewMenu(preview === null || preview === void 0 ? void 0 : preview.requestedEth);
+    }
+    catch (error) {
+        console.error("Error displaying requested trade preview", error);
+    }
+};
+const _displayOfferedTradePreview = async (tradeId) => {
+    try {
+        const preview = await _tradePreview(tradeId);
+        _createOfferedErc721PreviewMenu(preview === null || preview === void 0 ? void 0 : preview.offeredErc721s);
+        _createOfferedErc1155PreviewMenu(preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s);
+        _createOfferedErc20PreviewMenu(preview === null || preview === void 0 ? void 0 : preview.offeredErc20s);
+        _createOfferedEthPreviewMenu(preview === null || preview === void 0 ? void 0 : preview.offeredEth);
+    }
+    catch (error) {
+        console.error("Error displaying offered trade preview", error);
+    }
+};
+const displayTradePreview = (tradeId) => {
+    _displayOfferedTradePreview(tradeId);
+    _displayRequestedTradePreview(tradeId);
+};
 window.addEventListener("load", async () => {
     if (metamaskExist()) {
         try {
@@ -321,5 +509,13 @@ window.addEventListener("load", async () => {
         catch (error) {
             console.error("Error loading functions on window load");
         }
+    }
+});
+tradesTab.addEventListener("click", async () => {
+    try {
+        await displayCurrentUserTradeList();
+    }
+    catch (error) {
+        console.error("Error handling trades tab event listener", error);
     }
 });

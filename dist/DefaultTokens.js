@@ -17,7 +17,7 @@ const defaultErc1155s = [
         logoURI: "./images/erc1155-project-images/bloodcrystal.png",
         name: "Blood Crytals",
         symbol: "BLOOD",
-        address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
+        address: "0x76ba6821A834E2d30A699312829f8204830CCF5B",
     },
 ];
 const defaultErc20s = [
@@ -25,13 +25,13 @@ const defaultErc20s = [
         logoURI: "./images/erc20-project-images/linktokenimage.png",
         name: "Chainlink",
         symbol: "LINK",
-        address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
+        address: "0x779877A7B0D9E8603169DdbD7836e478b4624789",
     },
     {
         logoURI: "./images/erc20-project-images/samaToken.png",
         name: "Moonsama",
         symbol: "SAMA",
-        address: "0xe170b5b0d507b3e0ce3d51c043175e0a39f78b9f",
+        address: "0xE04F47FF45576249bc5083DFDf987e03d0550113",
     },
 ];
 const defaultNativeTokens = [
