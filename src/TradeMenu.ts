@@ -13,10 +13,7 @@ type TradeMenuElements = {
   tradeNameDiv: HTMLDivElement;
   tradePreviewDiv: HTMLDivElement;
   tokenImagesDiv: HTMLDivElement;
-  tokenImage1: HTMLImageElement;
-  tokenImage2: HTMLImageElement;
-  tokenImage3: HTMLImageElement;
-  tokenImage4: HTMLImageElement;
+
   tradeIdDiv: HTMLDivElement;
   id: HTMLDivElement;
 };
@@ -31,17 +28,14 @@ type TradeElements = {
 };
 const createTradeMenuElements = (
   tradeId: string,
-  div: HTMLDivElement /** tradeName: string,  imgSrc1: string, imgSrc2: string, imgSrc3: string, imgSrc4: string */
+  div: HTMLDivElement
 ): TradeMenuElements | undefined => {
   try {
     const tradeDiv: HTMLDivElement = document.createElement("div");
     const tradeNameDiv: HTMLDivElement = document.createElement("div");
     const tradePreviewDiv: HTMLDivElement = document.createElement("div");
     const tokenImagesDiv: HTMLDivElement = document.createElement("div");
-    const tokenImage1: HTMLImageElement = document.createElement("img");
-    const tokenImage2: HTMLImageElement = document.createElement("img");
-    const tokenImage3: HTMLImageElement = document.createElement("img");
-    const tokenImage4: HTMLImageElement = document.createElement("img");
+
     const tradeIdDiv: HTMLDivElement = document.createElement("div");
     const id: HTMLDivElement = document.createElement("div");
 
@@ -49,10 +43,7 @@ const createTradeMenuElements = (
     tradeNameDiv.classList.add("trade-name");
     tradePreviewDiv.classList.add("trade-preview");
     tokenImagesDiv.classList.add("token-images");
-    tokenImage1.classList.add("token-image");
-    tokenImage2.classList.add("token-image");
-    tokenImage3.classList.add("token-image");
-    tokenImage4.classList.add("token-image");
+
     tradeIdDiv.classList.add("trade-id");
     id.classList.add("id");
 
@@ -60,18 +51,11 @@ const createTradeMenuElements = (
     tradeDiv.appendChild(tradeNameDiv);
     tradeDiv.appendChild(tradePreviewDiv);
     tradePreviewDiv.appendChild(tokenImagesDiv);
-    tokenImagesDiv.appendChild(tokenImage1);
-    tokenImagesDiv.appendChild(tokenImage2);
-    tokenImagesDiv.appendChild(tokenImage3);
-    tokenImagesDiv.appendChild(tokenImage4);
+
     tradeDiv.appendChild(tradeIdDiv);
     tradeIdDiv.appendChild(id);
 
     tradeNameDiv.innerText = "Name";
-    tokenImage1.src = "./images/erc721-project-images/rareshipLogo.png";
-    tokenImage2.src = "./images/erc721-project-images/msamaLogo.png";
-    tokenImage3.src = "./images/erc20-project-images/linktokenimage.png";
-    tokenImage4.src = "./images/erc20-project-images/samaToken.png";
     id.innerText = tradeId;
 
     return {
@@ -79,10 +63,7 @@ const createTradeMenuElements = (
       tradeNameDiv,
       tradePreviewDiv,
       tokenImagesDiv,
-      tokenImage1,
-      tokenImage2,
-      tokenImage3,
-      tokenImage4,
+
       tradeIdDiv,
       id,
     };

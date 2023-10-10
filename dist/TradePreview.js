@@ -72,7 +72,7 @@ const _createNativeTokenTradePreviewElements = (token, tradePreviewDiv) => {
     tradePreviewElements.selectedTermAssetDiv.appendChild(tradePreviewElements.termAssetAmount);
 };
 const _createRequestedErc721PreviewMenu = (tradeListPreview) => {
-    requestedErc721sDivPreview.forEach((element) => (element.innerHTML = ""));
+    requestedErc721sDivPreview === null || requestedErc721sDivPreview === void 0 ? void 0 : requestedErc721sDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             requestedErc721sDivPreview.forEach((element) => {
@@ -88,7 +88,7 @@ const _createRequestedErc721PreviewMenu = (tradeListPreview) => {
     }
 };
 const _createRequestedErc1155PreviewMenu = (tradeListPreview) => {
-    requestedErc1155sDivPreview.forEach((element) => (element.innerHTML = ""));
+    requestedErc1155sDivPreview === null || requestedErc1155sDivPreview === void 0 ? void 0 : requestedErc1155sDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             requestedErc1155sDivPreview.forEach((element) => {
@@ -104,7 +104,7 @@ const _createRequestedErc1155PreviewMenu = (tradeListPreview) => {
     }
 };
 const _createRequestedErc20PreviewMenu = (tradeListPreview) => {
-    requestedErc20sDivPreview.forEach((element) => (element.innerHTML = ""));
+    requestedErc20sDivPreview === null || requestedErc20sDivPreview === void 0 ? void 0 : requestedErc20sDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             requestedErc20sDivPreview.forEach((element) => {
@@ -120,7 +120,7 @@ const _createRequestedErc20PreviewMenu = (tradeListPreview) => {
     }
 };
 const _createRequestedEthPreviewMenu = (tradeListPreview) => {
-    requestedEthDivPreview.forEach((element) => (element.innerHTML = ""));
+    requestedEthDivPreview === null || requestedEthDivPreview === void 0 ? void 0 : requestedEthDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             requestedEthDivPreview.forEach((element) => {
@@ -136,7 +136,7 @@ const _createRequestedEthPreviewMenu = (tradeListPreview) => {
     }
 };
 const _createOfferedErc721PreviewMenu = (tradeListPreview) => {
-    offeredErc721sDivPreview.forEach((element) => (element.innerHTML = ""));
+    offeredErc721sDivPreview === null || offeredErc721sDivPreview === void 0 ? void 0 : offeredErc721sDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             offeredErc721sDivPreview.forEach((element) => {
@@ -152,7 +152,7 @@ const _createOfferedErc721PreviewMenu = (tradeListPreview) => {
     }
 };
 const _createOfferedErc1155PreviewMenu = (tradeListPreview) => {
-    offeredErc1155sDivPreview.forEach((element) => (element.innerHTML = ""));
+    offeredErc1155sDivPreview === null || offeredErc1155sDivPreview === void 0 ? void 0 : offeredErc1155sDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             offeredErc1155sDivPreview.forEach((element) => {
@@ -168,7 +168,7 @@ const _createOfferedErc1155PreviewMenu = (tradeListPreview) => {
     }
 };
 const _createOfferedErc20PreviewMenu = (tradeListPreview) => {
-    offeredErc20sDivPreview.forEach((element) => (element.innerHTML = ""));
+    offeredErc20sDivPreview === null || offeredErc20sDivPreview === void 0 ? void 0 : offeredErc20sDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             offeredErc20sDivPreview.forEach((element) => {
@@ -184,7 +184,7 @@ const _createOfferedErc20PreviewMenu = (tradeListPreview) => {
     }
 };
 const _createOfferedEthPreviewMenu = (tradeListPreview) => {
-    offeredEthDivPreview.forEach((element) => (element.innerHTML = ""));
+    offeredEthDivPreview === null || offeredEthDivPreview === void 0 ? void 0 : offeredEthDivPreview.forEach((element) => (element.innerHTML = ""));
     if ((tradeListPreview === null || tradeListPreview === void 0 ? void 0 : tradeListPreview.length) !== 0) {
         try {
             offeredEthDivPreview.forEach((element) => {

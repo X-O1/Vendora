@@ -445,15 +445,94 @@ const _getAllUserTradeIds = async (): Promise<string[]> => {
   }
   return [];
 };
-
 const displayCurrentUserTradeList = async (): Promise<void> => {
   if (metamaskExist()) {
     try {
       const tradeIds: string[] = await _getAllUserTradeIds();
       tradesDiv.innerHTML = "";
 
-      tradeIds?.forEach((id: string): void => {
+      tradeIds?.forEach(async (id: string): Promise<void> => {
         const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
+        const preview = await _tradePreview(id);
+
+        if (preview?.offeredErc721s.length !== 0) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src = preview?.offeredErc721s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedErc721s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src =
+            preview?.requestedErc721s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.offeredErc1155s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src = preview?.offeredErc1155s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedErc1155s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src =
+            preview?.requestedErc1155s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.offeredErc20s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src = preview?.offeredErc20s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedErc20s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src = preview?.requestedErc20s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.offeredEth.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src = preview?.offeredEth[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedEth.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tokenImage.src = preview?.requestedEth[0].logoURI || "token image";
+        }
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
           _createTradeButtonsAndAddListeners(id, finishTradeDiv);

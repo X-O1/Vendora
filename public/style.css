@@ -638,6 +638,9 @@ header {
     height: 80px;
     position: relative;
     cursor: pointer;
+    /* overflow-y: hidden;
+    overflow-x: auto; */
+
 }
 
 .trade-preview {
@@ -768,4 +771,8 @@ header {
     overflow-y: auto;
     overflow-x: hidden;
     height: 15%;
+}
+
+.trade-name {
+    margin-right: 50px;
 }

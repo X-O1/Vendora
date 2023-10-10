@@ -5,47 +5,27 @@ const createTradeMenuElements = (tradeId, div) => {
         const tradeNameDiv = document.createElement("div");
         const tradePreviewDiv = document.createElement("div");
         const tokenImagesDiv = document.createElement("div");
-        const tokenImage1 = document.createElement("img");
-        const tokenImage2 = document.createElement("img");
-        const tokenImage3 = document.createElement("img");
-        const tokenImage4 = document.createElement("img");
         const tradeIdDiv = document.createElement("div");
         const id = document.createElement("div");
         tradeDiv.classList.add("trade");
         tradeNameDiv.classList.add("trade-name");
         tradePreviewDiv.classList.add("trade-preview");
         tokenImagesDiv.classList.add("token-images");
-        tokenImage1.classList.add("token-image");
-        tokenImage2.classList.add("token-image");
-        tokenImage3.classList.add("token-image");
-        tokenImage4.classList.add("token-image");
         tradeIdDiv.classList.add("trade-id");
         id.classList.add("id");
         div.appendChild(tradeDiv);
         tradeDiv.appendChild(tradeNameDiv);
         tradeDiv.appendChild(tradePreviewDiv);
         tradePreviewDiv.appendChild(tokenImagesDiv);
-        tokenImagesDiv.appendChild(tokenImage1);
-        tokenImagesDiv.appendChild(tokenImage2);
-        tokenImagesDiv.appendChild(tokenImage3);
-        tokenImagesDiv.appendChild(tokenImage4);
         tradeDiv.appendChild(tradeIdDiv);
         tradeIdDiv.appendChild(id);
         tradeNameDiv.innerText = "Name";
-        tokenImage1.src = "./images/erc721-project-images/rareshipLogo.png";
-        tokenImage2.src = "./images/erc721-project-images/msamaLogo.png";
-        tokenImage3.src = "./images/erc20-project-images/linktokenimage.png";
-        tokenImage4.src = "./images/erc20-project-images/samaToken.png";
         id.innerText = tradeId;
         return {
             tradeDiv,
             tradeNameDiv,
             tradePreviewDiv,
             tokenImagesDiv,
-            tokenImage1,
-            tokenImage2,
-            tokenImage3,
-            tokenImage4,
             tradeIdDiv,
             id,
         };

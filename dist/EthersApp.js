@@ -264,8 +264,62 @@ const displayCurrentUserTradeList = async () => {
         try {
             const tradeIds = await _getAllUserTradeIds();
             tradesDiv.innerHTML = "";
-            tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
+            tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach(async (id) => {
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
+                const preview = await _tradePreview(id);
+                const previewLimitNotMet = (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.childNodes)
+                    ? (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.childNodes.length) < 5
+                    : false;
+                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc721s.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc721s[0].logoURI) || "token image";
+                }
+                if ((preview === null || preview === void 0 ? void 0 : preview.requestedErc721s.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src =
+                        (preview === null || preview === void 0 ? void 0 : preview.requestedErc721s[0].logoURI) || "token image";
+                }
+                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s[0].logoURI) || "token image";
+                }
+                if ((preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src =
+                        (preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s[0].logoURI) || "token image";
+                }
+                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc20s.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc20s[0].logoURI) || "token image";
+                }
+                if ((preview === null || preview === void 0 ? void 0 : preview.requestedErc20s.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedErc20s[0].logoURI) || "token image";
+                }
+                if ((preview === null || preview === void 0 ? void 0 : preview.offeredEth.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredEth[0].logoURI) || "token image";
+                }
+                if ((preview === null || preview === void 0 ? void 0 : preview.requestedEth.length) !== 0 && previewLimitNotMet) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedEth[0].logoURI) || "token image";
+                }
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv);
                     displayFinishTradePage();
