@@ -38,7 +38,7 @@ const addNftToTradeList = (
     ) {
       tradeList.push({
         logoURI: menuElements.tokenLogo.src,
-        name: menuElements.tokenName.innerText,
+        tradeName: menuElements.tokenName.innerText,
         symbol: menuElements.tokenSymbol.innerText,
         address: menuElements.tokenAddress.innerText,
         tokenId: Number(menuElements.tokenId.value),
@@ -66,7 +66,7 @@ const addEthOrErc20ToTradeList = (
     ) {
       tradeList.push({
         logoURI: menuElements.tokenLogo.src,
-        name: menuElements.tokenName.innerText,
+        tradeName: menuElements.tokenName.innerText,
         symbol: menuElements.tokenSymbol.innerText,
         address: menuElements.tokenAddress.innerText,
         amount: Number(menuElements.tokenAmount.value),

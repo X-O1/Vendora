@@ -13,7 +13,6 @@ type TradeMenuElements = {
   tradeNameDiv: HTMLDivElement;
   tradePreviewDiv: HTMLDivElement;
   tokenImagesDiv: HTMLDivElement;
-
   tradeIdDiv: HTMLDivElement;
   id: HTMLDivElement;
 };
@@ -35,7 +34,6 @@ const createTradeMenuElements = (
     const tradeNameDiv: HTMLDivElement = document.createElement("div");
     const tradePreviewDiv: HTMLDivElement = document.createElement("div");
     const tokenImagesDiv: HTMLDivElement = document.createElement("div");
-
     const tradeIdDiv: HTMLDivElement = document.createElement("div");
     const id: HTMLDivElement = document.createElement("div");
 
@@ -43,7 +41,6 @@ const createTradeMenuElements = (
     tradeNameDiv.classList.add("trade-name");
     tradePreviewDiv.classList.add("trade-preview");
     tokenImagesDiv.classList.add("token-images");
-
     tradeIdDiv.classList.add("trade-id");
     id.classList.add("id");
 
@@ -51,11 +48,9 @@ const createTradeMenuElements = (
     tradeDiv.appendChild(tradeNameDiv);
     tradeDiv.appendChild(tradePreviewDiv);
     tradePreviewDiv.appendChild(tokenImagesDiv);
-
     tradeDiv.appendChild(tradeIdDiv);
     tradeIdDiv.appendChild(id);
 
-    tradeNameDiv.innerText = "Name";
     id.innerText = tradeId;
 
     return {

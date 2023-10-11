@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { getErc721TransferDetails, getErc1155TransferDetails, getErc20TransferDetails, getEthTransferDetails, } from "./TermsAssetDetails";
-import { finishTradeDiv, finishTradeDiv2, searchBar, searchButton, searchContainer, setTermsButton, tradesDiv, tradesDiv2, tradesTab, } from "./FrontEndElements";
+import { finishTradeDiv, finishTradeDiv2, searchBar, searchButton, searchContainer, setTermsButton, tradeNameInput, tradesDiv, tradesDiv2, tradesTab, } from "./FrontEndElements";
 import { VendoraContract } from "./Contracts";
 import { createTradeElements, createTradeMenuElements, displayActiveTradesPage, displayFinishTradePage, displayFinishTradePage2, } from "./TradeMenu";
 import { _createOfferedErc1155PreviewMenu, _createOfferedErc20PreviewMenu, _createOfferedErc721PreviewMenu, _createOfferedEthPreviewMenu, _createRequestedErc1155PreviewMenu, _createRequestedErc20PreviewMenu, _createRequestedErc721PreviewMenu, _createRequestedEthPreviewMenu, } from "./TradePreview";
@@ -15,8 +15,9 @@ const addTrade = async () => {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, signer);
-            const tx = await contract.setTerms((await getErc721TransferDetails()).offered, (await getErc721TransferDetails()).requested, (await getErc1155TransferDetails()).offered, (await getErc1155TransferDetails()).requested, (await getErc20TransferDetails()).offered, (await getErc20TransferDetails()).requested, (await getEthTransferDetails()).offered, (await getEthTransferDetails()).requested);
+            const tx = await contract.setTerms(tradeNameInput.value, (await getErc721TransferDetails()).offered, (await getErc721TransferDetails()).requested, (await getErc1155TransferDetails()).offered, (await getErc1155TransferDetails()).requested, (await getErc20TransferDetails()).offered, (await getErc20TransferDetails()).requested, (await getEthTransferDetails()).offered, (await getEthTransferDetails()).requested);
             await tx.wait();
+            tradeNameInput.value = "";
             localStorage.clear();
         }
         catch (error) {
@@ -30,7 +31,7 @@ const enterTrade = async (tradeId) => {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, signer);
-            const tx = await contract.startTrade(tradeId);
+            const tx = await contract.enterTrade(tradeId);
             await tx.wait();
         }
         catch (error) {
@@ -58,7 +59,7 @@ const deleteTrade = async (tradeId) => {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, signer);
-            const tx = await contract.deleteTermsFromProfile(tradeId);
+            const tx = await contract.deleteTrade(tradeId);
             await tx.wait();
         }
         catch (error) {
@@ -229,9 +230,94 @@ const displaySearchedUserTradeList = async () => {
         try {
             const tradeIds = await _searchAllUserTradeIds();
             tradesDiv2.innerHTML = "";
-            tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach((id) => {
+            tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach(async (id) => {
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
+                const preview = await _tradePreview(id);
+                const terms = await _getTerms(id);
+                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc721s.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc721s[0].logoURI) || "token image";
+                }
+                if (((_b = (_a = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _a === void 0 ? void 0 : _a.childElementCount) !== null && _b !== void 0 ? _b : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedErc721s.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src =
+                        (preview === null || preview === void 0 ? void 0 : preview.requestedErc721s[0].logoURI) || "token image";
+                }
+                if (((_d = (_c = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _c === void 0 ? void 0 : _c.childElementCount) !== null && _d !== void 0 ? _d : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s[0].logoURI) || "token image";
+                }
+                if (((_f = (_e = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _e === void 0 ? void 0 : _e.childElementCount) !== null && _f !== void 0 ? _f : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src =
+                        (preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s[0].logoURI) || "token image";
+                }
+                if (((_h = (_g = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _g === void 0 ? void 0 : _g.childElementCount) !== null && _h !== void 0 ? _h : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.offeredErc20s.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc20s[0].logoURI) || "token image";
+                }
+                if (((_k = (_j = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _j === void 0 ? void 0 : _j.childElementCount) !== null && _k !== void 0 ? _k : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedErc20s.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedErc20s[0].logoURI) || "token image";
+                }
+                if (((_m = (_l = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _l === void 0 ? void 0 : _l.childElementCount) !== null && _m !== void 0 ? _m : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.offeredEth.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredEth[0].logoURI) || "token image";
+                }
+                if (((_p = (_o = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _o === void 0 ? void 0 : _o.childElementCount) !== null && _p !== void 0 ? _p : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedEth.length) !== 0) {
+                    const tokenImage = document.createElement("img");
+                    tokenImage.classList.add("token-image");
+                    tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
+                    tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedEth[0].logoURI) || "token image";
+                }
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
+                    console.log("click");
                     searchContainer.style.display = "none";
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
                     displayFinishTradePage2();
@@ -265,62 +351,94 @@ const displayCurrentUserTradeList = async () => {
             const tradeIds = await _getAllUserTradeIds();
             tradesDiv.innerHTML = "";
             tradeIds === null || tradeIds === void 0 ? void 0 : tradeIds.forEach(async (id) => {
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
                 const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
                 const preview = await _tradePreview(id);
-                const previewLimitNotMet = (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.childNodes)
-                    ? (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.childNodes.length) < 5
-                    : false;
-                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc721s.length) !== 0 && previewLimitNotMet) {
+                const terms = await _getTerms(id);
+                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc721s.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc721s[0].logoURI) || "token image";
                 }
-                if ((preview === null || preview === void 0 ? void 0 : preview.requestedErc721s.length) !== 0 && previewLimitNotMet) {
+                if (((_b = (_a = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _a === void 0 ? void 0 : _a.childElementCount) !== null && _b !== void 0 ? _b : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedErc721s.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src =
                         (preview === null || preview === void 0 ? void 0 : preview.requestedErc721s[0].logoURI) || "token image";
                 }
-                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s.length) !== 0 && previewLimitNotMet) {
+                if (((_d = (_c = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _c === void 0 ? void 0 : _c.childElementCount) !== null && _d !== void 0 ? _d : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc1155s[0].logoURI) || "token image";
                 }
-                if ((preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s.length) !== 0 && previewLimitNotMet) {
+                if (((_f = (_e = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _e === void 0 ? void 0 : _e.childElementCount) !== null && _f !== void 0 ? _f : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src =
                         (preview === null || preview === void 0 ? void 0 : preview.requestedErc1155s[0].logoURI) || "token image";
                 }
-                if ((preview === null || preview === void 0 ? void 0 : preview.offeredErc20s.length) !== 0 && previewLimitNotMet) {
+                if (((_h = (_g = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _g === void 0 ? void 0 : _g.childElementCount) !== null && _h !== void 0 ? _h : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.offeredErc20s.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredErc20s[0].logoURI) || "token image";
                 }
-                if ((preview === null || preview === void 0 ? void 0 : preview.requestedErc20s.length) !== 0 && previewLimitNotMet) {
+                if (((_k = (_j = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _j === void 0 ? void 0 : _j.childElementCount) !== null && _k !== void 0 ? _k : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedErc20s.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedErc20s[0].logoURI) || "token image";
                 }
-                if ((preview === null || preview === void 0 ? void 0 : preview.offeredEth.length) !== 0 && previewLimitNotMet) {
+                if (((_m = (_l = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _l === void 0 ? void 0 : _l.childElementCount) !== null && _m !== void 0 ? _m : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.offeredEth.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.offeredEth[0].logoURI) || "token image";
                 }
-                if ((preview === null || preview === void 0 ? void 0 : preview.requestedEth.length) !== 0 && previewLimitNotMet) {
+                if (((_p = (_o = tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv) === null || _o === void 0 ? void 0 : _o.childElementCount) !== null && _p !== void 0 ? _p : 0) < 4 &&
+                    (preview === null || preview === void 0 ? void 0 : preview.requestedEth.length) !== 0) {
                     const tokenImage = document.createElement("img");
                     tokenImage.classList.add("token-image");
                     tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tokenImagesDiv.appendChild(tokenImage);
+                    (tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeNameDiv)
+                        ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+                        : undefined;
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedEth[0].logoURI) || "token image";
                 }
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
+                    console.log("click");
+                    searchContainer.style.display = "none";
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv);
                     displayFinishTradePage();
                     displayTradePreview(id);
@@ -348,7 +466,7 @@ const refreshTradeList = async () => {
         }
     }
 };
-const _createTradeButtonsAndAddListeners = (tradeId, div) => {
+const _createTradeButtonsAndAddListeners = async (tradeId, div) => {
     try {
         finishTradeDiv.innerHTML = "";
         finishTradeDiv2.innerHTML = "";
@@ -373,8 +491,9 @@ const _getTerms = async (tradeId) => {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, provider);
         const data = await contract.getTerms(tradeId);
-        const { offeredErc721s, requestedErc721s, offeredErc1155s, requestedErc1155s, offeredErc20s, requestedErc20s, offeredEth, requestedEth, } = data;
+        const { tradeName, offeredErc721s, requestedErc721s, offeredErc1155s, requestedErc1155s, offeredErc20s, requestedErc20s, offeredEth, requestedEth, } = data;
         return {
+            tradeName,
             offeredErc721s,
             requestedErc721s,
             offeredErc1155s,
@@ -411,7 +530,7 @@ const _tradePreview = async (tradeId) => {
                             preview.offeredErc721s.push({
                                 address: asset.erc721Address,
                                 tokenId: asset.tokenId,
-                                name: defaultToken.name,
+                                name: defaultToken.tradeName,
                                 symbol: defaultToken.symbol,
                                 logoURI: defaultToken.logoURI,
                             });
@@ -427,7 +546,7 @@ const _tradePreview = async (tradeId) => {
                                 address: asset.erc721Address,
                                 tokenId: asset.tokenId,
                                 logoURI: defaultToken.logoURI,
-                                name: defaultToken.name,
+                                name: defaultToken.tradeName,
                                 symbol: defaultToken.symbol,
                             });
                         }
@@ -443,7 +562,7 @@ const _tradePreview = async (tradeId) => {
                                 tokenId: asset.tokenId,
                                 amount: asset.amount,
                                 logoURI: defaultToken.logoURI,
-                                name: defaultToken.name,
+                                name: defaultToken.tradeName,
                                 symbol: defaultToken.symbol,
                             });
                         }
@@ -459,7 +578,7 @@ const _tradePreview = async (tradeId) => {
                                 tokenId: asset.tokenId,
                                 amount: asset.amount,
                                 logoURI: defaultToken.logoURI,
-                                name: defaultToken.name,
+                                name: defaultToken.tradeName,
                                 symbol: defaultToken.symbol,
                             });
                         }
@@ -472,7 +591,7 @@ const _tradePreview = async (tradeId) => {
                         if (defaultToken.address === asset.erc20Address) {
                             preview.offeredErc20s.push({
                                 address: asset.erc20Address,
-                                name: defaultToken.name,
+                                name: defaultToken.tradeName,
                                 symbol: defaultToken.symbol,
                                 logoURI: defaultToken.logoURI,
                                 amount: asset.amount,
@@ -487,7 +606,7 @@ const _tradePreview = async (tradeId) => {
                         if (defaultToken.address === asset.erc20Address) {
                             preview.requestedErc20s.push({
                                 address: asset.erc20Address,
-                                name: defaultToken.name,
+                                name: defaultToken.tradeName,
                                 symbol: defaultToken.symbol,
                                 logoURI: defaultToken.logoURI,
                                 amount: asset.amount,
@@ -499,7 +618,7 @@ const _tradePreview = async (tradeId) => {
             if (terms === null || terms === void 0 ? void 0 : terms.offeredEth) {
                 defaultNativeTokens.forEach((nativeCurrency) => {
                     preview.offeredEth.push({
-                        name: nativeCurrency.name,
+                        name: nativeCurrency.tradeName,
                         symbol: nativeCurrency.symbol,
                         logoURI: nativeCurrency.logoURI,
                         amount: terms.offeredEth,
@@ -509,7 +628,7 @@ const _tradePreview = async (tradeId) => {
             if (terms === null || terms === void 0 ? void 0 : terms.requestedEth) {
                 defaultNativeTokens.forEach((nativeCurrency) => {
                     preview.requestedEth.push({
-                        name: nativeCurrency.name,
+                        name: nativeCurrency.tradeName,
                         symbol: nativeCurrency.symbol,
                         logoURI: nativeCurrency.logoURI,
                         amount: terms.requestedEth,

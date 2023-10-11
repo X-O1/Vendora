@@ -169,6 +169,9 @@ const backToTrade2 = document.querySelector(
 const searchContainer = document.querySelector(
   ".search-container"
 ) as HTMLDivElement;
+const tradeNameInput = document.querySelector(
+  ".trade-name-input"
+) as HTMLInputElement;
 
 const requestedAssetsPreview = document.querySelector(
   ".requested-assets-preview"
@@ -297,4 +300,5 @@ export {
   offeredEthDivPreview,
   offeredAssetsTitlePreview,
   requestedAssetsTitlePreview,
+  tradeNameInput,
 };

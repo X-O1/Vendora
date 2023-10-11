@@ -19,7 +19,6 @@ const createTradeMenuElements = (tradeId, div) => {
         tradePreviewDiv.appendChild(tokenImagesDiv);
         tradeDiv.appendChild(tradeIdDiv);
         tradeIdDiv.appendChild(id);
-        tradeNameDiv.innerText = "Name";
         id.innerText = tradeId;
         return {
             tradeDiv,

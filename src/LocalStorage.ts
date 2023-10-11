@@ -26,6 +26,26 @@ const deleteStorageItem = (key: string): void => {
   localStorage.removeItem(key);
 };
 
+// const setTradeNameInLocalStorage = (key: string, value: string) => {
+//   try {
+//     const serializedValue = JSON.stringify(value);
+//     localStorage.setItem(key, serializedValue);
+//   } catch (error) {
+//     console.error("Error setting trade name in local storage", error);
+//   }
+// };
+
+// const getTradeNameInLocalStorage = async (key: string): Promise<string> => {
+//   try {
+//     const storedValue = await JSON.parse(localStorage.getItem(key) || "");
+
+//     return storedValue;
+//   } catch (error) {
+//     console.error("Error getting trade name from local storage", error);
+//     return "";
+//   }
+// };
+
 const requestedErc721s: TokenOption[] = await getTokenDetailsInLocalStorage(
   "requestedErc721s"
 );
@@ -63,4 +83,6 @@ export {
   offeredErc1155s,
   offeredErc20s,
   offeredEth,
+  // setTradeNameInLocalStorage,
+  // getTradeNameInLocalStorage,
 };

@@ -376,7 +376,8 @@ header {
 .offer-erc721-button,
 .offer-erc1155-button,
 .offer-erc20-button,
-.offer-eth-button {
+.offer-eth-button,
+.trade-name-input {
     border: 1px solid rgba(152, 161, 192, 0.24);
     border-radius: 7px;
     padding: 9px 10px;
@@ -413,7 +414,8 @@ header {
 .token-amount::placeholder,
 .erc1155-token-id::placeholder,
 .erc1155-amount::placeholder,
-.add-asset {
+.add-asset,
+.trade-name-input{
     color: #7F87A2;
 }
 
@@ -544,7 +546,8 @@ header {
 .deposit,
 .enter-trade,
 .cancel-trade,
-.delete-trade {
+.delete-trade,
+.trade-name-input  {
     padding: 15px;
     width: 100%;
     font-size: 19px;
@@ -775,4 +778,12 @@ header {
 
 .trade-name {
     margin-right: 50px;
+}
+
+.trade-name-input {
+    box-sizing: border-box;
+    text-align: left;
+    cursor: auto;
+    background-color: rgb(19, 26, 42)
+    
 }

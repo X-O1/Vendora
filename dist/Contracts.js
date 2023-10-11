@@ -1,5 +1,5 @@
 const VendoraContract = {
-    address: "0xA07A7260E214A9D630E6901ae30016F198F9ECe5",
+    address: "0xECE57701462f81c2832Ce0a1B6Ca3b013d7b11c2",
     abi: [
         {
             inputs: [],
@@ -15,12 +15,6 @@ const VendoraContract = {
                     name: "tradeId",
                     type: "bytes32",
                 },
-                {
-                    indexed: true,
-                    internalType: "bool",
-                    name: "buyerMetTerms",
-                    type: "bool",
-                },
             ],
             name: "Buyer_Met_Terms",
             type: "event",
@@ -33,12 +27,6 @@ const VendoraContract = {
                     internalType: "bytes32",
                     name: "tradeId",
                     type: "bytes32",
-                },
-                {
-                    indexed: true,
-                    internalType: "bool",
-                    name: "sellerMetTerms",
-                    type: "bool",
                 },
             ],
             name: "Seller_Met_Terms",
@@ -53,12 +41,6 @@ const VendoraContract = {
                     name: "tradeId",
                     type: "bytes32",
                 },
-                {
-                    indexed: true,
-                    internalType: "address",
-                    name: "seller",
-                    type: "address",
-                },
             ],
             name: "Terms_Set",
             type: "event",
@@ -72,37 +54,6 @@ const VendoraContract = {
                     name: "tradeId",
                     type: "bytes32",
                 },
-                {
-                    indexed: true,
-                    internalType: "bool",
-                    name: "tradeCanceled",
-                    type: "bool",
-                },
-                {
-                    indexed: true,
-                    internalType: "address",
-                    name: "userThatCanceled",
-                    type: "address",
-                },
-            ],
-            name: "Trade_Canceled",
-            type: "event",
-        },
-        {
-            anonymous: false,
-            inputs: [
-                {
-                    indexed: true,
-                    internalType: "bytes32",
-                    name: "tradeId",
-                    type: "bytes32",
-                },
-                {
-                    indexed: true,
-                    internalType: "bool",
-                    name: "tradeCompleted",
-                    type: "bool",
-                },
             ],
             name: "Trade_Completed",
             type: "event",
@@ -115,18 +66,6 @@ const VendoraContract = {
                     internalType: "bytes32",
                     name: "tradeId",
                     type: "bytes32",
-                },
-                {
-                    indexed: true,
-                    internalType: "bool",
-                    name: "termsFinalized",
-                    type: "bool",
-                },
-                {
-                    indexed: true,
-                    internalType: "address",
-                    name: "buyer",
-                    type: "address",
                 },
             ],
             name: "Trade_Started",
@@ -153,7 +92,7 @@ const VendoraContract = {
                     type: "bytes32",
                 },
             ],
-            name: "deleteTermsFromProfile",
+            name: "deleteTrade",
             outputs: [],
             stateMutability: "nonpayable",
             type: "function",
@@ -173,6 +112,24 @@ const VendoraContract = {
         },
         {
             inputs: [
+                {
+                    internalType: "bytes32",
+                    name: "tradeId",
+                    type: "bytes32",
+                },
+            ],
+            name: "enterTrade",
+            outputs: [],
+            stateMutability: "nonpayable",
+            type: "function",
+        },
+        {
+            inputs: [
+                {
+                    internalType: "string",
+                    name: "tradeName",
+                    type: "string",
+                },
                 {
                     components: [
                         {
@@ -309,21 +266,13 @@ const VendoraContract = {
                     type: "bytes32",
                 },
             ],
-            name: "startTrade",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-        },
-        {
-            inputs: [
-                {
-                    internalType: "bytes32",
-                    name: "tradeId",
-                    type: "bytes32",
-                },
-            ],
             name: "getTerms",
             outputs: [
+                {
+                    internalType: "string",
+                    name: "tradeName",
+                    type: "string",
+                },
                 {
                     components: [
                         {
@@ -611,6 +560,11 @@ const VendoraContract = {
             name: "trades",
             outputs: [
                 {
+                    internalType: "string",
+                    name: "tradeName",
+                    type: "string",
+                },
+                {
                     internalType: "address",
                     name: "seller",
                     type: "address",
@@ -648,11 +602,6 @@ const VendoraContract = {
                 {
                     internalType: "bool",
                     name: "allTermsMet",
-                    type: "bool",
-                },
-                {
-                    internalType: "bool",
-                    name: "tradeCanceled",
                     type: "bool",
                 },
                 {

@@ -91,7 +91,7 @@ const createCommonTokenMenuElements = (
   tokenOptionDiv.appendChild(tokenOrderDetailsDiv);
 
   if (option.logoURI) tokenLogo.src = option.logoURI;
-  if (option.name) tokenName.innerText = option.name;
+  if (option.tradeName) tokenName.innerText = option.tradeName;
   if (option.address) tokenAddress.innerText = option.address;
   if (option.symbol) tokenSymbol.innerText = option.symbol;
   tokenId.type = "text";

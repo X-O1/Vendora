@@ -9,13 +9,13 @@ import {
   getEthTransferDetails,
 } from "./TermsAssetDetails";
 import {
-  // activeTradesDiv,
   finishTradeDiv,
   finishTradeDiv2,
   searchBar,
   searchButton,
   searchContainer,
   setTermsButton,
+  tradeNameInput,
   tradesDiv,
   tradesDiv2,
   tradesTab,
@@ -49,6 +49,7 @@ import {
 } from "./DefaultTokens";
 
 type Terms = {
+  tradeName: string;
   offeredErc721s: Erc721TransferDetails[];
   requestedErc721s: Erc721TransferDetails[];
   offeredErc1155s: Erc1155TransferDetails[];
@@ -76,6 +77,7 @@ const addTrade = async (): Promise<void> => {
       );
 
       const tx = await contract.setTerms(
+        tradeNameInput.value,
         (
           await getErc721TransferDetails()
         ).offered,
@@ -102,7 +104,7 @@ const addTrade = async (): Promise<void> => {
         ).requested
       );
       await tx.wait();
-
+      tradeNameInput.value = "";
       localStorage.clear();
     } catch (error) {
       console.error("Failed to add trade", error);
@@ -122,7 +124,7 @@ const enterTrade = async (tradeId: string): Promise<void> => {
         signer
       );
 
-      const tx = await contract.startTrade(tradeId);
+      const tx = await contract.enterTrade(tradeId);
       await tx.wait();
     } catch (error) {
       console.error("Error starting trade", error);
@@ -160,7 +162,7 @@ const deleteTrade = async (tradeId: string): Promise<void> => {
         signer
       );
 
-      const tx = await contract.deleteTermsFromProfile(tradeId);
+      const tx = await contract.deleteTrade(tradeId);
       await tx.wait();
     } catch (error) {
       console.error("Error deleting trade", tradeId, error);
@@ -411,8 +413,113 @@ const displaySearchedUserTradeList = async (): Promise<void> => {
       const tradeIds: string[] = await _searchAllUserTradeIds();
       tradesDiv2.innerHTML = "";
 
-      tradeIds?.forEach((id: string): void => {
+      tradeIds?.forEach(async (id: string): Promise<void> => {
         const tradeMenuElements = createTradeMenuElements(id, tradesDiv2);
+        const preview = await _tradePreview(id);
+        const terms: Terms = await _getTerms(id);
+
+        if (preview?.offeredErc721s.length !== 0) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src = preview?.offeredErc721s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedErc721s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src =
+            preview?.requestedErc721s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.offeredErc1155s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src = preview?.offeredErc1155s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedErc1155s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src =
+            preview?.requestedErc1155s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.offeredErc20s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src = preview?.offeredErc20s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedErc20s.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src = preview?.requestedErc20s[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.offeredEth.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src = preview?.offeredEth[0].logoURI || "token image";
+        }
+
+        if (
+          (tradeMenuElements?.tokenImagesDiv?.childElementCount ?? 0) < 4 &&
+          preview?.requestedEth.length !== 0
+        ) {
+          const tokenImage: HTMLImageElement = document.createElement("img");
+          tokenImage.classList.add("token-image");
+          tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
+          tokenImage.src = preview?.requestedEth[0].logoURI || "token image";
+        }
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
           searchContainer.style.display = "none";
@@ -454,11 +561,15 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
       tradeIds?.forEach(async (id: string): Promise<void> => {
         const tradeMenuElements = createTradeMenuElements(id, tradesDiv);
         const preview = await _tradePreview(id);
+        const terms: Terms = await _getTerms(id);
 
         if (preview?.offeredErc721s.length !== 0) {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src = preview?.offeredErc721s[0].logoURI || "token image";
         }
 
@@ -469,6 +580,9 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src =
             preview?.requestedErc721s[0].logoURI || "token image";
         }
@@ -480,6 +594,9 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src = preview?.offeredErc1155s[0].logoURI || "token image";
         }
 
@@ -490,6 +607,9 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src =
             preview?.requestedErc1155s[0].logoURI || "token image";
         }
@@ -501,6 +621,9 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src = preview?.offeredErc20s[0].logoURI || "token image";
         }
 
@@ -511,6 +634,9 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src = preview?.requestedErc20s[0].logoURI || "token image";
         }
 
@@ -521,6 +647,9 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src = preview?.offeredEth[0].logoURI || "token image";
         }
 
@@ -531,10 +660,14 @@ const displayCurrentUserTradeList = async (): Promise<void> => {
           const tokenImage: HTMLImageElement = document.createElement("img");
           tokenImage.classList.add("token-image");
           tradeMenuElements?.tokenImagesDiv.appendChild(tokenImage);
+          tradeMenuElements?.tradeNameDiv
+            ? (tradeMenuElements.tradeNameDiv.innerText = terms.tradeName)
+            : undefined;
           tokenImage.src = preview?.requestedEth[0].logoURI || "token image";
         }
 
         tradeMenuElements?.tradeDiv.addEventListener("click", () => {
+          searchContainer.style.display = "none";
           _createTradeButtonsAndAddListeners(id, finishTradeDiv);
           displayFinishTradePage();
           displayTradePreview(id);
@@ -565,10 +698,10 @@ const refreshTradeList = async (): Promise<void> => {
   }
 };
 
-const _createTradeButtonsAndAddListeners = (
+const _createTradeButtonsAndAddListeners = async (
   tradeId: string,
   div: HTMLDivElement
-): void => {
+): Promise<void> => {
   try {
     finishTradeDiv.innerHTML = "";
     finishTradeDiv2.innerHTML = "";
@@ -624,6 +757,7 @@ const _getTerms = async (tradeId: string): Promise<any> => {
     const data = await contract.getTerms(tradeId);
 
     const {
+      tradeName,
       offeredErc721s,
       requestedErc721s,
       offeredErc1155s,
@@ -635,6 +769,7 @@ const _getTerms = async (tradeId: string): Promise<any> => {
     } = data;
 
     return {
+      tradeName,
       offeredErc721s,
       requestedErc721s,
       offeredErc1155s,
@@ -687,7 +822,7 @@ const _tradePreview = async (
               preview.offeredErc721s.push({
                 address: asset.erc721Address,
                 tokenId: asset.tokenId,
-                name: defaultToken.name,
+                name: defaultToken.tradeName,
                 symbol: defaultToken.symbol,
                 logoURI: defaultToken.logoURI,
               });
@@ -704,7 +839,7 @@ const _tradePreview = async (
                 address: asset.erc721Address,
                 tokenId: asset.tokenId,
                 logoURI: defaultToken.logoURI,
-                name: defaultToken.name,
+                name: defaultToken.tradeName,
                 symbol: defaultToken.symbol,
               });
             }
@@ -721,7 +856,7 @@ const _tradePreview = async (
                 tokenId: asset.tokenId,
                 amount: asset.amount,
                 logoURI: defaultToken.logoURI,
-                name: defaultToken.name,
+                name: defaultToken.tradeName,
                 symbol: defaultToken.symbol,
               });
             }
@@ -738,7 +873,7 @@ const _tradePreview = async (
                 tokenId: asset.tokenId,
                 amount: asset.amount,
                 logoURI: defaultToken.logoURI,
-                name: defaultToken.name,
+                name: defaultToken.tradeName,
                 symbol: defaultToken.symbol,
               });
             }
@@ -753,7 +888,7 @@ const _tradePreview = async (
             if (defaultToken.address === asset.erc20Address) {
               preview.offeredErc20s.push({
                 address: asset.erc20Address,
-                name: defaultToken.name,
+                name: defaultToken.tradeName,
                 symbol: defaultToken.symbol,
                 logoURI: defaultToken.logoURI,
                 amount: asset.amount,
@@ -770,7 +905,7 @@ const _tradePreview = async (
             if (defaultToken.address === asset.erc20Address) {
               preview.requestedErc20s.push({
                 address: asset.erc20Address,
-                name: defaultToken.name,
+                name: defaultToken.tradeName,
                 symbol: defaultToken.symbol,
                 logoURI: defaultToken.logoURI,
                 amount: asset.amount,
@@ -783,7 +918,7 @@ const _tradePreview = async (
       if (terms?.offeredEth) {
         defaultNativeTokens.forEach((nativeCurrency: TokenOption) => {
           preview.offeredEth.push({
-            name: nativeCurrency.name,
+            name: nativeCurrency.tradeName,
             symbol: nativeCurrency.symbol,
             logoURI: nativeCurrency.logoURI,
             amount: terms.offeredEth,
@@ -795,7 +930,7 @@ const _tradePreview = async (
       if (terms?.requestedEth) {
         defaultNativeTokens.forEach((nativeCurrency: TokenOption) => {
           preview.requestedEth.push({
-            name: nativeCurrency.name,
+            name: nativeCurrency.tradeName,
             symbol: nativeCurrency.symbol,
             logoURI: nativeCurrency.logoURI,
             amount: terms.requestedEth,

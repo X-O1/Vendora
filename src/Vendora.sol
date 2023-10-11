@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.19;
 
 /** IMPORTS */
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -30,6 +30,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
     }
 
     struct Terms {
+        string tradeName;
         address seller;
         address buyer;
         Erc721Details[] offeredErc721s;
@@ -44,7 +45,6 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         bool sellerMetTerms;
         bool buyerMetTerms;
         bool allTermsMet;
-        bool tradeCanceled;
         bool tradeCompleted;
     }
 
@@ -53,25 +53,14 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
     mapping(address => bytes32[]) public usersActiveTrades;
 
     /** EVENTS */
-    event Trade_Started(
-        bytes32 indexed tradeId,
-        bool indexed termsFinalized,
-        address indexed buyer
-    );
-    event Terms_Set(bytes32 indexed tradeId, address indexed seller);
-    event Seller_Met_Terms(
-        bytes32 indexed tradeId,
-        bool indexed sellerMetTerms
-    );
-    event Buyer_Met_Terms(bytes32 indexed tradeId, bool indexed buyerMetTerms);
-    event Trade_Canceled(
-        bytes32 indexed tradeId,
-        bool indexed tradeCanceled,
-        address indexed userThatCanceled
-    );
-    event Trade_Completed(bytes32 indexed tradeId, bool indexed tradeCompleted);
+    event Trade_Started(bytes32 indexed tradeId);
+    event Terms_Set(bytes32 indexed tradeId);
+    event Seller_Met_Terms(bytes32 indexed tradeId);
+    event Buyer_Met_Terms(bytes32 indexed tradeId);
+    event Trade_Completed(bytes32 indexed tradeId);
 
     function setTerms(
+        string memory tradeName,
         Erc721Details[] memory offeredErc721s,
         Erc721Details[] memory requestedErc721s,
         Erc1155Details[] memory offeredErc1155s,
@@ -91,6 +80,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             offeredEthAmount,
             requestedEthAmount
         );
+
         Terms storage terms = trades[tradeId];
         require(terms.seller == address(0), "Trade exists");
 
@@ -104,18 +94,18 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         _addErc20(offeredErc20s, terms.offeredErc20s);
         _addErc20(requestedErc20s, terms.requestedErc20s);
 
+        terms.tradeName = tradeName;
         terms.seller = msg.sender;
         terms.buyer = address(0);
         terms.termsFinalized = false;
         terms.sellerMetTerms = false;
         terms.buyerMetTerms = false;
         terms.allTermsMet = false;
-        terms.tradeCanceled = false;
         terms.tradeCompleted = false;
         terms.offeredEthAmount = offeredEthAmount;
         terms.requestedEthAmount = requestedEthAmount;
 
-        emit Terms_Set(tradeId, terms.seller);
+        emit Terms_Set(tradeId);
     }
 
     function deleteTrade(bytes32 tradeId) public {
@@ -126,32 +116,33 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         require(terms.termsFinalized == false, "Trade started");
         require(terms.buyer == address(0), "Buyer entered");
 
-        delete trades[tradeId];
+        bool found = false;
 
         for (uint256 i = 0; i < profile.length; i++) {
             if (profile[i] == tradeId) {
+                found = true;
                 if (i != profile.length - 1) {
                     profile[i] = profile[profile.length - 1];
                 }
                 profile.pop();
-                return;
-            }
-            if (profile[i] != tradeId) {
-                revert TRADE_DOES_NOT_EXIST();
+                break;
             }
         }
+
+        require(found);
+
+        delete trades[tradeId];
     }
 
     function enterTrade(bytes32 tradeId) external {
         Terms storage terms = trades[tradeId];
-        require(terms.seller != address(0), "Trade doesnt exist");
+        require(terms.seller != address(0), "Doesnt exist");
         require(msg.sender != terms.seller, "Buyer only");
         require(terms.buyer == address(0), "Has buyer");
 
         terms.buyer = msg.sender;
         terms.termsFinalized = true;
-        terms.tradeCanceled = false;
-        emit Trade_Started(tradeId, terms.termsFinalized, terms.buyer);
+        emit Trade_Started(tradeId);
     }
 
     function depositAssets(bytes32 tradeId) external payable {
@@ -162,7 +153,6 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             "Not member"
         );
         require(terms.termsFinalized == true, "Terms not finalized");
-        require(terms.tradeCanceled == false, "Trade canceled");
 
         if (msg.sender == terms.seller) {
             if (terms.offeredEthAmount > 0) {
@@ -181,7 +171,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             _depositErc20(terms.offeredErc20s, terms.seller);
 
             terms.sellerMetTerms = true;
-            emit Seller_Met_Terms(tradeId, terms.sellerMetTerms);
+            emit Seller_Met_Terms(tradeId);
         }
 
         if (msg.sender == terms.buyer) {
@@ -201,7 +191,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             _depositErc20(terms.requestedErc20s, terms.buyer);
 
             terms.buyerMetTerms = true;
-            emit Buyer_Met_Terms(tradeId, terms.buyerMetTerms);
+            emit Buyer_Met_Terms(tradeId);
         }
 
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == true) {
@@ -218,7 +208,6 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             "Not member"
         );
         require(terms.termsFinalized == true, "Terms not finalized");
-        require(terms.tradeCanceled == false, "Trade canceled");
         require(terms.allTermsMet == true, "Terms not met");
 
         if (terms.offeredEthAmount > 0) {
@@ -237,8 +226,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         _sendErc20(terms.offeredErc20s, terms.buyer);
         _sendErc20(terms.requestedErc20s, terms.seller);
 
-        terms.tradeCompleted = true;
-        emit Trade_Completed(tradeId, terms.tradeCompleted);
+        emit Trade_Completed(tradeId);
         delete trades[tradeId];
     }
 
@@ -250,7 +238,6 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             "Not member"
         );
         require(terms.termsFinalized == true, "Terms not finalized");
-        require(terms.tradeCanceled == false, "Trade canceled");
         require(terms.allTermsMet == false, "Terms met");
 
         if (terms.sellerMetTerms == true && terms.buyerMetTerms == false) {
@@ -271,10 +258,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
             _sendErc20(terms.requestedErc20s, terms.buyer);
         }
 
-        terms.termsFinalized = false;
-        terms.tradeCanceled = true;
         terms.buyer = address(0);
-        emit Trade_Canceled(tradeId, terms.tradeCanceled, msg.sender);
     }
 
     /** HELPER FUNCTIONS */
@@ -338,6 +322,29 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
                         erc20Address: details[i].erc20Address,
                         amount: details[i].amount
                     })
+                );
+            }
+        }
+    }
+
+    function _verifyAsset(
+        Erc721Details[] storage details,
+        address user
+    ) private view {
+        if (details.length > 0) {
+            for (uint256 i = 0; i < details.length; i++) {
+                require(
+                    IERC721(details[i].erc721Address).ownerOf(
+                        details[i].tokenId
+                    ) == user,
+                    "NFTs not owned"
+                );
+
+                require(
+                    IERC721(details[i].erc721Address).getApproved(
+                        details[i].tokenId
+                    ) == address(this),
+                    "Nfts not approved"
                 );
             }
         }
@@ -537,6 +544,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         external
         view
         returns (
+            string memory tradeName,
             Erc721Details[] memory offeredErc721s,
             Erc721Details[] memory requestedErc721s,
             Erc1155Details[] memory offeredErc1155s,
@@ -550,6 +558,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         Terms storage term = trades[tradeId];
 
         return (
+            term.tradeName,
             term.offeredErc721s,
             term.requestedErc721s,
             term.offeredErc1155s,

@@ -21,6 +21,7 @@ import {
   tradesBox,
   findBox,
   buildBox,
+  tradeNameInput,
 } from "./FrontEndElements.js";
 import {
   displayOfferedTradeList,
@@ -39,6 +40,8 @@ const displayRequestLinkContent = (): void => {
   finalizeTermsDiv.style.height = "50%";
   requestedAssets.style.height = "100%";
   setTermsButton.style.display = "none";
+  tradeNameInput.style.display = "none";
+
   selectAssetsH2.innerText = "Select Assets You Want";
   resetTradeListElementsInnerText();
   displayRequestedTradeList();
@@ -53,6 +56,8 @@ const displayOfferLinkContent = () => {
   finalizeTermsDiv.style.height = "50%";
   offeredAssets.style.height = "100%";
   setTermsButton.style.display = "none";
+  tradeNameInput.style.display = "none";
+
   selectAssetsH2.innerText = "Select Assets You'll Give";
   resetTradeListElementsInnerText();
   displayOfferedTradeList();
@@ -71,6 +76,8 @@ const displayFinalizeTermsLinkContent = (): void => {
   offeredAssetsTitle.innerText = "GIVE";
   requestedAssetsTitle.innerText = "RECIEVE";
   setTermsButton.style.display = "flex";
+  tradeNameInput.style.display = "flex";
+
   resetTradeListElementsInnerText();
   displayTradeList();
 };

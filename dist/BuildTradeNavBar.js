@@ -1,5 +1,5 @@
 import { closeTokenMenu, getOfferAssetButton, getRequestAssetButton, } from "./DefaultTokenMenu.js";
-import { offerTab, requestTab, finalizeTermsTab, selectAssetsH2, selectAssets, finalizeTermsDiv, requestedAssets, offeredAssets, offeredAssetsTitle, requestedAssetsTitle, setTermsButton, buildTradeTab, findTradeTab, tradesTab, tradesBox, findBox, buildBox, } from "./FrontEndElements.js";
+import { offerTab, requestTab, finalizeTermsTab, selectAssetsH2, selectAssets, finalizeTermsDiv, requestedAssets, offeredAssets, offeredAssetsTitle, requestedAssetsTitle, setTermsButton, buildTradeTab, findTradeTab, tradesTab, tradesBox, findBox, buildBox, tradeNameInput, } from "./FrontEndElements.js";
 import { displayOfferedTradeList, displayRequestedTradeList, displayTradeList, resetTradeListElementsInnerText, } from "./TradeListMenu.js";
 const displayRequestLinkContent = () => {
     requestTab.style.color = "#FFF";
@@ -11,6 +11,7 @@ const displayRequestLinkContent = () => {
     finalizeTermsDiv.style.height = "50%";
     requestedAssets.style.height = "100%";
     setTermsButton.style.display = "none";
+    tradeNameInput.style.display = "none";
     selectAssetsH2.innerText = "Select Assets You Want";
     resetTradeListElementsInnerText();
     displayRequestedTradeList();
@@ -25,6 +26,7 @@ const displayOfferLinkContent = () => {
     finalizeTermsDiv.style.height = "50%";
     offeredAssets.style.height = "100%";
     setTermsButton.style.display = "none";
+    tradeNameInput.style.display = "none";
     selectAssetsH2.innerText = "Select Assets You'll Give";
     resetTradeListElementsInnerText();
     displayOfferedTradeList();
@@ -42,6 +44,7 @@ const displayFinalizeTermsLinkContent = () => {
     offeredAssetsTitle.innerText = "GIVE";
     requestedAssetsTitle.innerText = "RECIEVE";
     setTermsButton.style.display = "flex";
+    tradeNameInput.style.display = "flex";
     resetTradeListElementsInnerText();
     displayTradeList();
 };
