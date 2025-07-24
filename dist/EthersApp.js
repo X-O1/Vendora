@@ -5,6 +5,7 @@ import { VendoraContract } from "./Contracts";
 import { createTradeElements, createTradeMenuElements, displayActiveTradesPage, displayFinishTradePage, displayFinishTradePage2, } from "./TradeMenu";
 import { _createOfferedErc1155PreviewMenu, _createOfferedErc20PreviewMenu, _createOfferedErc721PreviewMenu, _createOfferedEthPreviewMenu, _createRequestedErc1155PreviewMenu, _createRequestedErc20PreviewMenu, _createRequestedErc721PreviewMenu, _createRequestedEthPreviewMenu, } from "./TradePreview";
 import { defaultErc1155s, defaultErc20s, defaultErc721s, defaultNativeTokens, } from "./DefaultTokens";
+import { displayTradeList } from "./TradeListMenu";
 const metamaskExist = () => {
     const metamaskExist = typeof window.ethereum !== "undefined";
     return metamaskExist;
@@ -17,7 +18,7 @@ const addTrade = async () => {
             const contract = new ethers.Contract(VendoraContract.address, VendoraContract.abi, signer);
             const tx = await contract.setTerms(tradeNameInput.value, (await getErc721TransferDetails()).offered, (await getErc721TransferDetails()).requested, (await getErc1155TransferDetails()).offered, (await getErc1155TransferDetails()).requested, (await getErc20TransferDetails()).offered, (await getErc20TransferDetails()).requested, (await getEthTransferDetails()).offered, (await getEthTransferDetails()).requested);
             await tx.wait();
-            tradeNameInput.value = "";
+            displayTradeList();
             localStorage.clear();
         }
         catch (error) {
@@ -317,7 +318,6 @@ const displaySearchedUserTradeList = async () => {
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedEth[0].logoURI) || "token image";
                 }
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
-                    console.log("click");
                     searchContainer.style.display = "none";
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv2);
                     displayFinishTradePage2();
@@ -437,7 +437,6 @@ const displayCurrentUserTradeList = async () => {
                     tokenImage.src = (preview === null || preview === void 0 ? void 0 : preview.requestedEth[0].logoURI) || "token image";
                 }
                 tradeMenuElements === null || tradeMenuElements === void 0 ? void 0 : tradeMenuElements.tradeDiv.addEventListener("click", () => {
-                    console.log("click");
                     searchContainer.style.display = "none";
                     _createTradeButtonsAndAddListeners(id, finishTradeDiv);
                     displayFinishTradePage();

@@ -47,6 +47,7 @@ import {
   defaultErc721s,
   defaultNativeTokens,
 } from "./DefaultTokens";
+// import { displayTradeList } from "./TradeListMenu";
 
 type Terms = {
   tradeName: string;
@@ -104,7 +105,7 @@ const addTrade = async (): Promise<void> => {
         ).requested
       );
       await tx.wait();
-      tradeNameInput.value = "";
+      // displayTradeList();
       localStorage.clear();
     } catch (error) {
       console.error("Failed to add trade", error);

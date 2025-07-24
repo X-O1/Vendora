@@ -227,7 +227,7 @@ contract Vendora is IERC721Receiver, IERC1155Receiver {
         _sendErc20(terms.requestedErc20s, terms.seller);
 
         emit Trade_Completed(tradeId);
-        delete trades[tradeId];
+        deleteTrade(tradeId);
     }
 
     function cancelTradeAndWithdraw(bytes32 tradeId) external {

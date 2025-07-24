@@ -7,18 +7,17 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
   },
   resolve: {
-    extensions: [".ts", ".js"],
-    alias: {
-      // Add aliases for your modules here
-      "@FrontEndElements": path.resolve(__dirname, "src/FrontEndElements.js"),
-      "@LocalStorage": path.resolve(__dirname, "src/LocalStorage.js"),
-      "@ManageTradeList": path.resolve(__dirname, "src/ManageTradeList.js"),
-    },
+    extensions: [".tsx", ".ts", ".js"],
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
+        use: "ts-loader",
+        include: [path.resolve(__dirname, "src")],
+      },
+      {
+        test: /\.js$/,
         use: "ts-loader",
         include: [path.resolve(__dirname, "src")],
       },
